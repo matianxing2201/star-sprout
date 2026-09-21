@@ -1,0 +1,284 @@
+/**
+ * 设计令牌（Design Tokens）—— 儿童视觉体系
+ *
+ * 视觉方向：纸雕绘本（paper-cut storybook）
+ *  - 温暖的纸张底色 + 墨色文字，避免纯白 SaaS 感
+ *  - 每个学习世界拥有一个“主色 + 柔色 + 深色”三段调色板，而不是大面积彩虹色
+ *  - 大圆角、贴纸式投影、细墨线描边，营造插画世界的层次
+ *
+ * 所有令牌通过 Tailwind v4 的 @theme 暴露为原子类：
+ *   --color-paper        → bg-paper / text-paper / border-paper
+ *   --radius-card        → rounded-card
+ *   --shadow-sticker     → shadow-sticker
+ *   --ease-bounce        → ease-bounce
+ *   --animate-float      → animate-float
+ *
+ * 为什么是 `@theme static`：
+ * 默认情况下 Tailwind v4 只会把「被生成的原子类用到」的变量写进 :root，
+ * 而本项目的色调是**运行时**决定的（toneVars() 产出 var(--color-<tone>)），
+ * Tailwind 无法静态得知哪些色调会被用到。若不开 static，
+ * 没被任何类引用的 --color-math / --color-language 会被裁掉，
+ * 领域配色就会静默失效。`static` 保证整套令牌始终完整可用。
+ */
+
+@theme static {
+  /* ===== 字体 ===== */
+  --font-display: 'ZCOOL KuaiLe', 'LXGW WenKai', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-body: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-numeric: 'Baloo 2', 'Noto Sans SC', system-ui, sans-serif;
+
+  /* ===== 纸张与墨色（中性色阶） ===== */
+  --color-paper: #fbf5ea;
+  --color-paper-deep: #f3e8d5;
+  --color-paper-edge: #ece0c9;
+  --color-surface: #ffffff;
+  --color-surface-muted: #fdfaf3;
+  --color-ink: #2e2a25;
+  --color-ink-soft: #6b6157;
+  --color-ink-faint: #a2968a;
+  --color-line: #e8dcc8;
+  --color-line-strong: #d8c7a8;
+
+  /* ===== 学习世界调色板（主色 / 柔色 / 深色） ===== */
+  /* 语言 · 阅读森林 */
+  --color-language: #3f7d5b;
+  --color-language-soft: #e4f0e6;
+  --color-language-deep: #2a5a3e;
+  /* 阅读世界 */
+  --color-reading: #8a6a3b;
+  --color-reading-soft: #f3e9d6;
+  --color-reading-deep: #63492a;
+  /* 数学 · 数学城堡 */
+  --color-math: #d2833a;
+  --color-math-soft: #fbebd8;
+  --color-math-deep: #9a5a1e;
+  /* 科学 · 科学实验室 */
+  --color-science: #2f7e8c;
+  --color-science-soft: #ddf0f2;
+  --color-science-deep: #1e5a66;
+  /* 艺术 · 艺术小镇 */
+  --color-art: #c05b7e;
+  --color-art-soft: #fbe4eb;
+  --color-art-deep: #8e3b58;
+  /* 音乐 · 音乐舞台 */
+  --color-music: #7a5ea8;
+  --color-music-soft: #ebe4f7;
+  --color-music-deep: #563e7c;
+  /* 思维 · 思维训练营 */
+  --color-think: #c08a1e;
+  --color-think-soft: #faefd3;
+  --color-think-deep: #8a6112;
+  /* 探索 · 探索世界 */
+  --color-explore: #2f6fb0;
+  --color-explore-soft: #dfebf9;
+  --color-explore-deep: #1e4e80;
+  /* 编程 · 编程空间 */
+  --color-code: #5b6abf;
+  --color-code-soft: #e5e8f9;
+  --color-code-deep: #3f4b90;
+  /* 生活认知 */
+  --color-life: #6e8b3d;
+  --color-life-soft: #eaf1d9;
+  --color-life-deep: #4e6628;
+  /* 社交表达 */
+  --color-social: #d2685e;
+  --color-social-soft: #fbe5e1;
+  --color-social-deep: #9c453c;
+  /* 英语启蒙 */
+  --color-english: #3c8fa8;
+  --color-english-soft: #dff0f5;
+  --color-english-deep: #26687e;
+  /* 劳动实践 */
+  --color-labor: #8a7b3c;
+  --color-labor-soft: #f2edd6;
+  --color-labor-deep: #63582a;
+  /* 道德与法治 */
+  --color-moral: #6b7f5e;
+  --color-moral-soft: #e7eee2;
+  --color-moral-deep: #4b5b41;
+
+  /* ===== 成长体系配色 ===== */
+  --color-star: #f5b82e;
+  --color-star-soft: #fdf0d2;
+  --color-star-deep: #c9891a;
+  --color-energy: #6fbf73;
+  --color-energy-soft: #e5f5e6;
+  --color-energy-deep: #3f8a45;
+  --color-badge: #b07fd4;
+  --color-badge-soft: #f1e7fa;
+  --color-badge-deep: #7d4fa3;
+
+  /* ===== 反馈色（温柔，不使用刺眼的红叉） ===== */
+  --color-success: #57a773;
+  --color-success-soft: #e3f3e8;
+  --color-success-deep: #32724a;
+  --color-gently: #e9a23b;
+  --color-gently-soft: #fceeda;
+  --color-gently-deep: #a86b13;
+  --color-alert: #d2685e;
+  --color-alert-soft: #fbe5e1;
+  --color-alert-deep: #9c453c;
+
+  /* ===== 圆角 ===== */
+  --radius-blob: 40px;
+  --radius-card: 28px;
+  --radius-tile: 22px;
+  --radius-chip: 999px;
+
+  /* ===== 投影（贴纸式：短距离硬投影 + 长距离柔投影） ===== */
+  --shadow-sticker: 0 2px 0 0 rgb(46 42 37 / 8%), 0 10px 24px -12px rgb(46 42 37 / 22%);
+  --shadow-lift: 0 4px 0 0 rgb(46 42 37 / 10%), 0 22px 40px -18px rgb(46 42 37 / 28%);
+  --shadow-press: 0 1px 0 0 rgb(46 42 37 / 8%), 0 6px 14px -10px rgb(46 42 37 / 20%);
+  --shadow-glow: 0 0 0 6px rgb(245 184 46 / 18%), 0 14px 30px -12px rgb(245 184 46 / 45%);
+
+  /* ===== 动效令牌 ===== */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --duration-tap: 120ms;
+  --duration-quick: 220ms;
+  --duration-base: 320ms;
+  --duration-settle: 520ms;
+  --duration-celebrate: 900ms;
+
+  /* ===== 动画注册 ===== */
+  --animate-float: float 5s var(--ease-snap) infinite;
+  --animate-breathe: breathe 3.4s var(--ease-snap) infinite;
+  --animate-pop-in: pop-in var(--duration-settle) var(--ease-bounce) both;
+  --animate-slide-up: slide-up var(--duration-base) var(--ease-soft) both;
+  --animate-wiggle: wiggle 620ms var(--ease-snap);
+  --animate-sheen: sheen 2.6s linear infinite;
+  --animate-glow: glow 1.8s var(--ease-snap) infinite;
+  --animate-drift: drift 46s linear infinite;
+}
+
+/* 关键帧：与上面的 --animate-* 令牌配对 */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.045);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-6deg);
+  }
+  45% {
+    transform: rotate(5deg);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes sheen {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes drift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 1200px 600px;
+  }
+}
+
+@keyframes star-fly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--fly-x, 0px), var(--fly-y, -220px)) scale(1.1) rotate(220deg);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-14vh) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(104vh) rotate(560deg);
+  }
+}
+
+@keyframes ripple-out {
+  from {
+    opacity: 0.55;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}

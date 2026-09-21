@@ -1,0 +1,9 @@
+/**
+ * 样式入口
+ * 顺序固定：Tailwind → 令牌 → 基础层 → 动画组合层
+ */
+@import 'tailwindcss';
+
+@import './tokens.css';
+@import './base.css';
+@import './animations.css';
