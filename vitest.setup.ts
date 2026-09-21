@@ -9,7 +9,7 @@
 
 if (typeof window !== 'undefined') {
   if (typeof window.matchMedia !== 'function') {
-    window.matchMedia = ((query: string) => ({
+    window.matchMedia = (query: string) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -18,7 +18,7 @@ if (typeof window !== 'undefined') {
       addListener: () => {},
       removeListener: () => {},
       dispatchEvent: () => false,
-    })) as unknown as typeof window.matchMedia
+    })
   }
 
   if (typeof globalThis.ResizeObserver !== 'function') {
@@ -26,7 +26,7 @@ if (typeof window !== 'undefined') {
       observe(): void {}
       unobserve(): void {}
       disconnect(): void {}
-    } as unknown as typeof ResizeObserver
+    }
   }
 
   if (typeof window.requestAnimationFrame !== 'function') {
@@ -35,5 +35,5 @@ if (typeof window !== 'undefined') {
   }
 
   // 路由的 scrollBehavior 会调用它；jsdom 没有实现，测试输出会被噪音淹没
-  window.scrollTo = (() => {}) as unknown as typeof window.scrollTo
+  window.scrollTo = () => {}
 }
