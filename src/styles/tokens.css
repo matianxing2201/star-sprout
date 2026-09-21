@@ -272,6 +272,52 @@
   }
 }
 
+/* 盖章：从高处砸下来，压一下再回弹 —— 这是「量词印章」互动的核心手感 */
+@keyframes stamp-press {
+  0% {
+    opacity: 0;
+    transform: scale(2.4) rotate(-18deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.92) rotate(3deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(-1.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* 印章落下时的墨迹扩散 */
+@keyframes stamp-ink {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* 盖对了溅出的小星星 */
+@keyframes spark-out {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--spark-x, 0px), var(--spark-y, -40px)) scale(1);
+  }
+}
+
 @keyframes ripple-out {
   from {
     opacity: 0.55;

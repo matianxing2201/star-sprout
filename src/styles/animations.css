@@ -5,113 +5,139 @@
  *  - 反馈必须分级：轻触 → 正确 → 完成任务 → 完成课程 → 完成章节
  *  - 单次反馈总时长控制在 0.5s ~ 1.5s，不做拖沓的教学软件式动画
  *  - 动效服务于“理解知识”，不是为了炫技
+ *
+ * 放在 `@layer components`：这些是「有名字的复合样式」，
+ * 应该能被 Tailwind 的原子类按需覆盖（例如某个元素想改掉 fx-tap 的过渡时长）。
+ * 未分层会让它们反过来盖掉原子类，见 base.css 里的说明。
  */
 
-/* ===== 分级：轻触反馈（hover / press） ===== */
-.fx-tap {
-  transition:
-    transform var(--duration-tap) var(--ease-snap),
-    box-shadow var(--duration-quick) var(--ease-soft),
-    background-color var(--duration-quick) var(--ease-soft);
-}
+@layer components {
+  /* ===== 分级：轻触反馈（hover / press） ===== */
+  .fx-tap {
+    transition:
+      transform var(--duration-tap) var(--ease-snap),
+      box-shadow var(--duration-quick) var(--ease-soft),
+      background-color var(--duration-quick) var(--ease-soft);
+  }
 
-.fx-tap:hover {
-  transform: translateY(-2px);
-}
+  .fx-tap:hover {
+    transform: translateY(-2px);
+  }
 
-.fx-tap:active {
-  transform: translateY(1px) scale(0.985);
-}
+  .fx-tap:active {
+    transform: translateY(1px) scale(0.985);
+  }
 
-/* ===== 分级：正确反馈（元素弹一下 + 光环） ===== */
-.fx-correct {
-  animation: pop-in var(--duration-settle) var(--ease-bounce) both;
-}
+  /* ===== 分级：正确反馈（元素弹一下 + 光环） ===== */
+  .fx-correct {
+    animation: pop-in var(--duration-settle) var(--ease-bounce) both;
+  }
 
-.fx-correct::after {
-  position: absolute;
-  inset: -6px;
-  z-index: -1;
-  content: '';
-  background: rgb(87 167 115 / 30%);
-  border-radius: inherit;
-  animation: ripple-out var(--duration-settle) var(--ease-soft) both;
-}
+  .fx-correct::after {
+    position: absolute;
+    inset: -6px;
+    z-index: -1;
+    content: '';
+    background: rgb(87 167 115 / 30%);
+    border-radius: inherit;
+    animation: ripple-out var(--duration-settle) var(--ease-soft) both;
+  }
 
-/* ===== 分级：错误（差一点点，温柔抖动，绝不出现红叉） ===== */
-.fx-gently {
-  animation: wiggle 620ms var(--ease-snap);
-}
+  /* ===== 分级：错误（差一点点，温柔抖动，绝不出现红叉） ===== */
+  .fx-gently {
+    animation: wiggle 620ms var(--ease-snap);
+  }
 
-/* ===== 入场：列表错峰浮现 ===== */
-.fx-stagger > * {
-  animation: slide-up var(--duration-base) var(--ease-soft) both;
-}
+  /* ===== 入场：列表错峰浮现 ===== */
+  .fx-stagger > * {
+    animation: slide-up var(--duration-base) var(--ease-soft) both;
+  }
 
-.fx-stagger > :nth-child(1) {
-  animation-delay: 40ms;
-}
+  .fx-stagger > :nth-child(1) {
+    animation-delay: 40ms;
+  }
 
-.fx-stagger > :nth-child(2) {
-  animation-delay: 90ms;
-}
+  .fx-stagger > :nth-child(2) {
+    animation-delay: 90ms;
+  }
 
-.fx-stagger > :nth-child(3) {
-  animation-delay: 140ms;
-}
+  .fx-stagger > :nth-child(3) {
+    animation-delay: 140ms;
+  }
 
-.fx-stagger > :nth-child(4) {
-  animation-delay: 190ms;
-}
+  .fx-stagger > :nth-child(4) {
+    animation-delay: 190ms;
+  }
 
-.fx-stagger > :nth-child(5) {
-  animation-delay: 240ms;
-}
+  .fx-stagger > :nth-child(5) {
+    animation-delay: 240ms;
+  }
 
-.fx-stagger > :nth-child(6) {
-  animation-delay: 290ms;
-}
+  .fx-stagger > :nth-child(6) {
+    animation-delay: 290ms;
+  }
 
-.fx-stagger > :nth-child(7) {
-  animation-delay: 340ms;
-}
+  .fx-stagger > :nth-child(7) {
+    animation-delay: 340ms;
+  }
 
-.fx-stagger > :nth-child(8) {
-  animation-delay: 390ms;
-}
+  .fx-stagger > :nth-child(8) {
+    animation-delay: 390ms;
+  }
 
-/* ===== 交互态：hover → press → success → reward ===== */
-.fx-pressable {
-  transition: transform var(--duration-quick) var(--ease-bounce);
-}
+  /* ===== 交互态：hover → press → success → reward ===== */
+  .fx-pressable {
+    transition: transform var(--duration-quick) var(--ease-bounce);
+  }
 
-.fx-pressable:hover {
-  transform: scale(1.035) rotate(-0.6deg);
-}
+  .fx-pressable:hover {
+    transform: scale(1.035) rotate(-0.6deg);
+  }
 
-.fx-pressable:active {
-  transform: scale(0.96);
-}
+  .fx-pressable:active {
+    transform: scale(0.96);
+  }
 
-/* 拖拽中：让元素离开文档流并浮起 */
-.fx-dragging {
-  cursor: grabbing;
-  transform: scale(1.06) rotate(1.5deg);
-  box-shadow: var(--shadow-lift);
-}
+  /* 拖拽中：让元素离开文档流并浮起 */
+  .fx-dragging {
+    cursor: grabbing;
+    transform: scale(1.06) rotate(1.5deg);
+    box-shadow: var(--shadow-lift);
+  }
 
-/* 拖拽目标：被悬停时高亮 */
-.fx-drop-active {
-  border-color: var(--color-star) !important;
-  box-shadow: 0 0 0 6px rgb(245 184 46 / 22%);
-}
+  /* 拖拽目标：被悬停时高亮 */
+  .fx-drop-active {
+    border-color: var(--color-star) !important;
+    box-shadow: 0 0 0 6px rgb(245 184 46 / 22%);
+  }
 
-/* 奖励：星星飞入收藏栏 */
-.fx-star-fly {
-  animation: star-fly var(--duration-celebrate) var(--ease-soft) both;
-}
+  /* 奖励：星星飞入收藏栏 */
+  .fx-star-fly {
+    animation: star-fly var(--duration-celebrate) var(--ease-soft) both;
+  }
 
-/* 奖励：彩纸（仅用于“完成课程 / 完成章节”级别） */
-.fx-confetti {
-  animation: confetti-fall var(--duration-celebrate) linear both;
+  /* ===== 量词印章：盖下去的那一下 ===== */
+  .fx-stamp {
+    animation: stamp-press 520ms var(--ease-bounce) both;
+  }
+
+  /* 墨迹：印章与物品之间扩散开的一圈 */
+  .fx-ink {
+    animation: stamp-ink 620ms var(--ease-soft) both;
+  }
+
+  /* 溅出的小星星：每个元素用 --spark-x / --spark-y 指定飞的方向 */
+  .fx-spark {
+    animation: spark-out 640ms var(--ease-soft) both;
+  }
+
+  /* 印章待盖状态：轻轻晃动，暗示「拿起来盖一下」 */
+  .fx-stamp-ready {
+    animation: wiggle 1.6s var(--ease-snap) infinite;
+  }
+
+  /* 奖励：彩纸（仅用于“完成课程 / 完成章节”级别） */
+  .fx-confetti {
+    animation: confetti-fall var(--duration-celebrate) linear both;
+  }
 }

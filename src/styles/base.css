@@ -1,120 +1,135 @@
 /**
  * 基础层（Base）—— 重置、排版、通用交互反馈
  * 只放全局的、与业务无关的规则。
+ *
+ * 为什么整份文件包在 `@layer base` 里
+ * ---------------------------------
+ * CSS 的层叠规则是：**未分层的样式优先于任何 @layer 里的样式**，
+ * 与选择器特异性无关。Tailwind v4 把所有原子类放在 `@layer utilities`，
+ * 因此未分层的基础样式会反过来盖掉原子类 ——
+ * 例如这里的 `a { color: inherit }` 会压过 `<a class="text-paper">`，
+ * 结果就是「深色底 + 继承来的深色文字」= 高亮项一片漆黑，什么都看不见。
+ *
+ * 放进 `@layer base` 之后，Tailwind 声明的层序
+ * （theme → base → components → utilities）开始生效：
+ * 重置做打底，原子类照常覆盖它。这是本项目唯一正确的写法，
+ * 任何新增的全局样式都必须落在 base / components 层里。
  */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  margin: 0;
-  min-height: 100dvh;
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--color-ink);
-  background-color: var(--color-paper);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* 纸张质感：极淡的网点，避免大面积纯色带来的廉价感 */
-body::before {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  content: '';
-  background-image: radial-gradient(rgb(46 42 37 / 4%) 1px, transparent 0);
-  background-size: 22px 22px;
-}
-
-#app {
-  position: relative;
-  z-index: 1;
-  isolation: isolate;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.3;
-  letter-spacing: 0.01em;
-}
-
-p {
-  margin: 0;
-}
-
-img,
-svg,
-canvas {
-  display: block;
-  max-width: 100%;
-}
-
-button {
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-ul,
-ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* 儿童端：焦点环必须明显（键盘与无障碍可达） */
-:focus-visible {
-  outline: 3px solid var(--color-explore);
-  outline-offset: 3px;
-  border-radius: 6px;
-}
-
-/* 尊重系统的“减少动态效果”设置 */
-@media (prefers-reduced-motion: reduce) {
+@layer base {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    box-sizing: border-box;
   }
-}
 
-/* 滚动条：低干扰 */
-::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-line-strong);
-  background-clip: content-box;
-  border: 3px solid transparent;
-  border-radius: 999px;
-}
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-ink);
+    background-color: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+  /* 纸张质感：极淡的网点，避免大面积纯色带来的廉价感 */
+  body::before {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    content: '';
+    background-image: radial-gradient(rgb(46 42 37 / 4%) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  img,
+  svg,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* 儿童端：焦点环必须明显（键盘与无障碍可达） */
+  :focus-visible {
+    outline: 3px solid var(--color-explore);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* 尊重系统的“减少动态效果”设置 */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* 滚动条：低干扰 */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-line-strong);
+    background-clip: content-box;
+    border: 3px solid transparent;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
