@@ -6,6 +6,7 @@ coverage/
 *.local
 *.tsbuildinfo
 .pnpm-store/
+.wrangler/
 
 # 编辑器与系统
 .vscode/*
