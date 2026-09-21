@@ -26,10 +26,15 @@ const TABS = [
     <header class="border-b border-line bg-surface">
       <div class="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-4 px-5 py-4">
         <div class="mr-auto">
-          <p class="font-body text-xs font-bold tracking-[0.22em] text-ink-faint uppercase">
-            Parent Center
+          <!--
+            产品名放在家长端而不是儿童端：孩子那一屏已经很满（角色、年级、导航、星星），
+            而家长才需要一眼确认「这是哪个产品」。品牌名 + 英文名并列，也是国内产品的惯例写法。
+          -->
+          <p class="flex items-baseline gap-2 font-display text-lg text-ink">
+            <span>星芽</span>
+            <span class="font-numeric text-xs tracking-[0.12em] text-ink-faint">StarSprout</span>
           </p>
-          <h1 class="font-display text-2xl text-ink">
+          <h1 class="mt-0.5 font-display text-2xl text-ink">
             家长中心
           </h1>
         </div>

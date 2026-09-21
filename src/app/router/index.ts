@@ -3,8 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { installChunkReloadGuard } from './chunk-reload'
 import { routes } from './routes'
 
-/** 首页以外的页面标题统一带后缀，浏览器标签页与历史记录里都好认 */
-const DEFAULT_TITLE = '学习世界 · 儿童自主学习空间'
+/** 产品名。页面标题统一是「页面名 · 星芽」，标签页与历史记录里都好认 */
+const BRAND = '星芽'
+
+const DEFAULT_TITLE = `${BRAND} · 儿童自主探索学习空间`
 
 /**
  * 路由装配。
@@ -24,7 +26,7 @@ export function createAppRouter() {
 
   router.afterEach((to) => {
     const title = typeof to.meta.title === 'string' && to.meta.title.length > 0 ? to.meta.title : null
-    document.title = title === null ? DEFAULT_TITLE : `${title} · 学习世界`
+    document.title = title === null ? DEFAULT_TITLE : `${title} · ${BRAND}`
   })
 
   // 分块取不到时不能让界面「点了没反应」，见 chunk-reload.ts

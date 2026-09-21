@@ -9,7 +9,7 @@ import { ROUTE_NAMES } from './route-names'
  * ==============================
  *
  * 儿童端 7 个页面 + 家长端独立入口：
- *   首页/学习世界 · 年级选择 · 学习领域 · 课程地图 · 课程学习页 · 奖励中心 · 我的成长 · 家长中心
+ *   首页（导航里叫「学习世界」）· 年级选择 · 学习领域 · 课程地图 · 课程学习页 · 奖励中心 · 我的成长 · 家长中心
  *
  * 所有页面都懒加载：孩子第一次打开时只需要下载首页那一个 chunk。
  */
@@ -22,7 +22,9 @@ export const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.home,
         component: async () => import('@/pages/kid/HomePage.vue'),
-        meta: { title: '学习世界' },
+        // 标题用「我的学习世界」而不是「学习世界」：后者是领域名词（孩子在地图上逛的地方），
+        // 用在首页标题里会读成「学习世界 · 星芽」，像是两个产品名叠在一起
+        meta: { title: '我的学习世界' },
       },
       {
         path: 'grades',

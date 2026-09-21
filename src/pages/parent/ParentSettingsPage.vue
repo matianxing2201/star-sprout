@@ -217,9 +217,15 @@ function confirmResetProfile(): void {
 
     <!-- 关于 -->
     <section>
-      <KSectionTitle eyebrow="关于" title="关于课程内容" />
+      <KSectionTitle eyebrow="关于" title="关于星芽" />
       <KCard>
-        <p class="font-body text-sm leading-relaxed text-ink-soft">
+        <p class="font-display text-lg text-ink">
+          星芽 <span class="font-numeric text-xs tracking-[0.12em] text-ink-faint">StarSprout</span>
+        </p>
+        <p class="mt-1 font-body text-xs text-ink-faint">
+          4–12 岁自主探索学习空间
+        </p>
+        <p class="mt-4 font-body text-sm leading-relaxed text-ink-soft">
           课程内容采用数据驱动的方式组织：年级、领域、主题、课程与知识点都由内容包中的数据描述，
           界面完全按照数据渲染。因此新增教案只需要往内容包里加数据，不需要改动任何页面代码；
           内容有缺失或断链时，可以在「学习报告」页面的内容完整性自检中看到具体条目。

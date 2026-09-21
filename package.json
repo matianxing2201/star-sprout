@@ -1,9 +1,9 @@
 {
-  "name": "kids-learning-world",
+  "name": "starsprout",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "儿童一站式自主学习 Web App —— 探索式学习世界",
+  "description": "星芽 StarSprout —— 4–12 岁自主探索学习空间（探索地图 · 互动任务 · 角色陪伴）",
   "engines": {
     "node": ">=20.19.0"
   },

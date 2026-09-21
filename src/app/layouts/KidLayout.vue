@@ -112,11 +112,17 @@ const activeName = computed(() => route.name)
       <RouterView />
     </main>
 
-    <footer class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-1.5 px-4 pb-8 font-body text-xs text-ink-faint">
-      <template v-for="(step, index) in LEARNING_FLOW" :key="step">
-        <span>{{ step }}</span>
-        <KIcon v-if="index < LEARNING_FLOW.length - 1" name="arrow-right" size="xs" />
-      </template>
+    <footer class="mx-auto w-full max-w-6xl px-4 pb-8">
+      <!-- 品牌签名：安静地放在页脚，不跟孩子抢注意力 -->
+      <p class="mb-2 font-display text-sm text-ink-soft">
+        星芽 <span class="font-numeric text-[11px] tracking-[0.12em] text-ink-faint">StarSprout</span>
+      </p>
+      <div class="flex flex-wrap items-center gap-1.5 font-body text-xs text-ink-faint">
+        <template v-for="(step, index) in LEARNING_FLOW" :key="step">
+          <span>{{ step }}</span>
+          <KIcon v-if="index < LEARNING_FLOW.length - 1" name="arrow-right" size="xs" />
+        </template>
+      </div>
     </footer>
 
     <RewardLayer />
