@@ -82,16 +82,39 @@ src/
 
 ---
 
-## 文档
+## 部署
 
-| 文档                                                               | 内容                                                     |
-| ------------------------------------------------------------------ | -------------------------------------------------------- |
-| [`docs/architecture.md`](./docs/architecture.md)                   | 信息架构、分层与依赖方向、关键设计决策、质量闸门         |
-| [`docs/content-model.md`](./docs/content-model.md)                 | 课程数据模型，以及**如何把一份教案变成可玩课程**（四步） |
-| [`docs/design-system.md`](./docs/design-system.md)                 | 儿童视觉体系 · 动效体系 · 奖励分级 · 角色系统            |
-| [`docs/interaction-framework.md`](./docs/interaction-framework.md) | 交互框架：12 种互动、温柔反馈规则、**如何新增一种互动**  |
-| [`docs/propmt.md`](./docs/propmt.md)                               | 原始产品需求                                             |
+线上地址：<https://starsprout.njldgq.workers.dev>
 
-课程模板：[`src/content/templates/lesson.template.ts`](./src/content/templates/lesson.template.ts)（参与类型检查，复制即用）。
+纯静态站点，构建产物 `dist/` 由 Cloudflare Workers 托管，配置见 [wrangler.jsonc](./wrangler.jsonc) —— 启用了 `single-page-application` 回退，直接访问或刷新子路由不会 404。
 
----
+### 自动发布
+
+仓库接入 Cloudflare Workers Builds，push 到 `main` 自动构建并部署，开 PR 会自动生成预览地址。
+
+在 Cloudflare Dashboard → **Workers & Pages** → `starsprout` → **Settings** → **Builds** 连接本仓库，构建配置：
+
+| 配置项   | 值                    |
+| -------- | --------------------- |
+| 生产分支 | `main`                |
+| 构建命令 | `pnpm build`          |
+| 部署命令 | `npx wrangler deploy` |
+| 环境变量 | `NODE_VERSION=22`     |
+
+> `NODE_VERSION` 必须显式指定，构建镜像的默认 Node 版本可能低于 `engines` 要求的 `>=20.19.0`。
+
+### 手动发布
+
+```bash
+pnpm build
+CLOUDFLARE_API_TOKEN=xxx npx wrangler deploy
+```
+
+Token 在 Cloudflare Dashboard → **My Profile** → **API Tokens** 创建（Custom token），权限需要：
+
+| 类型    | 权限                    |
+| ------- | ----------------------- |
+| Account | Workers Scripts → Edit  |
+| Account | Account Settings → Read |
+
+后期接数据库 / KV / 对象存储时，再补 `D1 → Edit`、`Workers KV Storage → Edit`、`R2 → Edit`。
