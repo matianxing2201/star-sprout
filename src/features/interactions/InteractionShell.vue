@@ -78,15 +78,18 @@ const mood = computed(() => {
 <template>
   <section class="flex flex-col gap-5">
     <header class="rounded-blob border-2 border-line bg-surface/80 px-6 py-5 shadow-press">
-      <p class="flex items-center gap-1.5 font-body text-xs font-bold tracking-[0.22em] text-ink-faint">
-        <KIcon :name="meta.icon" size="sm" />
-        <span>{{ meta.label }}</span>
-      </p>
-      <h3 class="mt-1 font-display text-2xl leading-snug text-ink sm:text-3xl">
+      <h3 class="font-display text-2xl leading-snug text-ink sm:text-3xl">
         {{ spec.prompt }}
       </h3>
-      <p class="mt-2 font-body text-xs text-ink-faint">
-        正在锻炼：{{ meta.ability }}
+      <!--
+        这里只报「在练什么能力」，不报玩法名。
+        题目上方已经有内容作者写的任务标题（「盖量词印章」），而任务标题往往
+        就是照着玩法起的名字 —— 再报一次玩法名会变成两行一样的字（实测过）。
+        玩法名（`meta.label`）留给家长端的能力统计用，不在孩子这一屏重复出现。
+      -->
+      <p class="mt-2 flex items-center gap-1.5 font-body text-xs text-ink-faint">
+        <KIcon :name="meta.icon" size="sm" />
+        <span>正在锻炼：{{ meta.ability }}</span>
       </p>
     </header>
 
