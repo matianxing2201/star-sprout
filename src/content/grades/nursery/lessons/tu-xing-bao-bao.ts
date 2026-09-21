@@ -77,13 +77,16 @@ export const tuXingBaoBaoLesson: Lesson = {
               { id: 'home-triangle', label: '三角形的家', emoji: '🔺', tone: 'science', accepts: ['i-triangle', 'i-triangle-2'] },
               { id: 'home-square', label: '正方形的家', emoji: '🟦', tone: 'explore', accepts: ['i-square', 'i-square-2'] },
             ],
+            // 物品的色调刻意与它「正确的家」错开一位：
+            // drag-drop 的 tone 会渲染成卡片的底色，同色就等于用颜色把答案说出去。
+            // content.spec.ts 有一条断言守着这个规则，新增题目时别踩。
             items: [
-              { id: 'i-circle', label: '皮球', emoji: '⚽', tone: 'math' },
-              { id: 'i-triangle', label: '小山', emoji: '⛰️', tone: 'science' },
-              { id: 'i-square', label: '窗户', emoji: '🪟', tone: 'explore' },
-              { id: 'i-circle-2', label: '轮胎', emoji: '🛞', tone: 'math' },
-              { id: 'i-triangle-2', label: '帆船', emoji: '⛵', tone: 'science' },
-              { id: 'i-square-2', label: '积木', emoji: '🧱', tone: 'explore' },
+              { id: 'i-circle', label: '皮球', emoji: '⚽', tone: 'science' },
+              { id: 'i-triangle', label: '小山', emoji: '⛰️', tone: 'explore' },
+              { id: 'i-square', label: '窗户', emoji: '🪟', tone: 'math' },
+              { id: 'i-circle-2', label: '轮胎', emoji: '🛞', tone: 'science' },
+              { id: 'i-triangle-2', label: '帆船', emoji: '⛵', tone: 'explore' },
+              { id: 'i-square-2', label: '积木', emoji: '🧱', tone: 'math' },
             ],
           },
         },

@@ -132,11 +132,12 @@ export const xiaoTuZiLesson: Lesson = {
               { id: 'basket-6', label: '结果是 6 的篮子', emoji: '🧺', tone: 'math', accepts: ['x1', 'x2'] },
               { id: 'basket-9', label: '结果是 9 的篮子', emoji: '🪣', tone: 'science', accepts: ['x3', 'x4'] },
             ],
+            // 算式卡片的色调与篮子刻意错开：同色会让颜色本身泄露答案
             items: [
-              { id: 'x1', label: '13 − 7', tone: 'math' },
-              { id: 'x2', label: '11 − 5', tone: 'math' },
-              { id: 'x3', label: '16 − 7', tone: 'science' },
-              { id: 'x4', label: '12 − 3', tone: 'science' },
+              { id: 'x1', label: '13 − 7', tone: 'science' },
+              { id: 'x2', label: '11 − 5', tone: 'science' },
+              { id: 'x3', label: '16 − 7', tone: 'math' },
+              { id: 'x4', label: '12 − 3', tone: 'math' },
             ],
           },
         },

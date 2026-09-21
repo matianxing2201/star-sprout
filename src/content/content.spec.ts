@@ -151,6 +151,36 @@ describe('课程数据模型', () => {
     }
   })
 
+  it('拖拽归类题里，物品的颜色不能正好等于它「正确的框」的颜色', () => {
+    // drag-drop 的 tone 会渲染成卡片底色，两者同色就等于用颜色把答案说出去 ——
+    // 孩子不用认字也能「选对」，这道题就白出了。
+    const leaks: string[] = []
+
+    for (const lesson of contentPack.lessons) {
+      for (const task of lesson.tasks) {
+        if (task.kind !== 'interaction' && task.kind !== 'practice' && task.kind !== 'challenge')
+          continue
+
+        for (const interaction of task.interactions) {
+          if (interaction.kind !== 'drag-drop')
+            continue
+
+          const { zones, items } = interaction.payload
+          const toneOfZone = new Map(zones.map(zone => [zone.id, zone.tone]))
+          for (const item of items) {
+            const correctZone = zones.find(zone => zone.accepts.includes(item.id))
+            if (!correctZone)
+              continue
+            if (item.tone !== undefined && item.tone === toneOfZone.get(correctZone.id))
+              leaks.push(`${lesson.id}/${interaction.prompt}：${item.label} 与「${correctZone.label}」同色（${item.tone}）`)
+          }
+        }
+      }
+    }
+
+    expect(leaks).toEqual([])
+  })
+
   it('互动类型都在注册表覆盖的范围内', () => {
     for (const lesson of contentPack.lessons) {
       for (const task of lesson.tasks) {
