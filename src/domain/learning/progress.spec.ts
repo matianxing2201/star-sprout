@@ -113,6 +113,51 @@ describe('buildTopicProgressMap', () => {
     expect(map.m2?.status).toBe('locked')
   })
 
+  it('没有课程的主题不挡路（教案未到的主题不该锁死后面的路）', () => {
+    // 真实场景：中班语言表达的顺序是
+    //   1《春晓》(有课) → 2 挑战朗诵(暂无课) → 3 秘密花园(暂无课) → 4 量词小魔法师(有课)
+    // 如果空主题照常参与串链，第 4 个主题会永远锁死 —— 孩子看到一条走不通的路。
+    const topics = [
+      makeTopic('t1', 'c1', 1, ['l1']),
+      makeTopic('t2', 'c1', 2, []),
+      makeTopic('t3', 'c1', 3, []),
+      makeTopic('t4', 'c1', 4, ['l4']),
+    ]
+
+    const fresh = buildTopicProgressMap(topics, [])
+    expect(fresh.t1?.status).toBe('available')
+    // 还没学《春晓》，第 4 个主题本来就该锁着 —— 它挡在有内容的 t1 后面
+    expect(fresh.t4?.status).toBe('locked')
+
+    // 关键：学完 t1 之后，中间两个空主题不该继续挡路，t4 必须解锁。
+    // 修复前这里会一直是 locked（空主题永远无法变成 completed），孩子永远进不去。
+    const afterFirst = buildTopicProgressMap(topics, [makeCompletion('l1', 't1', 0)])
+    expect(afterFirst.t1?.status).toBe('completed')
+    expect(afterFirst.t2?.status).toBe('available')
+    expect(afterFirst.t3?.status).toBe('available')
+    expect(afterFirst.t4?.status).toBe('available')
+  })
+
+  it('有课的主题仍然严格串链（前一个没做完就不解锁）', () => {
+    const topics = [
+      makeTopic('t1', 'c1', 1, ['l1']),
+      makeTopic('t2', 'c1', 2, []),
+      makeTopic('t3', 'c1', 3, ['l3']),
+      makeTopic('t4', 'c1', 4, ['l4']),
+    ]
+
+    const map = buildTopicProgressMap(topics, [])
+
+    expect(map.t1?.status).toBe('available')
+    expect(map.t3?.status).toBe('locked')
+    expect(map.t4?.status).toBe('locked')
+
+    const after = buildTopicProgressMap(topics, [makeCompletion('l1', 't1', 0)])
+    expect(after.t1?.status).toBe('completed')
+    expect(after.t3?.status).toBe('available')
+    expect(after.t4?.status).toBe('locked')
+  })
+
   it('不同领域各自独立解锁', () => {
     const two = [makeTopic('a1', 'x', 1, []), makeTopic('b1', 'y', 1, [])]
     const map = buildTopicProgressMap(two, [])

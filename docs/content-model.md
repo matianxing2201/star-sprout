@@ -170,8 +170,12 @@ export const nurseryContent: GradeContent = {
 
 - **星星**：每次互动按 `interaction.stars` 给；一节课结束时按**首次答对率**结算 1~3 星，
   用过提示封顶 2 星（`useLessonSession.settleStars`）。
-- **解锁**：领域内 `Topic.order` 串成一条路，前一个主题完成才解锁下一个
+- **解锁**：领域内 `Topic.order` 串成一条路，前一个**有课程**的主题完成才解锁下一个
   （`buildTopicProgressMap`）。第一个主题永远开放 —— 孩子任何时候都有「下一步」。
+- **没有课程的主题不挡路**：教案是一份一份补进来的，路径中间常常夹着「目录已建好、内容还没到」
+  的主题（`lessonIds: []`）。这种主题永远无法变成 completed，所以它**不参与串链** ——
+  否则一条路径上只要有一个待补的主题，它后面所有主题都会被永久锁死。
+  界面上它照常显示「内容准备中」。
 - **挑战 / 隐藏主题**：`Topic.kind` 为 `challenge` / `hidden`，
   在课程地图上有不同的视觉与文案，但**依然遵守同一条解锁链**，不做暗门。
 - **徽章**：`src/content/badges.ts`，规则是**声明式数据**（`BadgeRule`）而不是函数，

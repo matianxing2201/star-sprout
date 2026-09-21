@@ -80,6 +80,12 @@ export function computeTopicProgress(topic: Topic, completions: readonly LessonC
  * 课程地图状态机：
  * 同一个领域内按 order 串成路径，前一主题完成后才解锁下一个。
  * 第一个主题始终可进入 —— 孩子任何时候都有“下一步”可以走。
+ *
+ * 一条重要规则：**没有课程的主题不挡路。**
+ * 教案是一份一份补进来的，所以路径中间常常夹着「已建好目录、还没内容」的主题
+ * （`lessonIds: []`）。这种主题永远无法变成 completed，
+ * 如果照常串链，它后面**所有**主题都会被永久锁死 —— 孩子看到的是一条走到一半就断掉的路。
+ * 因此这里让空主题保持自己的状态（界面上显示「内容准备中」），但不改变解锁状态。
  */
 export function buildTopicProgressMap(
   topics: readonly Topic[],
@@ -100,11 +106,19 @@ export function buildTopicProgressMap(
 
     for (const topic of ordered) {
       const progress = computeTopicProgress(topic, completions)
-      byTopic.set(topic.id, {
-        ...progress,
-        status: progress.status === 'completed' ? 'completed' : unlocked ? progress.status : 'locked',
-      })
-      unlocked = progress.status === 'completed'
+      const hasContent = topic.lessonIds.length > 0
+
+      const status: TopicProgress['status'] = progress.status === 'completed'
+        ? 'completed'
+        : hasContent && !unlocked
+          ? 'locked'
+          : progress.status
+
+      byTopic.set(topic.id, { ...progress, status })
+
+      // 只有「真的有课」的主题才参与串链；空主题既进不去，也不该锁住后面的路
+      if (hasContent)
+        unlocked = progress.status === 'completed'
     }
   }
 
