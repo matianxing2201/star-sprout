@@ -55,4 +55,5 @@ export const INTERACTION_META: Record<InteractionKind, Omit<InteractionMeta, 'ki
   'slider-explore': { label: '试一试', icon: 'sliders', ability: '观察与猜想' },
   'hotspot-explore': { label: '找一找', icon: 'binoculars', ability: '探索与发现' },
   'sequence-build': { label: '搭指令', icon: 'puzzle', ability: '顺序与编程思维' },
+  'measure-stamp': { label: '盖量词印章', icon: 'stamp', ability: '词语搭配与语感' },
 }

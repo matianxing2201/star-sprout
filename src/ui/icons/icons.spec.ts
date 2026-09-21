@@ -130,9 +130,10 @@ describe('语义映射表', () => {
       expect(isAppIconName(icon)).toBe(true)
   })
 
-  it('12 种互动都有能力图标', () => {
-    // INTERACTION_META 在 features 层，这里只保证词汇表能覆盖它需要的语义
-    expect(INTERACTION_KINDS).toHaveLength(12)
+  it('互动类型都拿到了图标（完整性在 features/interactions/contract.spec.ts 里查）', () => {
+    // 这里只保证词汇表不是空的；「每种互动都有能力图标」属于契约层的断言，
+    // 放在 src/features/interactions/contract.spec.ts，因为它需要 INTERACTION_META。
+    expect(INTERACTION_KINDS.length).toBeGreaterThanOrEqual(12)
   })
 })
 

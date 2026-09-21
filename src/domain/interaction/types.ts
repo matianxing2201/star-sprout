@@ -46,6 +46,8 @@ export const INTERACTION_KINDS = [
   'hotspot-explore',
   /** 编程积木：拼出指令序列 */
   'sequence-build',
+  /** 量词印章：给物品盖上正确的量词，并拼出「一座城堡」这样的短语 */
+  'measure-stamp',
 ] as const
 
 export type InteractionKind = (typeof INTERACTION_KINDS)[number]
@@ -277,6 +279,41 @@ export interface SequenceBuildPayload {
 }
 
 /* ------------------------------------------------------------------ */
+/* 量词印章（measure-stamp）                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 要盖章的物品。
+ * 物体本身是「场景道具」，所以用 emoji / 图片；需要矢量表达时也可给 icon。
+ */
+export interface MeasureStampItem {
+  id: string
+  label: string
+  emoji?: string
+  icon?: AppIconName
+  image?: string
+  /** 正确的量词 id */
+  measureId: string
+  /** 数量，默认 1；用来呈现「一座」「三座」 */
+  count?: number
+}
+
+/** 可选的量词印章 */
+export interface MeasureStamp {
+  id: string
+  /** 印章上的字，例如「座」 */
+  label: string
+  tone?: ToneKey
+}
+
+export interface MeasureStampPayload {
+  measures: MeasureStamp[]
+  items: MeasureStampItem[]
+  /** 全部盖对之后连起来念的整句，例如「一座城堡、一辆汽车、一朵云」 */
+  recital?: string
+}
+
+/* ------------------------------------------------------------------ */
 /* 判别联合                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -293,6 +330,7 @@ export interface InteractionPayloadMap {
   'slider-explore': SliderExplorePayload
   'hotspot-explore': HotspotExplorePayload
   'sequence-build': SequenceBuildPayload
+  'measure-stamp': MeasureStampPayload
 }
 
 export type InteractionSpec = {

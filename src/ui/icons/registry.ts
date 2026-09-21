@@ -1,3 +1,27 @@
+/**
+ * 图标变体表（此文件由 scripts/sync-icons.mjs 生成，请勿手工编辑）
+ * =================================================================
+ *
+ * 重新生成：pnpm icons:sync
+ *
+ * 这是唯一直接依赖图标来源的文件。语义名来自 domain/shared/icons.ts，
+ * 这里把它翻译成具体图标，并声明该图标需要哪几种字重：
+ *   - 每个图标都内联 bold（界面控件默认字重）；
+ *   - 「身份型」图标（领域 / 世界 / 主题 / 徽章 / 步骤）额外内联 duotone，
+ *     双色调正是纸雕风格要的「主形 + 20% 副形」两层剪纸感；
+ *   - star 额外内联 fill（表示「已经获得」）。
+ *
+ * satisfies Record<AppIconName, IconVariants> 是编译期保证：
+ *   - 词汇表加了名字却忘了映射 → 报错（缺 key）；
+ *   - 这里写了词汇表以外的名字 → 报错（多余 key）。
+ * 因此不可能出现「跑到某个页面才发现图标是空白」。
+ *
+ * 为什么不用 iconfont（字体图标）：
+ *   - 字体图标没有双色调，而本项目的视觉语言依赖双色调；
+ *   - 小字号下抗锯齿差、基线对齐困难，还会受字体加载影响（FOUT）；
+ *   - 它本质是文字：屏幕阅读器会念出乱码，复制粘贴也会污染文本。
+ */
+
 import type { Component } from 'vue'
 
 import type { AppIconName } from '@/domain'
@@ -31,6 +55,8 @@ import IconButterflyBold from '~icons/ph/butterfly-bold'
 import IconCalculatorBold from '~icons/ph/calculator-bold'
 import IconCalculatorDuotone from '~icons/ph/calculator-duotone'
 import IconCalendarBold from '~icons/ph/calendar-blank-bold'
+import IconCarBold from '~icons/ph/car-bold'
+import IconCarDuotone from '~icons/ph/car-duotone'
 import IconCardsBold from '~icons/ph/cards-bold'
 import IconCarrotBold from '~icons/ph/carrot-bold'
 import IconCarrotDuotone from '~icons/ph/carrot-duotone'
@@ -45,6 +71,7 @@ import IconCheckCircleBold from '~icons/ph/check-circle-bold'
 import IconClockBold from '~icons/ph/clock-bold'
 import IconClockDuotone from '~icons/ph/clock-duotone'
 import IconCloudBold from '~icons/ph/cloud-bold'
+import IconCloudDuotone from '~icons/ph/cloud-duotone'
 import IconRainBold from '~icons/ph/cloud-rain-bold'
 import IconRainDuotone from '~icons/ph/cloud-rain-duotone'
 import IconCodeBold from '~icons/ph/code-bold'
@@ -109,6 +136,7 @@ import IconLockOpenBold from '~icons/ph/lock-open-bold'
 import IconMagnifierBold from '~icons/ph/magnifying-glass-bold'
 import IconMagnifierDuotone from '~icons/ph/magnifying-glass-duotone'
 import IconMapBold from '~icons/ph/map-trifold-bold'
+import IconMapDuotone from '~icons/ph/map-trifold-duotone'
 import IconMathOperationsBold from '~icons/ph/math-operations-bold'
 import IconMathOperationsDuotone from '~icons/ph/math-operations-duotone'
 import IconMedalBold from '~icons/ph/medal-bold'
@@ -142,6 +170,7 @@ import IconPlayBold from '~icons/ph/play-bold'
 import IconPlusBold from '~icons/ph/plus-bold'
 import IconPolygonBold from '~icons/ph/polygon-bold'
 import IconPuzzleBold from '~icons/ph/puzzle-piece-bold'
+import IconPuzzleDuotone from '~icons/ph/puzzle-piece-duotone'
 import IconQuestionBold from '~icons/ph/question-bold'
 import IconRocketBold from '~icons/ph/rocket-bold'
 import IconRocketDuotone from '~icons/ph/rocket-duotone'
@@ -159,6 +188,8 @@ import IconSortBold from '~icons/ph/sort-ascending-bold'
 import IconSparkleBold from '~icons/ph/sparkle-bold'
 import IconSpeakerBold from '~icons/ph/speaker-high-bold'
 import IconSpeakerDuotone from '~icons/ph/speaker-high-duotone'
+import IconStampBold from '~icons/ph/stamp-bold'
+import IconStampDuotone from '~icons/ph/stamp-duotone'
 import IconStarBold from '~icons/ph/star-bold'
 import IconStarDuotone from '~icons/ph/star-duotone'
 import IconStarFill from '~icons/ph/star-fill'
@@ -171,6 +202,8 @@ import IconTargetBold from '~icons/ph/target-bold'
 import IconTargetDuotone from '~icons/ph/target-duotone'
 import IconTestTubeBold from '~icons/ph/test-tube-bold'
 import IconThermometerBold from '~icons/ph/thermometer-bold'
+import IconTrainBold from '~icons/ph/train-bold'
+import IconTrainDuotone from '~icons/ph/train-duotone'
 import IconTranslateBold from '~icons/ph/translate-bold'
 import IconTranslateDuotone from '~icons/ph/translate-duotone'
 import IconTreeBold from '~icons/ph/tree-bold'
@@ -179,6 +212,7 @@ import IconForestBold from '~icons/ph/tree-evergreen-bold'
 import IconForestDuotone from '~icons/ph/tree-evergreen-duotone'
 import IconTrendUpBold from '~icons/ph/trend-up-bold'
 import IconTrophyBold from '~icons/ph/trophy-bold'
+import IconTrophyDuotone from '~icons/ph/trophy-duotone'
 import IconUsersBold from '~icons/ph/users-three-bold'
 import IconConstructionBold from '~icons/ph/warning-bold'
 import IconWindBold from '~icons/ph/wind-bold'
@@ -186,36 +220,6 @@ import IconWrenchBold from '~icons/ph/wrench-bold'
 import IconWrenchDuotone from '~icons/ph/wrench-duotone'
 import IconCloseBold from '~icons/ph/x-bold'
 
-/**
- * 图标变体表（实现层）
- * ==================
- *
- * 这是**唯一**直接依赖图标来源的文件。语义名来自 domain/shared/icons.ts，
- * 这里负责把它翻译成具体图标，并声明该图标需要哪几种字重。
- *
- * ### 为什么是「按需内联」而不是图标库的运行时组件包
- *
- * 运行时包会把**每一种字重**都打进同一个组件里：121 个图标 × 6 种字重，
- * 实测首屏 JS 里图标占了 163 kB gzip（约 72%）。
- * 这里改成构建期内联，只打包真正用到的字重：
- *   - 每个图标都内联 `bold`（界面控件默认字重）；
- *   - 只有「身份型」图标额外内联 `duotone`（领域 / 世界 / 主题 / 徽章 / 步骤）；
- *   - `star` 额外内联 `fill`（表示「已经获得」）。
- * 于是 payload 从 163 kB gzip 降到 ~38 kB，而组件的 API 与语义名一个字都没变。
- *
- * ### 为什么不用 iconfont（字体图标）
- *
- *   - 字体图标没有双色调，而本项目的纸雕感依赖「主形 + 20% 副形」的两层剪纸；
- *   - 小字号下抗锯齿差、基线对齐困难，还会受字体加载影响（FOUT）；
- *   - 它本质是文字：屏幕阅读器会念出乱码，复制粘贴也会污染文本。
- *
- * ### 编译期保证
- *
- * `satisfies Record<AppIconName, IconVariants>`：
- *   - 词汇表加了名字却忘了在这里映射 → 报错（缺 key）；
- *   - 这里写了词汇表以外的名字 → 报错（多余 key）。
- * 因此不可能出现「跑到某个页面才发现图标是空白」。
- */
 export interface IconVariants {
   bold: Component
   duotone?: Component
@@ -245,7 +249,7 @@ const ICON_VARIANTS = {
   'sparkle': { bold: IconSparkleBold },
   'energy': { bold: IconEnergyBold, duotone: IconEnergyDuotone },
   'fire': { bold: IconFireBold, duotone: IconFireDuotone },
-  'trophy': { bold: IconTrophyBold },
+  'trophy': { bold: IconTrophyBold, duotone: IconTrophyDuotone },
   'medal': { bold: IconMedalBold, duotone: IconMedalDuotone },
   'gift': { bold: IconGiftBold, duotone: IconGiftDuotone },
   'lightbulb': { bold: IconLightbulbBold, duotone: IconLightbulbDuotone },
@@ -257,7 +261,7 @@ const ICON_VARIANTS = {
   'info': { bold: IconInfoBold },
   'target': { bold: IconTargetBold, duotone: IconTargetDuotone },
   'home': { bold: IconHomeBold, duotone: IconHomeDuotone },
-  'map': { bold: IconMapBold },
+  'map': { bold: IconMapBold, duotone: IconMapDuotone },
   'compass': { bold: IconCompassBold, duotone: IconCompassDuotone },
   'island': { bold: IconIslandBold, duotone: IconIslandDuotone },
   'ladder': { bold: IconLadderBold },
@@ -273,6 +277,9 @@ const ICON_VARIANTS = {
   'storefront': { bold: IconStorefrontBold },
   'backpack': { bold: IconBackpackBold, duotone: IconBackpackDuotone },
   'notebook': { bold: IconNotebookBold },
+  'car': { bold: IconCarBold, duotone: IconCarDuotone },
+  'train': { bold: IconTrainBold, duotone: IconTrainDuotone },
+  'stamp': { bold: IconStampBold, duotone: IconStampDuotone },
   'graduation-cap': { bold: IconGraduationCapBold, duotone: IconGraduationCapDuotone },
   'chalkboard': { bold: IconChalkboardBold, duotone: IconChalkboardDuotone },
   'book': { bold: IconBookBold, duotone: IconBookDuotone },
@@ -320,7 +327,7 @@ const ICON_VARIANTS = {
   'broom': { bold: IconBroomBold },
   'fork-knife': { bold: IconForkKnifeBold },
   'detective': { bold: IconDetectiveBold, duotone: IconDetectiveDuotone },
-  'puzzle': { bold: IconPuzzleBold },
+  'puzzle': { bold: IconPuzzleBold, duotone: IconPuzzleDuotone },
   'link': { bold: IconLinkBold },
   'cards': { bold: IconCardsBold },
   'sliders': { bold: IconSlidersBold },
@@ -335,7 +342,7 @@ const ICON_VARIANTS = {
   'fish': { bold: IconFishBold },
   'sun': { bold: IconSunBold },
   'moon': { bold: IconMoonBold, duotone: IconMoonDuotone },
-  'cloud': { bold: IconCloudBold },
+  'cloud': { bold: IconCloudBold, duotone: IconCloudDuotone },
   'rain': { bold: IconRainBold, duotone: IconRainDuotone },
   'wind': { bold: IconWindBold },
   'snowflake': { bold: IconSnowflakeBold, duotone: IconSnowflakeDuotone },

@@ -394,6 +394,42 @@ const sequenceBuildSchema = z.object({
 })
 
 /** 一个互动：判别联合，kind 决定 payload 的具体形状 */
+const measureStampSchema = z.object({
+  kind: z.literal('measure-stamp'),
+  ...interactionBaseShape,
+  payload: z.object({
+    measures: z.array(z.object({
+      id: z.string().min(1),
+      label: z.string().min(1),
+      tone: toneSchema.optional(),
+    })).min(2),
+    items: z.array(z.object({
+      id: z.string().min(1),
+      label: z.string().min(1),
+      emoji: z.string().optional(),
+      icon: iconSchema.optional(),
+      image: z.string().optional(),
+      measureId: z.string().min(1),
+      count: z.number().int().positive().optional(),
+    })).min(1),
+    recital: z.string().optional(),
+  }).superRefine((payload, context) => {
+    const measureIds = new Set(payload.measures.map(item => item.id))
+    for (const item of payload.items) {
+      if (!measureIds.has(item.measureId)) {
+        context.addIssue({
+          code: 'custom',
+          message: `物品 ${item.id} 指向了不存在的量词 ${item.measureId}`,
+        })
+      }
+    }
+    const itemIds = new Set(payload.items.map(item => item.id))
+    if (itemIds.size !== payload.items.length) {
+      context.addIssue({ code: 'custom', message: '量词印章的物品 id 重复了' })
+    }
+  }),
+})
+
 export const interactionSchema: z.ZodType<InteractionSpec> = z.discriminatedUnion('kind', [
   chooseOneSchema,
   chooseManySchema,
@@ -407,6 +443,7 @@ export const interactionSchema: z.ZodType<InteractionSpec> = z.discriminatedUnio
   sliderExploreSchema,
   hotspotExploreSchema,
   sequenceBuildSchema,
+  measureStampSchema,
 ])
 
 /* ------------------------------------------------------------------ */

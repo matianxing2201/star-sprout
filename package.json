@@ -16,7 +16,8 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "icons:sync": "node scripts/sync-icons.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^15.0.0",

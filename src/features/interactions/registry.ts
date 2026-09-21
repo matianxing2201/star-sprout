@@ -10,6 +10,7 @@ import DragDropInteraction from './components/DragDropInteraction.vue'
 import DragSortInteraction from './components/DragSortInteraction.vue'
 import DrawInteraction from './components/DrawInteraction.vue'
 import HotspotExploreInteraction from './components/HotspotExploreInteraction.vue'
+import MeasureStampInteraction from './components/MeasureStampInteraction.vue'
 import MemoryPairInteraction from './components/MemoryPairInteraction.vue'
 import SequenceBuildInteraction from './components/SequenceBuildInteraction.vue'
 import SliderExploreInteraction from './components/SliderExploreInteraction.vue'
@@ -38,6 +39,7 @@ export const INTERACTION_REGISTRY: Record<InteractionKind, InteractionComponent>
   'slider-explore': SliderExploreInteraction,
   'hotspot-explore': HotspotExploreInteraction,
   'sequence-build': SequenceBuildInteraction,
+  'measure-stamp': MeasureStampInteraction,
 }
 
 export function resolveInteraction(kind: InteractionKind): InteractionComponent {

@@ -69,6 +69,9 @@ export const APP_ICON_NAMES = [
   'storefront',
   'backpack',
   'notebook',
+  'car',
+  'train',
+  'stamp',
   'graduation-cap',
   'chalkboard',
 

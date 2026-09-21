@@ -26,5 +26,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# 工具产物（截图、a11y 快照等，用于本地核对，不进仓库）
+.playwright-cli/
+output/
+
 # 本地历史
 .history/

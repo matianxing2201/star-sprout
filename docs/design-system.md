@@ -154,6 +154,7 @@ pages/dev/IconGalleryPage.vue /dev/icons（仅开发环境）—— 看着图挑
 | `fx-gently` | 差一点点 | 温柔左右摇一摇（**没有红色，没有 ✕**） |
 | `fx-stagger` | 列表入场 | 子元素按 50ms 错峰浮现 |
 | `fx-dragging` / `fx-drop-active` | 拖拽中 / 拖放目标 | 浮起旋转 / 高亮描边 |
+| `fx-stamp` / `fx-ink` / `fx-spark` | 盖量词印章 | 砸下 + 回弹 + 墨迹扩散 + 溅星星 |
 | `fx-star-fly` / `fx-confetti` | 星星飞入 / 彩纸 | **仅高等级奖励使用** |
 
 ### 时机原则
