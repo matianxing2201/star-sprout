@@ -74,12 +74,12 @@
 
 | 目录 | 职责 | 不该出现的东西 |
 | --- | --- | --- |
-| `src/domain/` | 领域语言：年级 / 领域 / 主题 / 课程 / 任务 / 互动 / 成长 / 进度规则 | Vue、浏览器 API、存储、任何具体课程数据 |
+| `src/domain/` | 领域语言：年级 / 领域 / 主题 / 课程 / 任务 / 互动 / 成长 / 进度规则，以及**语义图标词汇表**（`shared/icons.ts`） | Vue、浏览器 API、存储、任何具体课程数据 |
 | `src/content/` | 内容包：目录数据、示例课程、学习世界、学习地图、徽章、zod 校验 | 组件、样式、业务判断 |
 | `src/data/` | 端口（`CatalogRepository` / `ProgressRepository` / `ProfileRepository`）与本地适配器 | 组件、路由 |
 | `src/stores/` | Pinia：`profile` · `catalog` · `progress` · `feedback` | 直接操作 DOM、样式 |
 | `src/features/` | 业务组件模块：`mascot` · `grade-switcher` · `world-map` · `category-grid` · `lesson-path` · `lesson-player` · `interactions` · `reward` | 直接读写仓储 |
-| `src/ui/` | 设计系统：`KButton` `KCard` `KTag` `KProgress` `KModal` `KEmptyState` `KSectionTitle` `KStatTile` `KConfetti` `KStarBurst` | 任何课程概念 |
+| `src/ui/` | 设计系统：`KButton` `KCard` `KTag` `KProgress` `KModal` `KEmptyState` `KSectionTitle` `KStatTile` `KConfetti` `KStarBurst`，以及图标层 `icons/`（`KIcon` · `KIconTile` · `KVisual` + 词汇表映射） | 任何课程概念；图标之外的业务语义 |
 | `src/app/` | 装配：`main.ts` · `router/` · `layouts/` · `plugins/` | 业务逻辑 |
 | `src/pages/` | 页面：只做数据编排与区块拼装 | 复杂逻辑（放 composable 或 store） |
 | `src/composables/` | 可复用逻辑：`useLessonSession` · `useInteraction` · `usePointerDrag` · `useMotion` · `useFocusTrap` | 具体某节课的硬编码 |
@@ -137,6 +137,7 @@ export const progressRepository = createLocalStorageProgressRepository()
 
 测试覆盖的三条关键链路：
 
+- `src/ui/icons/icons.spec.ts` —— 图标词汇表完整性、领域图标不撞图、结构性内容不退回 emoji
 - `src/domain/learning/progress.spec.ts` —— 连续天数、解锁链、掌握度、薄弱点、推荐
 - `src/domain/growth/rewards.spec.ts` —— 奖励分级单调性、等级、徽章规则、日期
 - `src/content/content.spec.ts` —— 内容包 schema + 引用完整性 + 「课程一定有引入与奖励」

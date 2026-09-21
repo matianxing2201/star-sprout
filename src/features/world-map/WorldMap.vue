@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { GradeId, WorldMapLayout, WorldMapNode, WorldMapPath } from '@/domain'
+import type { AppIconName, GradeId, ToneKey, WorldMapLayout, WorldMapNode, WorldMapPath } from '@/domain'
 
 import { computed } from 'vue'
-import { toneVars } from '@/domain'
-import { cn } from '@/shared/utils'
 import { useCatalogStore, useProgressStore } from '@/stores'
+import { KIcon, KIconTile } from '@/ui'
 
 /**
  * 学习地图
@@ -33,11 +32,22 @@ const nodeByWorld = computed(() => {
   return map
 })
 
-const SIZE_CLASSES = {
-  sm: 'size-16 text-2xl',
-  md: 'size-20 text-3xl',
-  lg: 'size-24 text-4xl',
+/** 节点尺寸档位对应到图标徽章尺寸：地图上的世界是「标识」，因此整体比列表里大一号 */
+const TILE_SIZES = {
+  sm: 'md',
+  md: 'lg',
+  lg: 'xl',
 } as const
+
+/** 世界图标来自词汇表；万一地图指向了不存在的内容包，用罗盘兜底，不留空白 */
+function iconOf(worldId: string): AppIconName {
+  return catalog.world(worldId)?.icon ?? 'compass'
+}
+
+/** 世界缺失时也要有色调，否则 KIconTile 的变量会落空 */
+function toneOf(worldId: string): ToneKey {
+  return catalog.world(worldId)?.tone ?? 'explore'
+}
 
 /** 每个世界在当前年级下的探索进度（已完成的主题 / 全部主题） */
 function worldProgressOf(worldId: string): { done: number, total: number } {
@@ -121,27 +131,21 @@ function placeLabelAbove(node: WorldMapNode): boolean {
           {{ catalog.world(node.worldId)?.name }}
         </span>
 
-        <span
-          :class="cn(
-            'fx-pressable relative grid place-items-center rounded-chip border-2 shadow-sticker',
-            SIZE_CLASSES[node.size],
-            node.lockedInFog
-              ? 'border-dashed border-line-strong bg-paper text-ink-faint'
-              : 'border-[var(--tone-line)] bg-surface',
-          )"
-          :style="toneVars(catalog.world(node.worldId)?.tone ?? 'explore')"
-        >
-          <span :class="cn(node.lockedInFog && 'opacity-40 grayscale')" aria-hidden="true">
-            {{ node.lockedInFog ? '🔒' : catalog.world(node.worldId)?.emoji }}
-          </span>
+        <span class="fx-pressable relative">
+          <KIconTile
+            :icon="iconOf(node.worldId)"
+            :tone="toneOf(node.worldId)"
+            :size="TILE_SIZES[node.size]"
+            :locked="node.lockedInFog"
+          />
 
           <!-- 已完成的小勾：告诉孩子“这里我来过” -->
           <span
             v-if="worldProgressOf(node.worldId).done > 0 && !node.lockedInFog"
-            class="absolute -top-2 -right-2 grid size-6 place-items-center rounded-chip bg-success text-xs text-white shadow-press"
+            class="absolute -top-2 -right-2 grid size-6 place-items-center rounded-chip bg-success text-white shadow-press"
             aria-hidden="true"
           >
-            ✓
+            <KIcon name="check" size="sm" />
           </span>
         </span>
 

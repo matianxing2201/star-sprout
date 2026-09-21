@@ -1,4 +1,5 @@
 import type { GradeId } from '../catalog/types'
+import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
 /**
@@ -23,7 +24,8 @@ export interface LearningWorld {
   id: string
   /** 例如 '阅读森林' */
   name: string
-  emoji: string
+  /** 地图节点上的图标；用矢量图标才能在地图上保持一致的粗细与尺寸 */
+  icon: AppIconName
   tone: ToneKey
   /** 孩子能读懂的一句话 */
   tagline: string

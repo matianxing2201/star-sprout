@@ -3,8 +3,9 @@ import type { InteractionResult, InteractionSpec, MascotId } from '@/domain'
 
 import { computed } from 'vue'
 import { MascotBubble } from '@/features/mascot'
-import { KButton } from '@/ui'
+import { KButton, KIcon } from '@/ui'
 
+import { INTERACTION_META } from './contract'
 import { resolveInteraction } from './registry'
 import { useInteraction } from './useInteraction'
 
@@ -45,6 +46,14 @@ const {
 
 const component = computed(() => resolveInteraction(spec.kind))
 
+/**
+ * 玩法标签。
+ * 孩子看到的不是「互动类型」这种术语，而是「选一选」「连一连」——
+ * 这回答了产品判断标准里的「我一眼能不能知道这里是什么」。
+ * 「正在锻炼」那行是给家长看的：家长翻到这一屏时能知道孩子在练什么能力。
+ */
+const meta = computed(() => INTERACTION_META[spec.kind])
+
 function onSolved(answer?: unknown): void {
   markSolved(answer)
   emit('resolved', toResult(spec.kind))
@@ -69,12 +78,16 @@ const mood = computed(() => {
 <template>
   <section class="flex flex-col gap-5">
     <header class="rounded-blob border-2 border-line bg-surface/80 px-6 py-5 shadow-press">
-      <p class="font-body text-xs font-bold tracking-[0.22em] text-ink-faint uppercase">
-        动手探索
+      <p class="flex items-center gap-1.5 font-body text-xs font-bold tracking-[0.22em] text-ink-faint">
+        <KIcon :name="meta.icon" size="sm" />
+        <span>{{ meta.label }}</span>
       </p>
       <h3 class="mt-1 font-display text-2xl leading-snug text-ink sm:text-3xl">
         {{ spec.prompt }}
       </h3>
+      <p class="mt-2 font-body text-xs text-ink-faint">
+        正在锻炼：{{ meta.ability }}
+      </p>
     </header>
 
     <div
@@ -98,7 +111,8 @@ const mood = computed(() => {
           tone="think"
           @click="revealHint()"
         >
-          💡 给我一点提示
+          <KIcon name="lightbulb" size="sm" />
+          给我一点提示
         </KButton>
         <KButton
           v-if="spec.skippable && !solved"

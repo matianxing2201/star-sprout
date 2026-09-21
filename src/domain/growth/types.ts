@@ -1,4 +1,5 @@
 import type { CategoryId, TopicId } from '../catalog/types'
+import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
 /**
@@ -73,7 +74,8 @@ export type BadgeRule
 export interface BadgeDefinition {
   id: BadgeId
   name: string
-  emoji: string
+  /** 徽章图标；与领域一样用矢量图标，才能在徽章墙上保持统一的粗细与基线 */
+  icon: AppIconName
   description: string
   tone: ToneKey
   rule: BadgeRule
@@ -86,7 +88,8 @@ export interface BadgeDefinition {
 export interface GrowthLevel {
   id: string
   name: string
-  emoji: string
+  /** 等级图标：与年级、领域一样用矢量图标，成长阶梯才是一条统一的视觉线索 */
+  icon: AppIconName
   /** 达到该等级所需的星星数（含） */
   from: number
 }

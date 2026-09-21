@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AppIconName, Topic } from '@/domain'
 import { computed, onMounted } from 'vue'
 
 import { ROUTE_NAMES } from '@/app/router/route-names'
@@ -7,7 +8,8 @@ import { MascotAvatar } from '@/features/mascot'
 import { BadgeWall } from '@/features/reward'
 import { cn } from '@/shared/utils'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
-import { KButton, KEmptyState, KProgress, KSectionTitle, KStatTile, KTag } from '@/ui'
+import { KButton, KEmptyState, KIcon, KIconTile, KProgress, KSectionTitle, KStatTile, KTag, STAT_ICONS, TONE_ICONS } from '@/ui'
+import { TOPIC_KIND_ICONS } from '@/ui/icons'
 
 /**
  * 奖励中心
@@ -49,6 +51,12 @@ const levelHint = computed(() =>
     : '已经站到最高的等级啦',
 )
 
+/** 主题图标：主题自己声明了就用它，否则跟随所属领域的色调 */
+function topicIcon(topic: Topic): AppIconName {
+  const category = catalog.category(topic.categoryId)
+  return topic.icon ?? (category ? TONE_ICONS[category.tone] : TOPIC_KIND_ICONS.standard)
+}
+
 /** 收藏架：星星攒得最多的几个小主题，就是孩子自己的“藏品” */
 const collected = computed(() =>
   Object.entries(progress.growth.topicStars)
@@ -57,7 +65,12 @@ const collected = computed(() =>
     .slice(0, 3)
     .map(([topicId, stars]) => {
       const topic = catalog.topic(topicId)
-      return { topicId, stars, emoji: topic?.emoji ?? '📘', title: topic?.title ?? '一个小主题' }
+      return {
+        topicId,
+        stars,
+        icon: topic ? topicIcon(topic) : 'book',
+        title: topic?.title ?? '一个小主题',
+      }
     }),
 )
 </script>
@@ -71,7 +84,7 @@ const collected = computed(() =>
           我的星星罐
         </p>
         <p class="mt-3 flex flex-wrap items-baseline gap-3">
-          <span class="animate-breathe text-4xl" aria-hidden="true">⭐</span>
+          <KIcon name="star" size="2xl" weight="fill" class="animate-breathe text-star-deep" />
           <span class="font-numeric text-6xl leading-none font-extrabold text-star-deep">
             {{ progress.growth.stars }}
           </span>
@@ -88,8 +101,10 @@ const collected = computed(() =>
           <ul v-if="collected.length > 0" class="mt-2 flex flex-wrap gap-2">
             <li v-for="item in collected" :key="item.topicId">
               <KTag tone="star" size="sm">
-                <span aria-hidden="true">{{ item.emoji }}</span>
-                {{ item.title }} · ⭐ {{ item.stars }}
+                <KIcon :name="item.icon" size="xs" weight="duotone" />
+                <span>{{ item.title }} ·</span>
+                <KIcon :name="STAT_ICONS.stars" size="xs" weight="fill" />
+                <span>{{ item.stars }}</span>
               </KTag>
             </li>
           </ul>
@@ -106,7 +121,7 @@ const collected = computed(() =>
 
       <div class="flex flex-col gap-5 rounded-blob border-2 border-line bg-surface p-6 shadow-sticker">
         <div class="flex items-center gap-3">
-          <span class="text-4xl" aria-hidden="true">{{ progress.level.emoji }}</span>
+          <KIconTile :icon="progress.level.icon" tone="star" size="md" />
           <div>
             <p class="font-display text-2xl text-ink">
               {{ progress.level.name }}
@@ -133,10 +148,10 @@ const collected = computed(() =>
 
     <!-- 四个数字 -->
     <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <KStatTile emoji="⭐" :value="progress.growth.stars" label="星星总数" hint="攒得越多，等级越高" tone="star" />
-      <KStatTile emoji="⚡" :value="progress.growth.energy" label="能量" hint="每天来玩就会长一点" tone="energy" />
-      <KStatTile emoji="🏅" :value="earnedBadgeCount" label="已得徽章" :hint="`徽章墙上一共 ${totalBadgeCount} 枚`" tone="badge" />
-      <KStatTile emoji="🌍" :value="exploredWorldCount" label="已探索区域" hint="还有更多世界在等你" tone="explore" />
+      <KStatTile :icon="STAT_ICONS.stars" :value="progress.growth.stars" label="星星总数" hint="攒得越多，等级越高" tone="star" />
+      <KStatTile :icon="STAT_ICONS.energy" :value="progress.growth.energy" label="能量" hint="每天来玩就会长一点" tone="energy" />
+      <KStatTile :icon="STAT_ICONS.badge" :value="earnedBadgeCount" label="已得徽章" :hint="`徽章墙上一共 ${totalBadgeCount} 枚`" tone="badge" />
+      <KStatTile :icon="STAT_ICONS.worlds" :value="exploredWorldCount" label="已探索区域" hint="还有更多世界在等你" tone="explore" />
     </section>
 
     <!-- 徽章墙 -->
@@ -178,12 +193,12 @@ const collected = computed(() =>
           )"
           :style="toneVars(world.tone)"
         >
-          <span
-            :class="cn('text-3xl', !exploredWorldIds.has(world.id) && 'grayscale')"
-            aria-hidden="true"
-          >
-            {{ world.emoji }}
-          </span>
+          <KIcon
+            :name="world.icon"
+            size="xl"
+            weight="duotone"
+            :class="cn(!exploredWorldIds.has(world.id) && 'text-ink-faint opacity-60')"
+          />
           <div class="min-w-0">
             <p class="font-display text-lg text-ink">
               {{ world.name }}
@@ -208,7 +223,7 @@ const collected = computed(() =>
 
       <KEmptyState
         v-else
-        emoji="🗺️"
+        icon="map"
         title="学习世界还在铺路，我们一起去找找"
         description="地图上的地方会一份一份地长出来，先去学习世界看看吧。"
         tone="explore"
@@ -259,7 +274,8 @@ const collected = computed(() =>
               size="sm"
               solid
             >
-              ⭐ 我的伙伴
+              <KIcon name="star" size="xs" weight="fill" />
+              我的伙伴
             </KTag>
           </button>
         </li>

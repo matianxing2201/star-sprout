@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { InteractionComponentEmits } from '../contract'
 
-import type { ChooseOnePayload } from '@/domain'
+import type { ChooseOnePayload, InteractionOption } from '@/domain'
 import { computed, ref } from 'vue'
 import { toneVars } from '@/domain'
 
 import { cn } from '@/shared/utils'
+import { KIcon, KVisual } from '@/ui'
 
 /**
  * 选一选：点一个就对。
@@ -44,6 +45,11 @@ const gridClass = computed(() => {
 
 const isScene = computed(() => payload.layout === 'scene')
 
+/** 内容侧可能只写了文字：给一枚问号图标占位，避免卡片空着半张脸 */
+function optionIcon(option: InteractionOption) {
+  return option.icon ?? (option.emoji || option.image ? undefined : 'question' as const)
+}
+
 function pick(id: string, correct: boolean | undefined, hint: string | undefined): void {
   if (disabled || pickedId.value)
     return
@@ -79,16 +85,20 @@ function pick(id: string, correct: boolean | undefined, hint: string | undefined
       :style="toneVars(option.tone ?? 'neutral')"
       @click="pick(option.id, option.correct, option.hint)"
     >
-      <span :class="isScene ? 'text-6xl' : 'text-4xl'" aria-hidden="true">
-        {{ option.emoji ?? '❓' }}
-      </span>
+      <KVisual
+        :icon="optionIcon(option)"
+        :emoji="option.emoji"
+        :image="option.image"
+        :size="isScene ? 'xl' : 'lg'"
+        :tone="option.tone"
+      />
       <span class="font-display text-lg leading-tight text-[var(--tone-deep)]">{{ option.label }}</span>
       <span
         v-if="pickedId === option.id"
         class="absolute -top-3 -right-3 grid size-8 place-items-center rounded-chip bg-success text-white shadow-press"
         aria-hidden="true"
       >
-        ✓
+        <KIcon name="check" size="md" />
       </span>
     </button>
   </div>

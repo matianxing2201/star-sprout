@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { toneVars } from '@/domain'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
-import { KCard, KEmptyState, KProgress, KSectionTitle } from '@/ui'
+import { KCard, KEmptyState, KIcon, KProgress, KSectionTitle, TONE_ICONS } from '@/ui'
 
 /**
  * 家长中心 · 学习报告
@@ -138,7 +138,7 @@ const gradeLessons = computed(() =>
                   :to="{ name: ROUTE_NAMES.courseMap, params: { gradeId: profile.gradeId, categoryId: row.category.id } }"
                   class="font-body text-sm font-medium text-[var(--tone-deep)] underline decoration-line-strong underline-offset-4 hover:decoration-current"
                 >
-                  <span aria-hidden="true">{{ row.category.emoji }}</span>
+                  <KIcon :name="row.category.icon ?? TONE_ICONS[row.category.tone]" size="sm" />
                   {{ row.category.name }}
                 </RouterLink>
                 <span class="mt-1 block font-body text-xs text-ink-faint">{{ row.category.summary }}</span>
@@ -213,7 +213,7 @@ const gradeLessons = computed(() =>
 
       <KEmptyState
         v-else
-        emoji="🗂️"
+        icon="grid"
         title="暂无学习记录"
         :description="`${grade?.name ?? '当前年级'}还没有完成的课程。孩子在儿童端完成一节课程后，这里会出现对应的记录。`"
       />

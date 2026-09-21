@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { Category } from '@/domain'
+import type { AppIconName, Category, Topic } from '@/domain'
 import { computed, onMounted } from 'vue'
 
 import { RouterLink } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
-import { KCard, KSectionTitle, KStatTile } from '@/ui'
+import { KCard, KIcon, KSectionTitle, KStatTile, STAT_ICONS, TONE_ICONS } from '@/ui'
+import { TOPIC_KIND_ICONS } from '@/ui/icons'
 
 /**
  * 家长中心 · 总览
@@ -28,7 +29,7 @@ const leadingCategory = computed<Category | null>(() => {
   return top ? top.category : null
 })
 
-/** 薄弱知识点 → 所属领域，用于在列表里给出上下文 */
+/** 薄弱知识点与它所属的领域，用于在列表里给出上下文 */
 const weakPoints = computed(() =>
   report.value.weakPoints.map(point => ({
     id: point.id,
@@ -88,6 +89,12 @@ const suggestions = computed<string[]>(() => {
 })
 
 const grade = computed(() => catalog.grade(profile.gradeId))
+
+/** 主题图标：主题自己声明了就用它，否则跟随所属领域的色调 */
+function topicIcon(topic: Topic): AppIconName {
+  const category = catalog.category(topic.categoryId)
+  return topic.icon ?? (category ? TONE_ICONS[category.tone] : TOPIC_KIND_ICONS.standard)
+}
 </script>
 
 <template>
@@ -118,25 +125,25 @@ const grade = computed(() => catalog.grade(profile.gradeId))
     <!-- 关键数字 -->
     <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KStatTile
-        emoji="⏱️"
+        :icon="STAT_ICONS.minutes"
         :value="`${progress.today.minutes} 分钟`"
         label="今日学习时间"
         :hint="`今日完成 ${progress.today.lessons} 节`"
       />
       <KStatTile
-        emoji="📘"
+        :icon="STAT_ICONS.lessons"
         :value="report.lessons"
         label="完成课程"
         :hint="`累计 ${report.minutes} 分钟`"
       />
       <KStatTile
-        emoji="🎯"
+        icon="check-circle"
         :value="`${report.correctRate}%`"
         label="平均正确率"
         :hint="`基于 ${progress.attempts.length} 次作答`"
       />
       <KStatTile
-        emoji="📅"
+        :icon="STAT_ICONS.streak"
         :value="`${progress.growth.streakDays} 天`"
         label="连续学习"
         :hint="`累计学习 ${progress.growth.learningDays} 天`"
@@ -203,7 +210,7 @@ const grade = computed(() => catalog.grade(profile.gradeId))
             class="flex h-full flex-col gap-2 rounded-tile border-2 border-line bg-surface p-4 shadow-press transition-colors hover:border-line-strong"
           >
             <span class="flex items-center gap-2">
-              <span class="text-xl" aria-hidden="true">{{ topic.emoji }}</span>
+              <KIcon :name="topicIcon(topic)" size="sm" />
               <span class="font-body text-sm font-medium text-ink">{{ topic.title }}</span>
             </span>
             <span class="font-body text-xs text-ink-faint">
@@ -235,7 +242,7 @@ const grade = computed(() => catalog.grade(profile.gradeId))
           :key="item.category.id"
           class="flex items-center gap-3 rounded-tile border-2 border-line bg-surface px-4 py-3 shadow-press"
         >
-          <span class="text-lg" aria-hidden="true">{{ item.category.emoji }}</span>
+          <KIcon :name="item.category.icon ?? TONE_ICONS[item.category.tone]" size="sm" />
           <span class="flex flex-col">
             <span class="font-body text-sm text-ink">{{ item.category.name }}</span>
             <span class="font-numeric text-xs text-ink-faint">{{ item.attempts }} 次作答</span>

@@ -98,3 +98,17 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: '走丢了' },
   },
 ]
+
+/**
+ * 开发期专用路由。
+ * 图标词汇表是封闭的 —— 内容作者必须从固定列表里挑名字，所以需要一个能
+ * 「看着图挑名字」的地方。它只在 DEV 注册，生产构建里不存在这条路由。
+ */
+if (import.meta.env.DEV) {
+  routes.push({
+    path: '/dev/icons',
+    name: ROUTE_NAMES.iconGallery,
+    component: async () => import('@/pages/dev/IconGalleryPage.vue'),
+    meta: { title: '图标总览' },
+  })
+}

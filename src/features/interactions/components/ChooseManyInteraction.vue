@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { InteractionComponentEmits } from '../contract'
 
-import type { ChooseManyPayload } from '@/domain'
+import type { ChooseManyPayload, InteractionOption } from '@/domain'
 import { computed, ref } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 
-import { KButton } from '@/ui'
+import { KButton, KIcon, KVisual } from '@/ui'
 
 /**
  * 全都找出来：多选之后按「就选这些！」才判定。
@@ -49,6 +49,11 @@ const gridClass = computed(() => {
 
 function isSelected(id: string): boolean {
   return selectedIds.value.includes(id)
+}
+
+/** 内容侧可能只写了文字：给一枚问号图标占位，避免卡片空着半张脸 */
+function optionIcon(option: InteractionOption) {
+  return option.icon ?? (option.emoji || option.image ? undefined : 'question' as const)
 }
 
 function toggle(id: string): void {
@@ -116,16 +121,20 @@ function confirm(): void {
         :style="toneVars(option.tone ?? 'neutral')"
         @click="toggle(option.id)"
       >
-        <span class="text-4xl" aria-hidden="true">
-          {{ option.emoji ?? '❓' }}
-        </span>
+        <KVisual
+          :icon="optionIcon(option)"
+          :emoji="option.emoji"
+          :image="option.image"
+          size="lg"
+          :tone="option.tone"
+        />
         <span class="font-display text-lg leading-tight text-[var(--tone-deep)]">{{ option.label }}</span>
         <span
           v-if="isSelected(option.id)"
           class="absolute -top-3 -right-3 grid size-8 place-items-center rounded-chip bg-success text-white shadow-press"
           aria-hidden="true"
         >
-          ✓
+          <KIcon name="check" size="md" />
         </span>
       </button>
     </div>
@@ -138,6 +147,7 @@ function confirm(): void {
       :disabled="disabled || selectedIds.length === 0"
       @click="confirm"
     >
+      <KIcon name="check" size="sm" />
       就选这些！
     </KButton>
   </div>

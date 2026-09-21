@@ -17,7 +17,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'reading-star': {
     id: 'reading-star',
     name: '阅读小达人',
-    emoji: '🌟',
+    icon: 'book-open',
     description: '读完 3 节课，故事就记住了你的名字。',
     tone: 'reading',
     rule: { type: 'lessons', count: 3 },
@@ -25,7 +25,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'math-explorer': {
     id: 'math-explorer',
     name: '数学探险家',
-    emoji: '🔢',
+    icon: 'math-operations',
     description: '一次都没用提示，自己算对整整 2 节课。',
     tone: 'math',
     rule: { type: 'perfect-lessons', count: 2 },
@@ -33,7 +33,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'little-scientist': {
     id: 'little-scientist',
     name: '小小科学家',
-    emoji: '🔬',
+    icon: 'flask',
     description: '动手做满 6 节课，实验本上就有记录了。',
     tone: 'science',
     rule: { type: 'lessons', count: 6 },
@@ -41,7 +41,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'creative-master': {
     id: 'creative-master',
     name: '创意大师',
-    emoji: '🎨',
+    icon: 'palette',
     description: '攒够 30 颗星星，你的作品墙就挂满了。',
     tone: 'art',
     rule: { type: 'stars', count: 30 },
@@ -49,7 +49,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'rhythm-master': {
     id: 'rhythm-master',
     name: '节奏达人',
-    emoji: '🎵',
+    icon: 'music-notes',
     description: '连续 3 天来学习，拍子就不会断。',
     tone: 'music',
     rule: { type: 'streak', days: 3 },
@@ -57,7 +57,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'thinking-detective': {
     id: 'thinking-detective',
     name: '思维侦探',
-    emoji: '🧠',
+    icon: 'detective',
     description: '来过 5 个学习日，线索就自己连起来了。',
     tone: 'think',
     rule: { type: 'learning-days', days: 5 },
@@ -65,7 +65,7 @@ export const BADGE_BY_ID: Record<BadgeId, BadgeDefinition> = {
   'explorer': {
     id: 'explorer',
     name: '探索家',
-    emoji: '🚀',
+    icon: 'rocket',
     description: '一口气完成 10 节课，地图上都是你的脚印。',
     tone: 'explore',
     rule: { type: 'lessons', count: 10 },

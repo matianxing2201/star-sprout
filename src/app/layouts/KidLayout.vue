@@ -7,6 +7,7 @@ import { MascotAvatar } from '@/features/mascot'
 import { RewardLayer } from '@/features/reward'
 import { cn } from '@/shared/utils'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
+import { KIcon } from '@/ui'
 
 /**
  * 儿童端外壳
@@ -14,6 +15,9 @@ import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
  *
  * 顶部只放三件事：我在哪（角色 + 年级）、我能去哪（三个大按钮）、我攒了多少（星星）。
  * 菜单、面包屑、二级导航一律不要 —— 孩子不需要理解“信息架构”。
+ *
+ * 导航与星星都用矢量图标：它们和界面一起呼吸，粗细与基线一致；
+ * 而角色头像仍然是插画（见 MascotAvatar）—— 形象与图标是两回事。
  *
  * 星星计数器带 `data-star-target`：它是奖励动画的视觉落点，
  * 位于右上角，正好是 RewardLayer 星星飞行的方向。
@@ -25,12 +29,16 @@ const catalog = useCatalogStore()
 
 const grade = computed(() => catalog.grade(profile.gradeId))
 
+/** 导航项：icon 取自语义图标词汇表，不再是 emoji */
 const NAV = [
-  { name: ROUTE_NAMES.home, label: '学习世界', emoji: '🏝️' },
-  { name: ROUTE_NAMES.grades, label: '成长阶梯', emoji: '🪜' },
-  { name: ROUTE_NAMES.rewards, label: '奖励', emoji: '🎁' },
-  { name: ROUTE_NAMES.growth, label: '我的成长', emoji: '🌟' },
+  { name: ROUTE_NAMES.home, label: '学习世界', icon: 'island' },
+  { name: ROUTE_NAMES.grades, label: '成长阶梯', icon: 'ladder' },
+  { name: ROUTE_NAMES.rewards, label: '奖励', icon: 'gift' },
+  { name: ROUTE_NAMES.growth, label: '我的成长', icon: 'star-four' },
 ] as const
+
+/** 底部那条“学习是怎么发生的”，过去用箭头字符连接，现在用箭头图标 */
+const LEARNING_FLOW = ['发现', '好奇', '点击', '操作', '成功', '奖励', '解锁', '再探索'] as const
 
 const activeName = computed(() => route.name)
 </script>
@@ -51,7 +59,7 @@ const activeName = computed(() => route.name)
           :to="{ name: ROUTE_NAMES.grades }"
           class="fx-tap flex items-center gap-1.5 rounded-chip border-2 border-line bg-surface px-3 py-1.5 shadow-press hover:border-line-strong"
         >
-          <span aria-hidden="true">{{ grade?.emoji }}</span>
+          <KIcon v-if="grade" :name="grade.icon" size="sm" :tone="grade.tone" />
           <span class="font-display text-base text-ink">{{ grade?.name }}</span>
         </RouterLink>
 
@@ -67,7 +75,7 @@ const activeName = computed(() => route.name)
                 : 'text-ink-soft hover:bg-paper-deep hover:text-ink',
             )"
           >
-            <span aria-hidden="true">{{ item.emoji }}</span>
+            <KIcon :name="item.icon" size="sm" />
             {{ item.label }}
           </RouterLink>
         </nav>
@@ -78,7 +86,12 @@ const activeName = computed(() => route.name)
             class="flex items-center gap-1.5 rounded-chip border-2 border-star-deep/25 bg-star-soft px-3 py-1.5 shadow-press"
             :title="`已经收集 ${progress.growth.stars} 颗星星`"
           >
-            <span class="animate-breathe text-lg" aria-hidden="true">⭐</span>
+            <KIcon
+              name="star"
+              size="md"
+              weight="fill"
+              class="animate-breathe text-star-deep"
+            />
             <span class="font-numeric text-lg leading-none font-extrabold text-star-deep">
               {{ progress.growth.stars }}
             </span>
@@ -99,8 +112,11 @@ const activeName = computed(() => route.name)
       <RouterView />
     </main>
 
-    <footer class="mx-auto w-full max-w-6xl px-4 pb-8 font-body text-xs text-ink-faint">
-      发现 → 好奇 → 点击 → 操作 → 成功 → 奖励 → 解锁 → 再探索
+    <footer class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-1.5 px-4 pb-8 font-body text-xs text-ink-faint">
+      <template v-for="(step, index) in LEARNING_FLOW" :key="step">
+        <span>{{ step }}</span>
+        <KIcon v-if="index < LEARNING_FLOW.length - 1" name="arrow-right" size="xs" />
+      </template>
     </footer>
 
     <RewardLayer />

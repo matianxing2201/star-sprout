@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import type { AppIconName, Topic } from '@/domain'
 import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { GrowthSummary } from '@/features/reward'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
-import { KButton, KEmptyState, KProgress, KSectionTitle, KStatTile, KTag } from '@/ui'
+import { KButton, KEmptyState, KIcon, KIconTile, KProgress, KSectionTitle, KStatTile, KTag, STAT_ICONS, TONE_ICONS } from '@/ui'
+import { TOPIC_KIND_ICONS } from '@/ui/icons'
 
 /**
  * 我的成长
@@ -83,6 +85,20 @@ const exploreSentence = computed(() => {
 function isTopicDone(topicId: string): boolean {
   return progress.topicProgressOf(topicId).status === 'completed'
 }
+
+/** 主题图标：主题自己声明了就用它，否则跟随所属领域的色调 */
+function topicIcon(topic: Topic): AppIconName {
+  const category = catalog.category(topic.categoryId)
+  return topic.icon ?? (category ? TONE_ICONS[category.tone] : TOPIC_KIND_ICONS.standard)
+}
+
+/** 课程图标：课程自己声明了就用它，否则跟随课程色调；课程缺失时才退回通用图标 */
+function lessonIcon(lessonId: string): AppIconName {
+  const lesson = catalog.lesson(lessonId)
+  if (!lesson)
+    return 'book'
+  return lesson.icon ?? TONE_ICONS[lesson.tone]
+}
 </script>
 
 <template>
@@ -91,9 +107,9 @@ function isTopicDone(topicId: string): boolean {
 
     <!-- 三个数字：来了多少天、全对的课、拿到的徽章 -->
     <section class="grid gap-4 sm:grid-cols-3">
-      <KStatTile emoji="📅" :value="progress.growth.learningDays" label="学习天数" hint="每天来一下就算一天" tone="language" />
-      <KStatTile emoji="🌟" :value="progress.growth.perfectLessons" label="一次就做对的课" hint="这些课里你全对哦" tone="star" />
-      <KStatTile emoji="🏅" :value="earnedBadgeCount" label="获得徽章" :hint="`徽章墙上一共 ${totalBadgeCount} 枚`" tone="badge" />
+      <KStatTile icon="calendar" :value="progress.growth.learningDays" label="学习天数" hint="每天来一下就算一天" tone="language" />
+      <KStatTile icon="star-four" :value="progress.growth.perfectLessons" label="一次就做对的课" hint="这些课里你全对哦" tone="star" />
+      <KStatTile :icon="STAT_ICONS.badge" :value="earnedBadgeCount" label="获得徽章" :hint="`徽章墙上一共 ${totalBadgeCount} 枚`" tone="badge" />
     </section>
 
     <!-- 学习足迹 -->
@@ -111,21 +127,24 @@ function isTopicDone(topicId: string): boolean {
             :to="{ name: ROUTE_NAMES.lesson, params: { lessonId: item.completion.lessonId } }"
             class="fx-tap flex items-center gap-4 rounded-tile border-2 border-line bg-surface p-4 shadow-press hover:border-line-strong"
           >
-            <span class="text-3xl" aria-hidden="true">{{ item.lesson?.emoji ?? '📘' }}</span>
+            <KIcon :name="lessonIcon(item.completion.lessonId)" size="lg" weight="duotone" />
             <span class="min-w-0 flex-1">
               <span class="block font-display text-base text-ink">
                 {{ item.lesson?.title ?? '一节课' }}
               </span>
               <span class="block font-body text-xs text-ink-faint">{{ item.when }}</span>
             </span>
-            <span class="font-numeric text-lg font-extrabold text-star-deep">⭐ {{ item.completion.stars }}</span>
+            <span class="flex items-center gap-1 font-numeric text-lg font-extrabold text-star-deep">
+              <KIcon :name="STAT_ICONS.stars" size="sm" weight="fill" />
+              {{ item.completion.stars }}
+            </span>
           </RouterLink>
         </li>
       </ol>
 
       <KEmptyState
         v-else
-        emoji="🌱"
+        icon="plant"
         title="还没有足迹，我们一起去找找"
         description="完成第一节课，这里就会亮起来。"
         tone="explore"
@@ -154,7 +173,11 @@ function isTopicDone(topicId: string): boolean {
           class="rounded-tile border-2 border-line bg-surface p-5 shadow-press"
         >
           <div class="flex items-center gap-3">
-            <span class="text-3xl" aria-hidden="true">{{ row.category.emoji }}</span>
+            <KIconTile
+              :icon="row.category.icon ?? TONE_ICONS[row.category.tone]"
+              :tone="row.category.tone"
+              size="sm"
+            />
             <div class="min-w-0">
               <p class="font-display text-lg text-ink">
                 {{ row.category.name }}
@@ -174,15 +197,16 @@ function isTopicDone(topicId: string): boolean {
             :label="`一共答了 ${row.mastery.attempts} 次 · 答对 ${Math.round(row.mastery.correctRate * 100)}%`"
             show-value
           />
-          <p v-else class="mt-4 font-body text-sm text-ink-faint">
-            还没开始，等你来看看 🌱
+          <p v-else class="mt-4 flex items-center gap-2 font-body text-sm text-ink-faint">
+            <KIcon name="plant" size="sm" />
+            还没开始，等你来看看
           </p>
         </li>
       </ul>
 
       <KEmptyState
         v-else
-        emoji="🧭"
+        icon="compass"
         title="这里还没有可以走的路，我们一起去找找"
         description="这个阶段的领域还在准备中，先去成长阶梯看看别的阶段吧。"
       >
@@ -229,9 +253,9 @@ function isTopicDone(topicId: string): boolean {
               size="sm"
               :solid="isTopicDone(topic.id)"
             >
-              <span aria-hidden="true">{{ topic.emoji }}</span>
+              <KIcon :name="topicIcon(topic)" size="xs" />
               {{ topic.title }}
-              <span v-if="isTopicDone(topic.id)" aria-hidden="true">✔</span>
+              <KIcon v-if="isTopicDone(topic.id)" name="check" size="xs" weight="fill" />
             </KTag>
           </li>
         </ul>

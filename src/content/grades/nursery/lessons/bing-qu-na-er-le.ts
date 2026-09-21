@@ -14,7 +14,7 @@ export const bingQuNaErLeLesson: Lesson = {
   categoryId: 'nursery-science',
   topicId: 'nursery-science-ice',
   title: '冰去哪儿了？',
-  emoji: '🧊',
+  icon: 'snowflake',
   question: '冰放在暖和地方，会变成什么呢？',
   mascot: 'panda',
   minutes: 8,

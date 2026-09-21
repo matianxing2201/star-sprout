@@ -4,7 +4,7 @@ import type { Category } from '@/domain'
 import { computed } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
-import { KProgress, KTag } from '@/ui'
+import { KIconTile, KProgress, KTag, TONE_ICONS } from '@/ui'
 
 /**
  * 领域卡片（二级分类）
@@ -39,12 +39,11 @@ const restCount = computed(() => Math.max(0, category.skills.length - skills.val
     :style="toneVars(category.tone)"
   >
     <div class="flex items-start gap-3">
-      <span
-        class="grid size-14 shrink-0 place-items-center rounded-chip bg-[var(--tone-soft)] text-3xl"
-        aria-hidden="true"
-      >
-        {{ category.emoji }}
-      </span>
+      <KIconTile
+        size="lg"
+        :icon="category.icon ?? TONE_ICONS[category.tone]"
+        :tone="category.tone"
+      />
       <div class="min-w-0">
         <h3 class="font-display text-xl leading-tight text-ink">
           {{ category.name }}

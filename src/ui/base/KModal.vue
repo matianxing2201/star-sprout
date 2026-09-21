@@ -3,6 +3,8 @@ import { ref, toRef } from 'vue'
 
 import { useFocusTrap } from '@/composables/useFocusTrap'
 import { cn } from '@/shared/utils'
+/** 走 ui 内部出口，避免 base 组件回头依赖 @/ui 桶文件形成循环 */
+import { KIcon } from '@/ui/icons'
 
 /**
  * 通用弹层（角色对话、确认、奖励）。
@@ -78,7 +80,7 @@ const SIZE_CLASSES = {
               aria-label="关闭"
               @click="emit('close')"
             >
-              ✕
+              <KIcon name="close" size="md" />
             </button>
           </header>
 

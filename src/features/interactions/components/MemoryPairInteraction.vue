@@ -5,6 +5,7 @@ import type { MemoryCard, MemoryPairPayload } from '@/domain'
 import { computed, onBeforeUnmount, ref } from 'vue'
 
 import { cn } from '@/shared/utils'
+import { KIcon, KVisual } from '@/ui'
 
 /**
  * 翻翻乐：翻牌找成对。
@@ -119,10 +120,16 @@ onBeforeUnmount(() => {
     >
       <span class="memory-card__inner" :class="isFaceUp(card) && 'memory-card__inner--flipped'">
         <span class="memory-card__face memory-card__face--front">
-          <span class="text-3xl sm:text-4xl" aria-hidden="true">{{ card.emoji ?? '⭐' }}</span>
+          <KVisual
+            :icon="card.icon ?? (card.emoji ? undefined : 'star-four')"
+            :emoji="card.emoji"
+            size="lg"
+          />
           <span class="font-display text-sm leading-tight text-ink">{{ card.label }}</span>
         </span>
-        <span class="memory-card__face memory-card__face--back" aria-hidden="true">❓</span>
+        <span class="memory-card__face memory-card__face--back" aria-hidden="true">
+          <KIcon name="question" size="xl" />
+        </span>
       </span>
     </button>
   </div>
@@ -167,7 +174,6 @@ onBeforeUnmount(() => {
 }
 
 .memory-card__face--back {
-  font-size: 2.25rem;
   color: var(--color-ink-faint);
   background: var(--color-paper-deep);
   border-color: var(--color-line-strong);

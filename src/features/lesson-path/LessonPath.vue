@@ -3,7 +3,7 @@ import type { CategoryId, GradeId } from '@/domain'
 
 import { computed } from 'vue'
 import { useCatalogStore, useProgressStore } from '@/stores'
-import { KEmptyState } from '@/ui'
+import { KEmptyState, TONE_ICONS } from '@/ui'
 
 import TopicCard from './TopicCard.vue'
 
@@ -28,11 +28,17 @@ const category = computed(() => catalog.category(props.categoryId))
 
 const topics = computed(() => catalog.topicsOfCategory(props.categoryId))
 
+/**
+ * 课程图标与色调在这里解析好再交给卡片：
+ * 课程自己的 icon 优先，缺省时按课程色调取默认图标 ——
+ * 卡片不需要知道词汇表怎么查。
+ */
 function lessonsOf(topicId: string) {
   return catalog.lessonsOfTopic(topicId).map(lesson => ({
     id: lesson.id,
     title: lesson.title,
-    emoji: lesson.emoji,
+    icon: lesson.icon ?? TONE_ICONS[lesson.tone],
+    tone: lesson.tone,
     minutes: lesson.minutes,
     stars: progress.starsOfLesson(lesson.id) || lesson.reward.stars,
   }))
@@ -51,7 +57,7 @@ function unlockHintFor(index: number): string | undefined {
   <section>
     <KEmptyState
       v-if="topics.length === 0"
-      emoji="🌱"
+      icon="plant"
       :title="`${category?.name ?? '这个领域'}的课程还在准备`"
       description="领域已经建好了，接下来会把一份份教案变成可以动手探索的小任务。"
       :tone="category?.tone"

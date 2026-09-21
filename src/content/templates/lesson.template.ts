@@ -21,7 +21,8 @@ export const lessonTemplate: Lesson = {
   topicId: 'template-topic',
 
   title: '课程名称（孩子看得懂的一句话）',
-  emoji: '🌸',
+  // 课程图标，可选：省略时按 tone 取默认图标；可选值见 domain/shared/icons.ts 的 APP_ICON_NAMES
+  icon: 'flower',
   question: '今天要探索什么？（一个能勾住好奇心的问题）',
 
   // 陪孩子上这节课的角色
@@ -60,7 +61,7 @@ export const lessonTemplate: Lesson = {
       },
     },
 
-    /* 2. 知识发现：一张卡只讲一件事，点开才出现正文 */
+    /* 2. 知识发现：一张卡只讲一件事，点开才出现正文；card 的 icon 是必填的结构性图标 */
     {
       id: 'template-discover',
       kind: 'discover',
@@ -69,8 +70,8 @@ export const lessonTemplate: Lesson = {
       knowledgePointIds: ['kp-template-a'],
       discovery: {
         cards: [
-          { id: 'card-1', emoji: '💡', title: '小标题', body: '一句话说清楚。', tone: 'think' },
-          { id: 'card-2', emoji: '🔍', title: '小标题', body: '一句话说清楚。', tone: 'science' },
+          { id: 'card-1', icon: 'lightbulb', title: '小标题', body: '一句话说清楚。', tone: 'think' },
+          { id: 'card-2', icon: 'magnifier', title: '小标题', body: '一句话说清楚。', tone: 'science' },
         ],
       },
     },

@@ -2,8 +2,9 @@
 import { computed, ref } from 'vue'
 
 import { MASCOTS } from '@/domain'
+import { MascotAvatar } from '@/features/mascot'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
-import { KButton, KCard, KModal, KSectionTitle, KStatTile } from '@/ui'
+import { KButton, KCard, KModal, KSectionTitle, KStatTile, STAT_ICONS } from '@/ui'
 
 /**
  * 家长中心 · 设置
@@ -137,7 +138,7 @@ function confirmResetProfile(): void {
                   : 'border-line bg-surface hover:border-line-strong'"
                 @click="profile.chooseMascot(mascot.id)"
               >
-                <span class="text-xl" aria-hidden="true">{{ mascot.emoji }}</span>
+                <MascotAvatar :id="mascot.id" size="sm" :animate="false" />
                 <span class="flex min-w-0 flex-col">
                   <span class="font-body text-sm text-ink">{{ mascot.name }}</span>
                   <span class="truncate font-body text-xs text-ink-faint">{{ mascot.role }}</span>
@@ -160,11 +161,11 @@ function confirmResetProfile(): void {
         description="当前内容包中已就绪的年级、领域、主题、课程与知识方向数量。"
       />
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <KStatTile emoji="🎓" :value="stats.grades" label="年级" />
-        <KStatTile emoji="🧭" :value="stats.categories" label="学习领域" />
-        <KStatTile emoji="🗺️" :value="stats.topics" label="学习主题" />
-        <KStatTile emoji="📘" :value="stats.lessons" label="课程" />
-        <KStatTile emoji="🎯" :value="stats.skills" label="知识方向" />
+        <KStatTile icon="graduation-cap" :value="stats.grades" label="年级" />
+        <KStatTile icon="grid" :value="stats.categories" label="学习领域" />
+        <KStatTile icon="map" :value="stats.topics" label="学习主题" />
+        <KStatTile :icon="STAT_ICONS.lessons" :value="stats.lessons" label="课程" />
+        <KStatTile icon="brain" :value="stats.skills" label="知识方向" />
       </div>
     </section>
 

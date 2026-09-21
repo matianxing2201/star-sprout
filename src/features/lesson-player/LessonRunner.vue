@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { useLessonSession } from '@/composables/useLessonSession'
 import { useCatalogStore } from '@/stores'
-import { KButton, KEmptyState } from '@/ui'
+import { KButton, KEmptyState, KIcon, TONE_ICONS } from '@/ui'
 
 import StageDiscover from './StageDiscover.vue'
 import StageInteraction from './StageInteraction.vue'
@@ -65,24 +65,36 @@ function exit(): void {
         <div class="flex flex-wrap items-center gap-3">
           <button
             type="button"
-            class="fx-tap grid size-10 place-items-center rounded-chip border-2 border-line bg-surface text-lg shadow-press"
+            class="fx-tap grid size-10 place-items-center rounded-chip border-2 border-line bg-surface text-ink shadow-press"
             aria-label="离开这节课"
             @click="exit"
           >
-            ←
+            <KIcon name="arrow-left" size="md" />
           </button>
 
           <div class="min-w-0">
             <p class="font-body text-xs text-ink-faint">
               {{ catalog.grade(lesson.gradeId)?.name }} · {{ catalog.category(lesson.categoryId)?.name }}
             </p>
-            <h1 class="truncate font-display text-xl text-ink sm:text-2xl">
-              {{ lesson.emoji }} {{ lesson.title }}
-            </h1>
+            <div class="flex min-w-0 items-center gap-2">
+              <KIcon
+                :name="lesson.icon ?? TONE_ICONS[lesson.tone]"
+                size="lg"
+                weight="duotone"
+                :tone="lesson.tone"
+              />
+              <h1 class="truncate font-display text-xl text-ink sm:text-2xl">
+                {{ lesson.title }}
+              </h1>
+            </div>
           </div>
 
-          <span class="ml-auto font-numeric text-sm font-bold text-star-deep">
-            ⭐ {{ session.earnedStars.value }}
+          <span
+            data-star-target
+            class="ml-auto inline-flex items-center gap-1 font-numeric text-sm font-bold text-star-deep"
+          >
+            <KIcon name="star" size="sm" weight="fill" />
+            {{ session.earnedStars.value }}
           </span>
         </div>
 
@@ -137,7 +149,8 @@ function exit(): void {
           :disabled="session.cursor.value === 0"
           @click="session.back()"
         >
-          ← 上一步
+          <KIcon name="arrow-left" size="sm" />
+          上一步
         </KButton>
 
         <p class="font-body text-xs text-ink-faint">
@@ -150,14 +163,15 @@ function exit(): void {
           size="sm"
           @click="session.next()"
         >
-          下一步 →
+          下一步
+          <KIcon name="arrow-right" size="sm" />
         </KButton>
       </footer>
     </template>
 
     <KEmptyState
       v-else
-      emoji="🧭"
+      icon="compass"
       title="没有找到这节课"
       description="它可能已经被移动了。回到课程地图看看别的吧。"
     >

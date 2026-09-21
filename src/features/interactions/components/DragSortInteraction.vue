@@ -5,7 +5,7 @@ import type { DragSortPayload } from '@/domain'
 import { computed, ref } from 'vue'
 import { cn } from '@/shared/utils'
 
-import { KButton } from '@/ui'
+import { KButton, KIcon, KVisual } from '@/ui'
 import { findDropTarget, usePointerDrag } from '../usePointerDrag'
 
 /**
@@ -144,9 +144,11 @@ function check(): void {
         @pointerdown="drag.start($event, item.id)"
         @click="tapItem(item.id)"
       >
-        <span class="text-3xl" aria-hidden="true">{{ item.emoji ?? '⬜' }}</span>
+        <KVisual :icon="item.icon" :emoji="item.emoji" size="md" />
         <span class="font-display text-lg text-ink">{{ item.label }}</span>
-        <span class="ml-auto text-xl text-ink-faint" aria-hidden="true">⠿</span>
+        <span class="ml-auto text-ink-faint" aria-hidden="true">
+          <KIcon name="drag-handle" size="md" />
+        </span>
       </button>
     </div>
 
@@ -156,7 +158,7 @@ function check(): void {
       :style="ghostStyle"
       aria-hidden="true"
     >
-      <span class="text-2xl">{{ ghostItem.emoji ?? '⬜' }}</span>
+      <KVisual :icon="ghostItem.icon" :emoji="ghostItem.emoji" size="md" />
       <span class="font-display text-base text-ink">{{ ghostItem.label }}</span>
     </span>
 

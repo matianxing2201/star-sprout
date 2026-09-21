@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 import { useProgressStore } from '@/stores'
-import { KProgress } from '@/ui'
+import { KIconTile, KProgress } from '@/ui'
 
 /**
  * 成长概览
@@ -22,7 +22,7 @@ const remain = computed(() => (next.value ? next.value.from - progress.growth.st
   <section class="grid gap-4 sm:grid-cols-3">
     <div class="rounded-tile border-2 border-line bg-surface p-5 shadow-sticker">
       <div class="flex items-center gap-3">
-        <span class="text-4xl" aria-hidden="true">{{ level.emoji }}</span>
+        <KIconTile :icon="level.icon" tone="star" size="md" />
         <div>
           <p class="font-display text-xl text-ink">
             {{ level.name }}

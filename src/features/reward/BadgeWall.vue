@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 import { useProgressStore } from '@/stores'
-import { KProgress } from '@/ui'
+import { KIcon, KProgress } from '@/ui'
 
 /**
  * 徽章墙
@@ -24,10 +25,16 @@ const progress = useProgressStore()
       )"
     >
       <span
-        :class="cn('text-4xl', !item.earned && 'opacity-35 grayscale')"
+        :class="cn(
+          'grid size-16 place-items-center rounded-chip border-2 shadow-press',
+          item.earned
+            ? 'border-[var(--tone-line)] bg-[var(--tone-soft)] text-[var(--tone-deep)]'
+            : 'border-dashed border-line-strong bg-paper text-ink-faint opacity-60',
+        )"
+        :style="toneVars(item.badge.tone)"
         :aria-label="item.earned ? '已获得' : '还没有获得'"
       >
-        {{ item.badge.emoji }}
+        <KIcon :name="item.badge.icon" size="lg" weight="duotone" />
       </span>
       <p class="font-display text-base text-ink">
         {{ item.badge.name }}

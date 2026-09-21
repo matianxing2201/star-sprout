@@ -4,7 +4,7 @@ import { computed, watch } from 'vue'
 import { getMascot } from '@/domain'
 import { MascotAvatar } from '@/features/mascot'
 import { useFeedbackStore } from '@/stores'
-import { KConfetti, KStarBurst } from '@/ui'
+import { KConfetti, KIcon, KStarBurst } from '@/ui'
 
 /**
  * 奖励层
@@ -73,8 +73,9 @@ watch(active, (value) => {
             <p class="font-display text-lg text-ink">
               {{ cheer }}
             </p>
-            <p v-if="feedback.stars > 0" class="font-numeric text-sm text-star-deep">
-              +{{ feedback.stars }} ⭐
+            <p v-if="feedback.stars > 0" class="flex items-center gap-1 font-numeric text-sm text-star-deep">
+              +{{ feedback.stars }}
+              <KIcon name="star" size="xs" weight="fill" />
             </p>
           </div>
         </div>

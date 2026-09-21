@@ -1,3 +1,4 @@
+import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
 /**
@@ -52,7 +53,12 @@ export interface Grade {
   /** 升序序号，决定成长阶梯的顺序 */
   order: number
   ageRange: string
-  emoji: string
+  /**
+   * 年级在成长阶梯上的图标。
+   * 用矢量图标而不是 emoji：emoji 在不同系统里字形差异极大，
+   * 八个年级并排时会粗细不一、基线参差，一眼就能看出“没设计过”。
+   */
+  icon: AppIconName
   tone: ToneKey
   /** 一句话定位，孩子能读懂 */
   tagline: string
@@ -67,7 +73,11 @@ export interface Category {
   gradeId: GradeId
   /** 二级分类名称，例如“语言表达” */
   name: string
-  emoji: string
+  /**
+   * 领域图标。可以省略 —— 省略时按 `tone` 取默认图标（见 ui/icons/mappings.ts），
+   * 因此新增领域不会出现“没有图标”的空窗。
+   */
+  icon?: AppIconName
   tone: ToneKey
   /** 面向家长的领域说明 */
   summary: string
@@ -90,7 +100,8 @@ export interface Topic {
   categoryId: CategoryId
   /** 学习主题名称，例如“《春晓》” */
   title: string
-  emoji: string
+  /** 主题图标；省略时按所属领域的色调取默认图标 */
+  icon?: AppIconName
   kind: TopicKind
   order: number
   /** 学习目标（面向家长与教师） */

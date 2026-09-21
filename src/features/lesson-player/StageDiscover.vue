@@ -4,7 +4,7 @@ import type { DiscoverTask } from '@/domain'
 import { computed, ref } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
-import { KButton } from '@/ui'
+import { KButton, KIcon } from '@/ui'
 
 /**
  * 知识发现
@@ -13,6 +13,9 @@ import { KButton } from '@/ui'
  * 需求明确反对“直接显示一大段文字”。所以一张卡只讲一件事，
  * 卡片背面对着孩子（只有图标 + 小标题），点开才出现那一句话 ——
  * “点开”这个动作本身就是注意力管理。
+ *
+ * 卡片上的图形走矢量图标（双色调），一整排并排时粗细与基线一致；
+ * 卡片本身的色调由 `toneVars` 提供，图标跟着同一个色系深浅变化。
  */
 const { task } = defineProps<{ task: DiscoverTask }>()
 
@@ -50,7 +53,12 @@ function open(id: string): void {
           :aria-expanded="opened.includes(card.id)"
           @click="open(card.id)"
         >
-          <span class="text-4xl" aria-hidden="true">{{ card.emoji }}</span>
+          <KIcon
+            :name="card.icon"
+            size="xl"
+            weight="duotone"
+            :tone="card.tone ?? 'neutral'"
+          />
           <span class="font-display text-lg text-ink">{{ card.title }}</span>
 
           <span
@@ -59,7 +67,10 @@ function open(id: string): void {
           >
             {{ card.body }}
           </span>
-          <span v-else class="font-body text-xs text-ink-faint">点一下看看 →</span>
+          <span v-else class="inline-flex items-center gap-1 font-body text-xs text-ink-faint">
+            点一下看看
+            <KIcon name="arrow-right" size="sm" />
+          </span>
         </button>
       </li>
     </ul>
@@ -70,7 +81,13 @@ function open(id: string): void {
         :variant="allOpened ? 'primary' : 'soft'"
         @click="emit('done')"
       >
-        {{ allOpened ? '我知道啦，继续 →' : `继续（已看 ${openedCount}/${cards.length}）` }}
+        <template v-if="allOpened">
+          我知道啦，继续
+          <KIcon name="arrow-right" size="sm" />
+        </template>
+        <template v-else>
+          继续（已看 {{ openedCount }}/{{ cards.length }}）
+        </template>
       </KButton>
     </div>
   </section>

@@ -1,6 +1,7 @@
 import type { CategoryId, GradeId, KnowledgePoint, TopicId } from '../catalog/types'
 import type { InteractionSpec } from '../interaction/types'
 import type { MascotId } from '../mascot/types'
+import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
 /**
@@ -50,7 +51,12 @@ export interface StoryBeat {
 /** 知识发现的卡片，一张卡只讲一件事 */
 export interface DiscoverCard {
   id: string
-  emoji: string
+  /**
+   * 卡片图标。
+   * 知识卡片是**结构性内容**（不是场景里的物件），所以统一用矢量图标：
+   * 一排卡片并排时，图标粗细一致、基线对齐，才不会显得像随手贴上去的 emoji。
+   */
+  icon: AppIconName
   title: string
   body: string
   /** 孩子可以点一下听到的声音 / 看到的小演示 */
@@ -116,7 +122,8 @@ export interface Lesson {
   categoryId: CategoryId
   topicId: TopicId
   title: string
-  emoji: string
+  /** 课程图标；省略时按所属领域的色调取默认图标 */
+  icon?: AppIconName
   /** 本节要回答的那个问题：“今天要探索什么？” */
   question: string
   mascot: MascotId

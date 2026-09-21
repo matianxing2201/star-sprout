@@ -15,6 +15,15 @@ export type MascotVoice = 'warm' | 'lively' | 'calm' | 'clever' | 'cuddly' | 'cu
 export interface Mascot {
   id: MascotId
   name: string
+  /**
+   * 角色形象目前用 emoji。
+   *
+   * 这是**有意的例外**：角色是插画，不是图标。
+   * 全站的界面图标已经统一换成矢量图标（见 domain/shared/icons.ts），
+   * 但如果把 🐻 也换成矢量图标，得到的会是一个「熊的符号」而不是「熊老师这个角色」——
+   * 角色需要的是专属插画，那是独立的一件美术工作，不该用图标凑合。
+   * 因此这里保留 emoji，等专属插画到位后替换这一个字段即可。
+   */
   emoji: string
   voice: MascotVoice
   /** 角色定位：孩子会问“你是谁” */

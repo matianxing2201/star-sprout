@@ -1,4 +1,5 @@
 import type { MascotId } from '../mascot/types'
+import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
 /**
@@ -13,6 +14,11 @@ import type { ToneKey } from '../shared/tone'
  *
  * 新增一种互动方式 = 新增一个 payload 类型 + 注册一个组件，
  * 不需要改动课程页、播放器或任何页面。
+ *
+ * 关于图标：互动里的视觉元素同时支持 `icon` 与 `emoji`，规则是
+ *   - **结构性的东西**（选项卡、分类筐、积木）用 `icon`，与界面一起呼吸；
+ *   - **场景里的东西**（一只鸟、一根胡萝卜、一个皮球）用 `emoji`，它们本身就是插画。
+ * 两者都给时 `icon` 优先（见 ui/icons/KVisual.vue），所以教案可以按需选择。
  */
 
 export const INTERACTION_KINDS = [
@@ -67,6 +73,7 @@ export interface InteractionBase {
 export interface InteractionOption {
   id: string
   label: string
+  icon?: AppIconName
   emoji?: string
   image?: string
   /** 是否为正确答案 */
@@ -98,6 +105,7 @@ export interface SceneTarget {
   x: number
   y: number
   size?: number
+  icon?: AppIconName
   emoji?: string
   correct?: boolean
   hint?: string
@@ -115,6 +123,7 @@ export interface TapTargetPayload {
 export interface SortItem {
   id: string
   label: string
+  icon?: AppIconName
   emoji?: string
 }
 
@@ -129,6 +138,7 @@ export interface DragSortPayload {
 export interface DropZone {
   id: string
   label: string
+  icon?: AppIconName
   emoji?: string
   tone?: ToneKey
   /** 该区域期望接收的 item id */
@@ -138,6 +148,7 @@ export interface DropZone {
 export interface DraggableItem {
   id: string
   label: string
+  icon?: AppIconName
   emoji?: string
   tone?: ToneKey
 }
@@ -150,6 +161,7 @@ export interface DragDropPayload {
 export interface ConnectNode {
   id: string
   label: string
+  icon?: AppIconName
   emoji?: string
 }
 
@@ -164,6 +176,7 @@ export interface MemoryCard {
   id: string
   pairId: string
   label: string
+  icon?: AppIconName
   emoji?: string
 }
 
@@ -200,6 +213,7 @@ export interface DrawPayload {
 export interface SliderState {
   /** 达到该阈值（含）时展示这个状态 */
   from: number
+  icon?: AppIconName
   emoji: string
   caption: string
 }
@@ -225,6 +239,7 @@ export interface Hotspot {
   y: number
   /** 点击后揭示的知识卡片 */
   reveal: string
+  icon?: AppIconName
   emoji?: string
 }
 
@@ -243,6 +258,7 @@ export interface ProgramBlock {
   id: string
   kind: ProgramBlockKind
   label: string
+  icon?: AppIconName
   emoji?: string
   /** 该积木可用的次数上限，缺省不限 */
   limit?: number
@@ -256,8 +272,8 @@ export interface SequenceBuildPayload {
   /** 目标描述，例如“让小狐狸走到胡萝卜那里” */
   goal: string
   /** 舞台上的角色与目标物 */
-  actor?: { emoji: string, label: string }
-  target?: { emoji: string, label: string }
+  actor?: { emoji?: string, icon?: AppIconName, label: string }
+  target?: { emoji?: string, icon?: AppIconName, label: string }
 }
 
 /* ------------------------------------------------------------------ */

@@ -5,7 +5,7 @@ import type { InteractionSpec } from '@/domain/interaction/types'
 import type { LearningTask, Lesson } from '@/domain/lesson/types'
 import { z } from 'zod'
 
-import { GRADE_IDS, TOPIC_KINDS } from '@/domain/catalog/types'
+import { APP_ICON_NAMES, GRADE_IDS, TOPIC_KINDS } from '@/domain'
 
 import { BADGE_IDS } from '@/domain/growth/types'
 import { INTERACTION_KINDS, PROGRAM_BLOCK_KINDS } from '@/domain/interaction/types'
@@ -45,6 +45,7 @@ export interface ContentPack {
  * schema 会自动跟上，不会出现“领域有、校验不认”的静默漂移。
  */
 export const SCHEMA_VALUE_SETS = {
+  appIcons: APP_ICON_NAMES,
   gradeIds: GRADE_IDS,
   tones: TONE_KEYS,
   mascotIds: MASCOT_IDS,
@@ -58,6 +59,9 @@ const gradeIdSchema = z.enum(SCHEMA_VALUE_SETS.gradeIds)
 const stageIdSchema = z.enum(['kindergarten', 'primary'])
 const toneSchema = z.enum(SCHEMA_VALUE_SETS.tones)
 const mascotIdSchema = z.enum(SCHEMA_VALUE_SETS.mascotIds)
+/** 图标名必须是图标词汇表里的语义名 —— 写错会在这里被拦下，而不是渲染成空白 */
+const iconSchema = z.enum(SCHEMA_VALUE_SETS.appIcons)
+
 const topicKindSchema = z.enum(SCHEMA_VALUE_SETS.topicKinds)
 const programBlockKindSchema = z.enum(SCHEMA_VALUE_SETS.programBlockKinds)
 
@@ -85,7 +89,7 @@ export const gradeSchema: z.ZodType<Grade> = z.object({
   stage: stageIdSchema,
   order: z.number().int().nonnegative(),
   ageRange: z.string().min(1),
-  emoji: z.string().min(1),
+  icon: iconSchema,
   tone: toneSchema,
   tagline: z.string().min(1),
   summary: z.string().min(1),
@@ -97,7 +101,7 @@ export const categorySchema: z.ZodType<Category> = z.object({
   id: z.string().min(1),
   gradeId: gradeIdSchema,
   name: z.string().min(1),
-  emoji: z.string().min(1),
+  icon: iconSchema,
   tone: toneSchema,
   summary: z.string().min(1),
   focus: z.array(z.string().min(1)),
@@ -118,7 +122,7 @@ export const topicSchema: z.ZodType<Topic> = z.object({
   gradeId: gradeIdSchema,
   categoryId: z.string().min(1),
   title: z.string().min(1),
-  emoji: z.string().min(1),
+  icon: iconSchema,
   kind: topicKindSchema,
   order: z.number().int().nonnegative(),
   objectives: z.array(z.string().min(1)),
@@ -135,6 +139,7 @@ const interactionOptionSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
   image: z.string().optional(),
   correct: z.boolean().optional(),
   hint: z.string().optional(),
@@ -148,6 +153,7 @@ const sceneTargetSchema = z.object({
   y: percentSchema,
   size: z.number().positive().optional(),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
   correct: z.boolean().optional(),
   hint: z.string().optional(),
 })
@@ -156,12 +162,14 @@ const sortItemSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
 })
 
 const dropZoneSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
   tone: toneSchema.optional(),
   accepts: z.array(z.string().min(1)),
 })
@@ -170,6 +178,7 @@ const connectNodeSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
 })
 
 const memoryCardSchema = z.object({
@@ -177,6 +186,7 @@ const memoryCardSchema = z.object({
   pairId: z.string().min(1),
   label: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
 })
 
 const colorFillRegionSchema = z.object({
@@ -187,6 +197,7 @@ const colorFillRegionSchema = z.object({
 
 const sliderStateSchema = z.object({
   from: z.number(),
+  icon: iconSchema.optional(),
   emoji: z.string().min(1),
   caption: z.string().min(1),
 })
@@ -198,6 +209,7 @@ const hotspotSchema = z.object({
   y: percentSchema,
   reveal: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
 })
 
 const programBlockSchema = z.object({
@@ -205,6 +217,7 @@ const programBlockSchema = z.object({
   kind: programBlockKindSchema,
   label: z.string().min(1),
   emoji: z.string().optional(),
+  icon: iconSchema.optional(),
   limit: z.number().int().positive().optional(),
 })
 
@@ -372,8 +385,8 @@ const sequenceBuildSchema = z.object({
     palette: z.array(programBlockSchema).min(1),
     solution: z.array(z.string().min(1)).min(1),
     goal: z.string().min(1),
-    actor: z.object({ emoji: z.string().min(1), label: z.string().min(1) }).optional(),
-    target: z.object({ emoji: z.string().min(1), label: z.string().min(1) }).optional(),
+    actor: z.object({ emoji: z.string().min(1).optional(), icon: iconSchema.optional(), label: z.string().min(1) }).optional(),
+    target: z.object({ emoji: z.string().min(1).optional(), icon: iconSchema.optional(), label: z.string().min(1) }).optional(),
   }).refine(
     payload => payload.solution.every(id => payload.palette.some(block => block.id === id)),
     { message: 'sequence-build 的 solution 引用了 palette 里没有的积木' },
@@ -425,7 +438,7 @@ const discoverTaskSchema = z.object({
   discovery: z.object({
     cards: z.array(z.object({
       id: z.string().min(1),
-      emoji: z.string().min(1),
+      icon: iconSchema,
       title: z.string().min(1),
       body: z.string().min(1),
       tone: toneSchema.optional(),
@@ -467,7 +480,7 @@ export const lessonSchema: z.ZodType<Lesson> = z.object({
   categoryId: z.string().min(1),
   topicId: z.string().min(1),
   title: z.string().min(1),
-  emoji: z.string().min(1),
+  icon: iconSchema,
   question: z.string().min(1),
   mascot: mascotIdSchema,
   minutes: z.number().int().positive(),
@@ -517,7 +530,7 @@ const badgeRuleSchema = z.discriminatedUnion('type', [
 export const badgeSchema: z.ZodType<BadgeDefinition> = z.object({
   id: z.enum(SCHEMA_VALUE_SETS.badgeIds),
   name: z.string().min(1),
-  emoji: z.string().min(1),
+  icon: iconSchema,
   description: z.string().min(1),
   tone: toneSchema,
   rule: badgeRuleSchema,
@@ -531,7 +544,7 @@ export const badgeSchema: z.ZodType<BadgeDefinition> = z.object({
 export const learningWorldSchema: z.ZodType<LearningWorld> = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, '学习世界 id 必须是 kebab-case'),
   name: z.string().min(1),
-  emoji: z.string().min(1),
+  icon: iconSchema,
   tone: toneSchema,
   tagline: z.string().min(1),
   description: z.string().min(1),

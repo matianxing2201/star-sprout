@@ -7,6 +7,7 @@ import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 import { toneVars } from '@/domain'
 
 import { cn } from '@/shared/utils'
+import { KVisual } from '@/ui'
 import { findDropTarget, usePointerDrag } from '../usePointerDrag'
 
 /**
@@ -306,7 +307,7 @@ onBeforeUnmount(() => {
           @pointerdown="onLeftPointerDown($event, node.id)"
           @click="onLeftClick(node.id)"
         >
-          <span class="text-2xl" aria-hidden="true">{{ node.emoji ?? '🔵' }}</span>
+          <KVisual :icon="node.icon" :emoji="node.emoji" size="md" />
           <span class="font-display text-base leading-tight text-[var(--tone-deep)]">{{ node.label }}</span>
         </button>
       </div>
@@ -328,7 +329,7 @@ onBeforeUnmount(() => {
           :style="nodeTone"
           @click="onRightClick(node.id)"
         >
-          <span class="text-2xl" aria-hidden="true">{{ node.emoji ?? '🟡' }}</span>
+          <KVisual :icon="node.icon" :emoji="node.emoji" size="md" />
           <span class="font-display text-base leading-tight text-[var(--tone-deep)]">{{ node.label }}</span>
         </button>
       </div>

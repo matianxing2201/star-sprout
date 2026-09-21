@@ -31,7 +31,7 @@ function makeStats(overrides: Partial<LearningStats> = {}): LearningStats {
 }
 
 function makeBadge(id: string, rule: BadgeDefinition['rule']): BadgeDefinition {
-  return { id: id as BadgeDefinition['id'], name: id, emoji: '🏅', description: '', tone: 'think', rule }
+  return { id: id as BadgeDefinition['id'], name: id, icon: 'medal', description: '', tone: 'think', rule }
 }
 
 describe('奖励分级', () => {

@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 
-import type { InteractionKind, InteractionPayloadMap } from '@/domain'
+import type { AppIconName, InteractionKind, InteractionPayloadMap } from '@/domain'
 
 /**
  * 互动组件契约
@@ -36,22 +36,23 @@ export type InteractionComponent = Component
 export interface InteractionMeta {
   kind: InteractionKind
   label: string
-  emoji: string
+  /** 互动的结构性图标：和界面一起呼吸，不用场景 emoji（见 ui/icons/KVisual.vue 的规则） */
+  icon: AppIconName
   /** 主要锻炼的能力，家长端会用到 */
   ability: string
 }
 
 export const INTERACTION_META: Record<InteractionKind, Omit<InteractionMeta, 'kind'>> = {
-  'choose-one': { label: '选一选', emoji: '👆', ability: '观察与判断' },
-  'choose-many': { label: '全都找出来', emoji: '🔍', ability: '分类与归纳' },
-  'tap-target': { label: '点一点', emoji: '🎯', ability: '观察力' },
-  'drag-sort': { label: '排一排', emoji: '↕️', ability: '顺序与逻辑' },
-  'drag-drop': { label: '拖一拖', emoji: '🧺', ability: '分类与配对' },
-  'connect-line': { label: '连一连', emoji: '🔗', ability: '关系认知' },
-  'memory-pair': { label: '翻翻乐', emoji: '🃏', ability: '记忆力' },
-  'color-fill': { label: '涂一涂', emoji: '🎨', ability: '色彩与审美' },
-  'draw': { label: '画一画', emoji: '✏️', ability: '精细动作与创造' },
-  'slider-explore': { label: '试一试', emoji: '🎚️', ability: '观察与猜想' },
-  'hotspot-explore': { label: '找一找', emoji: '🔭', ability: '探索与发现' },
-  'sequence-build': { label: '搭指令', emoji: '🧩', ability: '顺序与编程思维' },
+  'choose-one': { label: '选一选', icon: 'click-hand', ability: '观察与判断' },
+  'choose-many': { label: '全都找出来', icon: 'magnifier', ability: '分类与归纳' },
+  'tap-target': { label: '点一点', icon: 'target', ability: '观察力' },
+  'drag-sort': { label: '排一排', icon: 'sort', ability: '顺序与逻辑' },
+  'drag-drop': { label: '拖一拖', icon: 'basket', ability: '分类与配对' },
+  'connect-line': { label: '连一连', icon: 'link', ability: '关系认知' },
+  'memory-pair': { label: '翻翻乐', icon: 'cards', ability: '记忆力' },
+  'color-fill': { label: '涂一涂', icon: 'palette', ability: '色彩与审美' },
+  'draw': { label: '画一画', icon: 'pencil', ability: '精细动作与创造' },
+  'slider-explore': { label: '试一试', icon: 'sliders', ability: '观察与猜想' },
+  'hotspot-explore': { label: '找一找', icon: 'binoculars', ability: '探索与发现' },
+  'sequence-build': { label: '搭指令', icon: 'puzzle', ability: '顺序与编程思维' },
 }

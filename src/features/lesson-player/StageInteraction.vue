@@ -3,7 +3,7 @@ import type { InteractionResult, MascotId, PracticeTask } from '@/domain'
 
 import { computed, ref } from 'vue'
 import { InteractionShell } from '@/features/interactions'
-import { KButton } from '@/ui'
+import { KButton, KIcon } from '@/ui'
 
 /**
  * 动手探索 / 小试身手 / 挑战任务
@@ -65,7 +65,8 @@ function advance(): void {
 
     <div v-if="solvedCurrent" class="flex justify-center">
       <KButton size="lg" variant="star" @click="advance">
-        {{ isLast ? '继续 →' : '还有一个小任务 →' }}
+        {{ isLast ? '继续' : '还有一个小任务' }}
+        <KIcon name="arrow-right" size="sm" />
       </KButton>
     </div>
   </section>

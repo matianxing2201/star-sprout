@@ -18,7 +18,7 @@ function makeTopic(id: string, categoryId: string, order: number, lessonIds: str
     gradeId: 'nursery',
     categoryId,
     title: id,
-    emoji: '🧩',
+    icon: 'puzzle',
     kind: 'standard',
     order,
     objectives: [],

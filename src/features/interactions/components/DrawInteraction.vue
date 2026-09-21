@@ -6,7 +6,7 @@ import { computed, onMounted, ref } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 
-import { KButton } from '@/ui'
+import { KButton, KIcon } from '@/ui'
 
 /**
  * 画一画：描红、临摹或自由创作，可以垫一张底图当引导线。
@@ -186,7 +186,10 @@ onMounted(() => {
 
     <!-- 颜色和笔头都待在画面里，孩子不用离开画纸去找工具 -->
     <div class="flex flex-wrap items-center gap-2">
-      <span class="font-body text-xs text-ink-soft">颜色</span>
+      <span class="inline-flex items-center gap-1 font-body text-xs text-ink-soft">
+        <KIcon name="palette" size="sm" />
+        颜色
+      </span>
       <button
         v-for="(swatch, index) in swatches"
         :key="swatch"
@@ -204,7 +207,10 @@ onMounted(() => {
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      <span class="font-body text-xs text-ink-soft">笔头</span>
+      <span class="inline-flex items-center gap-1 font-body text-xs text-ink-soft">
+        <KIcon name="pencil" size="sm" />
+        笔头
+      </span>
       <button
         v-for="size in brushSizes"
         :key="size"
@@ -234,6 +240,7 @@ onMounted(() => {
         :disabled="disabled"
         @click="restart"
       >
+        <KIcon name="refresh" size="sm" />
         重新画
       </KButton>
       <p v-if="!ready" class="font-body text-sm text-ink-soft">

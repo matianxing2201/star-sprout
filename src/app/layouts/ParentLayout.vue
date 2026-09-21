@@ -3,6 +3,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { cn } from '@/shared/utils'
+import { KIcon } from '@/ui'
 
 /**
  * 家长端外壳
@@ -51,9 +52,10 @@ const TABS = [
 
         <RouterLink
           :to="{ name: ROUTE_NAMES.home }"
-          class="rounded-chip border border-line-strong px-4 py-2 font-body text-sm text-ink-soft transition-colors hover:bg-paper-deep hover:text-ink"
+          class="inline-flex items-center gap-1.5 rounded-chip border border-line-strong px-4 py-2 font-body text-sm text-ink-soft transition-colors hover:bg-paper-deep hover:text-ink"
         >
-          ← 回到儿童端
+          <KIcon name="arrow-left" size="sm" />
+          回到儿童端
         </RouterLink>
       </div>
     </header>

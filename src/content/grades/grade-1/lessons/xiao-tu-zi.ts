@@ -15,7 +15,7 @@ export const xiaoTuZiLesson: Lesson = {
   categoryId: 'grade-1-math',
   topicId: 'grade-1-math-subtract-within-20',
   title: '小兔子收胡萝卜',
-  emoji: '🥕',
+  icon: 'carrot',
   question: '15 根胡萝卜，被吃掉 4 根，还剩几根？',
   mascot: 'rabbit',
   minutes: 10,
@@ -53,9 +53,9 @@ export const xiaoTuZiLesson: Lesson = {
       knowledgePointIds: ['kp-sub-meaning'],
       discovery: {
         cards: [
-          { id: 'd1', emoji: '➖', tone: 'math', title: '减法就是拿走', body: '本来有一些，拿走一些，问剩下多少，就用减法。' },
-          { id: 'd2', emoji: '🥕', tone: 'life', title: '15 − 4', body: '15 根里拿走 4 根。先拿走 5 根里的 4 根，还剩 1 根。' },
-          { id: 'd3', emoji: '🧮', tone: 'think', title: '10 + 1 = 11', body: '10 根没有动，加上剩下的 1 根，就是 11 根。' },
+          { id: 'd1', icon: 'math-operations', tone: 'math', title: '减法就是拿走', body: '本来有一些，拿走一些，问剩下多少，就用减法。' },
+          { id: 'd2', icon: 'carrot', tone: 'life', title: '15 − 4', body: '15 根里拿走 4 根。先拿走 5 根里的 4 根，还剩 1 根。' },
+          { id: 'd3', icon: 'calculator', tone: 'think', title: '10 + 1 = 11', body: '10 根没有动，加上剩下的 1 根，就是 11 根。' },
         ],
       },
     },

@@ -2,6 +2,7 @@
 import type { LearningTask } from '@/domain'
 import { TASK_KIND_LABELS } from '@/domain'
 import { cn } from '@/shared/utils'
+import { KIcon, TASK_KIND_ICONS } from '@/ui'
 
 /**
  * 学习任务进度
@@ -10,6 +11,9 @@ import { cn } from '@/shared/utils'
  * 不显示“第 3 步 / 共 9 步”这种计数，而是把每一步的**角色**摆出来：
  * 角色引入 → 知识发现 → 动手探索 → 小试身手 → 挑战 → 奖励。
  * 孩子看到的是“走到哪一站了”，而不是“还剩几道题”。
+ *
+ * 每一站的图标直接取 `TASK_KIND_ICONS[task.kind]` —— 与课程地图上的
+ * 步骤图标同源，孩子在哪都认得出「这一步是做什么的」。
  */
 const {
   tasks,
@@ -37,9 +41,7 @@ const {
       )"
       :aria-current="index === cursor ? 'step' : undefined"
     >
-      <span aria-hidden="true">
-        {{ doneTaskIds.includes(task.id) && index !== cursor ? '✓' : index + 1 }}
-      </span>
+      <KIcon :name="TASK_KIND_ICONS[task.kind]" size="sm" />
       {{ TASK_KIND_LABELS[task.kind] }}
     </li>
   </ol>

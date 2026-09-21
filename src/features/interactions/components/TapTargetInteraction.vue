@@ -6,6 +6,7 @@ import { computed, ref } from 'vue'
 import { toneVars } from '@/domain'
 
 import { cn } from '@/shared/utils'
+import { KIcon, KVisual } from '@/ui'
 
 /**
  * 点一点：在场景里把目标找出来。
@@ -76,10 +77,10 @@ function tapTarget(target: SceneTarget): void {
     >
     <span
       v-else
-      class="absolute inset-0 grid select-none place-items-center text-[7rem] opacity-20"
+      class="absolute inset-0 grid select-none place-items-center opacity-20"
       aria-hidden="true"
     >
-      🔍
+      <KIcon name="magnifier" size="2xl" class="size-28" />
     </span>
 
     <!-- 外层只负责用 translate 对准坐标；动画放在里面的按钮上，两者不会互相覆盖 -->
@@ -95,21 +96,25 @@ function tapTarget(target: SceneTarget): void {
         :aria-label="target.label"
         :aria-pressed="foundIds.includes(target.id)"
         :class="cn(
-          'fx-pressable grid size-full place-items-center rounded-chip border-2 border-[var(--tone-line)] bg-surface/90 text-3xl shadow-sticker',
+          'fx-pressable grid size-full place-items-center rounded-chip border-2 border-[var(--tone-line)] bg-surface/90 shadow-sticker',
           'disabled:cursor-default',
           foundIds.includes(target.id) && 'fx-correct border-success bg-success-soft',
           wrongId === target.id && 'fx-gently border-gently bg-gently-soft',
         )"
         @click="tapTarget(target)"
       >
-        <span aria-hidden="true">{{ target.emoji ?? '✨' }}</span>
+        <KVisual
+          :icon="target.icon ?? (target.emoji ? undefined : 'sparkle')"
+          :emoji="target.emoji"
+          size="xl"
+        />
       </button>
       <span
         v-if="foundIds.includes(target.id)"
         class="pointer-events-none absolute -top-2 -right-2 grid size-7 place-items-center rounded-chip bg-success text-white shadow-press"
         aria-hidden="true"
       >
-        ✓
+        <KIcon name="check" size="md" />
       </span>
     </div>
   </div>

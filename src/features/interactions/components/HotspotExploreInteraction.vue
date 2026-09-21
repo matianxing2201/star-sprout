@@ -6,6 +6,7 @@ import { computed, ref } from 'vue'
 import { toneVars } from '@/domain'
 
 import { cn } from '@/shared/utils'
+import { KIcon, KVisual } from '@/ui'
 
 /**
  * 找一找：点场景里的物件，一个个亮出知识卡片。
@@ -95,10 +96,10 @@ function discover(hotspot: Hotspot): void {
     >
     <span
       v-else
-      class="absolute inset-0 grid select-none place-items-center text-[7rem] opacity-20"
+      class="absolute inset-0 grid select-none place-items-center opacity-20"
       aria-hidden="true"
     >
-      🔭
+      <KIcon name="binoculars" size="2xl" class="size-28" />
     </span>
 
     <span class="absolute top-3 left-3 rounded-chip border-2 border-[var(--tone-line)] bg-surface/85 px-3 py-1 font-body text-xs text-ink-soft">
@@ -118,20 +119,24 @@ function discover(hotspot: Hotspot): void {
         :aria-label="hotspot.label"
         :aria-pressed="discovered.includes(hotspot.id)"
         :class="cn(
-          'fx-pressable relative grid size-full place-items-center rounded-chip border-2 border-[var(--tone-line)] bg-surface/90 text-3xl shadow-sticker',
+          'fx-pressable relative grid size-full place-items-center rounded-chip border-2 border-[var(--tone-line)] bg-surface/90 shadow-sticker',
           'disabled:cursor-default',
           discovered.includes(hotspot.id) && 'border-success bg-success-soft',
           activeId === hotspot.id && 'border-[var(--tone)]',
         )"
         @click="discover(hotspot)"
       >
-        <span aria-hidden="true">{{ hotspot.emoji ?? '✨' }}</span>
+        <KVisual
+          :icon="hotspot.icon ?? (hotspot.emoji ? undefined : 'sparkle')"
+          :emoji="hotspot.emoji"
+          size="xl"
+        />
         <span
           v-if="discovered.includes(hotspot.id)"
           class="absolute -top-2 -right-2 grid size-7 place-items-center rounded-chip bg-success text-white shadow-press"
           aria-hidden="true"
         >
-          ✓
+          <KIcon name="check" size="md" />
         </span>
       </button>
     </div>
@@ -141,8 +146,12 @@ function discover(hotspot: Hotspot): void {
       class="absolute z-10 max-h-[64%] w-[min(20rem,86%)] overflow-y-auto rounded-tile border-2 border-[var(--tone-line)] bg-surface/95 p-3 shadow-lift"
       :style="cardStyle"
     >
-      <p class="font-display text-base text-[var(--tone-deep)]">
-        <span aria-hidden="true">{{ active.emoji ?? '🔎' }}</span>
+      <p class="flex items-center gap-1.5 font-display text-base text-[var(--tone-deep)]">
+        <KVisual
+          :icon="active.icon ?? (active.emoji ? undefined : 'sparkle')"
+          :emoji="active.emoji"
+          size="sm"
+        />
         {{ active.label }}
       </p>
       <p class="mt-1 font-body text-sm leading-relaxed text-ink-soft">

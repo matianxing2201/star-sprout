@@ -24,6 +24,8 @@ export const ROUTE_NAMES = {
   parent: 'parent',
   parentReport: 'parent-report',
   parentSettings: 'parent-settings',
+  /** 仅开发环境：图标词汇表总览，供内容作者挑图标名 */
+  iconGallery: 'icon-gallery',
   notFound: 'not-found',
 } as const
 

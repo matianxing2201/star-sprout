@@ -6,6 +6,7 @@ import { computed, ref, watch } from 'vue'
 import { toneVars } from '@/domain'
 
 import { cn } from '@/shared/utils'
+import { KIcon, KVisual } from '@/ui'
 
 /**
  * 试一试：拖动滑块做实验，看画面跟着变（冰融化、音量变大、影子变长……）。
@@ -103,7 +104,11 @@ function onPointerUp(event: PointerEvent): void {
   >
     <!-- 状态整体换掉（:key）才能重放一次 pop-in，孩子看得见“世界变了” -->
     <div :key="current?.from ?? 'none'" class="flex animate-pop-in flex-col items-center gap-1 text-center">
-      <span class="text-6xl" aria-hidden="true">{{ current?.emoji ?? '🔎' }}</span>
+      <KVisual
+        :icon="current?.icon ?? (current?.emoji ? undefined : 'thermometer')"
+        :emoji="current?.emoji"
+        size="xl"
+      />
       <p class="font-display text-lg leading-snug text-[var(--tone-deep)]">
         {{ current?.caption ?? '拖动滑块，看看会怎样' }}
       </p>
@@ -140,7 +145,9 @@ function onPointerUp(event: PointerEvent): void {
         )"
         :style="{ left: `${percent}%` }"
       >
-        <span aria-hidden="true">↔️</span>
+        <span aria-hidden="true">
+          <KIcon name="swap" size="md" />
+        </span>
       </button>
       <input
         v-model.number="value"

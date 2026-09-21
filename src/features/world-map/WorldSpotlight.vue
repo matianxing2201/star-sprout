@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { useCatalogStore, useProgressStore } from '@/stores'
-import { KButton, KEmptyState, KModal, KProgress, KTag } from '@/ui'
+import { KButton, KEmptyState, KIconTile, KModal, KProgress, KTag, TONE_ICONS } from '@/ui'
 
 /**
  * 学习世界聚焦卡
@@ -59,7 +59,7 @@ function masteryOf(categoryId: string): number {
   <KModal :open="open" :title="world?.name" size="md" @close="emit('close')">
     <div v-if="world" class="flex flex-col gap-5">
       <div class="flex items-start gap-4">
-        <span class="text-5xl" aria-hidden="true">{{ world.emoji }}</span>
+        <KIconTile size="xl" :icon="world.icon" :tone="world.tone" />
         <div>
           <p class="font-display text-lg text-ink">
             {{ world.tagline }}
@@ -83,7 +83,11 @@ function masteryOf(categoryId: string): number {
           @click="enter(category.id)"
         >
           <div class="flex items-center gap-3">
-            <span class="text-2xl" aria-hidden="true">{{ category.emoji }}</span>
+            <KIconTile
+              size="sm"
+              :icon="category.icon ?? TONE_ICONS[category.tone]"
+              :tone="category.tone"
+            />
             <span class="font-display text-base text-ink">{{ category.name }}</span>
             <KTag class="ml-auto" :tone="category.tone" size="sm">
               {{ catalog.countLessonsOfCategory(category.id) }} 节
@@ -102,7 +106,7 @@ function masteryOf(categoryId: string): number {
 
       <KEmptyState
         v-else
-        emoji="🚧"
+        icon="construction"
         :title="`${world.name}正在建设`"
         description="这个地方还没有开放。等教案准备好，它就会出现在这里。"
         :tone="world.tone"

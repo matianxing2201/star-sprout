@@ -8,7 +8,7 @@ import { ROUTE_NAMES } from '@/app/router/route-names'
 import { CategoryGrid } from '@/features/category-grid'
 import { WorldMap, WorldSpotlight } from '@/features/world-map'
 import { useCatalogStore, useProfileStore } from '@/stores'
-import { KButton, KEmptyState, KSectionTitle } from '@/ui'
+import { KButton, KEmptyState, KIconTile, KSectionTitle } from '@/ui'
 
 /**
  * 学习领域（二级分类）
@@ -37,11 +37,12 @@ if (!grade.value) {
   <div v-if="grade" class="flex flex-col gap-8">
     <KSectionTitle
       eyebrow="学习领域"
-      :title="`${grade.emoji} ${grade.name}`"
+      :title="grade.name"
       :description="grade.tagline"
       :tone="grade.tone"
     >
       <template #action>
+        <KIconTile :icon="grade.icon" :tone="grade.tone" size="md" />
         <KButton
           v-if="profile.gradeId !== grade.id"
           variant="soft"
@@ -77,7 +78,7 @@ if (!grade.value) {
 
   <KEmptyState
     v-else
-    emoji="🧭"
+    icon="compass"
     title="没有找到这个阶段"
     description="我们带你回到学习世界。"
   >

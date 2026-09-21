@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Topic } from '@/domain'
+import type { AppIconName, Lesson, Topic, UiTone } from '@/domain'
 import { computed, onMounted, ref } from 'vue'
 
 import { RouterLink, useRouter } from 'vue-router'
@@ -7,7 +7,8 @@ import { ROUTE_NAMES } from '@/app/router/route-names'
 import { MascotBubble } from '@/features/mascot'
 import { WorldMap, WorldSpotlight } from '@/features/world-map'
 import { useCatalogStore, useProfileStore, useProgressStore } from '@/stores'
-import { KButton, KEmptyState, KProgress, KSectionTitle, KStatTile, KTag } from '@/ui'
+import { KButton, KEmptyState, KIcon, KIconTile, KProgress, KSectionTitle, KStatTile, KTag, STAT_ICONS, TONE_ICONS } from '@/ui'
+import { TOPIC_KIND_ICONS } from '@/ui/icons'
 
 /**
  * 首页 / 学习世界
@@ -72,6 +73,24 @@ function enterTopic(topic: Topic): void {
     params: { gradeId: topic.gradeId, categoryId: topic.categoryId },
   })
 }
+
+/** 主题所属领域的色调：主题卡片与图标都跟着领域走 */
+function topicTone(topic: Topic): UiTone {
+  return catalog.category(topic.categoryId)?.tone ?? 'neutral'
+}
+
+/** 主题图标：主题自己声明了就用它，否则跟随所属领域的色调 */
+function topicIcon(topic: Topic): AppIconName {
+  const category = catalog.category(topic.categoryId)
+  return topic.icon ?? (category ? TONE_ICONS[category.tone] : TOPIC_KIND_ICONS.standard)
+}
+
+/** 课程图标：课程自己声明了就用它，否则跟随课程色调；课程缺失时才退回通用图标 */
+function lessonIcon(lesson: Lesson | undefined): AppIconName {
+  if (!lesson)
+    return 'book'
+  return lesson.icon ?? TONE_ICONS[lesson.tone]
+}
 </script>
 
 <template>
@@ -83,13 +102,16 @@ function enterTopic(topic: Topic): void {
 
         <div class="mt-5 flex flex-wrap items-center gap-3">
           <KTag :tone="grade?.tone ?? 'explore'" size="md">
-            {{ grade?.emoji }} {{ grade?.name }}
+            <KIcon v-if="grade" :name="grade.icon" size="sm" />
+            {{ grade?.name }}
           </KTag>
           <KTag tone="star" size="md">
-            ⭐ {{ progress.growth.stars }} 颗星星
+            <KIcon :name="STAT_ICONS.stars" size="sm" weight="fill" />
+            {{ progress.growth.stars }} 颗星星
           </KTag>
           <KTag v-if="progress.growth.streakDays > 0" tone="energy" size="md">
-            🔥 连续 {{ progress.growth.streakDays }} 天
+            <KIcon :name="STAT_ICONS.streak" size="sm" weight="fill" />
+            连续 {{ progress.growth.streakDays }} 天
           </KTag>
         </div>
 
@@ -112,11 +134,11 @@ function enterTopic(topic: Topic): void {
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-        <KStatTile emoji="⏱️" :value="`${progress.today.minutes} 分钟`" label="今天学习" tone="explore" />
-        <KStatTile emoji="🎯" :value="progress.today.lessons" label="今天完成的探索" tone="language" />
-        <KStatTile emoji="⭐" :value="progress.today.stars" label="今天得到的星星" tone="star" />
+        <KStatTile :icon="STAT_ICONS.minutes" :value="`${progress.today.minutes} 分钟`" label="今天学习" tone="explore" />
+        <KStatTile :icon="STAT_ICONS.lessons" :value="progress.today.lessons" label="今天完成的探索" tone="language" />
+        <KStatTile :icon="STAT_ICONS.stars" :value="progress.today.stars" label="今天得到的星星" tone="star" />
         <KStatTile
-          emoji="🌍"
+          :icon="STAT_ICONS.worlds"
           :value="progress.growth.exploredWorldIds.length"
           label="去过的学习世界"
           tone="science"
@@ -147,9 +169,10 @@ function enterTopic(topic: Topic): void {
             @click="enterTopic(topic)"
           >
             <span class="flex w-full items-center gap-3">
-              <span class="text-4xl" aria-hidden="true">{{ topic.emoji }}</span>
+              <KIconTile :icon="topicIcon(topic)" :tone="topicTone(topic)" size="md" />
               <KTag :tone="topic.kind === 'challenge' ? 'social' : topic.kind === 'hidden' ? 'badge' : 'star'" size="sm">
-                {{ topic.kind === 'challenge' ? '🔥 挑战' : topic.kind === 'hidden' ? '🗝️ 隐藏' : '可以开始' }}
+                <KIcon :name="TOPIC_KIND_ICONS[topic.kind]" size="xs" />
+                {{ topic.kind === 'challenge' ? '挑战' : topic.kind === 'hidden' ? '隐藏' : '可以开始' }}
               </KTag>
             </span>
             <span class="font-display text-xl text-ink">{{ topic.title }}</span>
@@ -165,7 +188,7 @@ function enterTopic(topic: Topic): void {
 
       <KEmptyState
         v-else
-        emoji="🌱"
+        icon="plant"
         :title="`${grade?.name}的地图正在铺路`"
         description="这个年级的探索任务还在准备中，先去成长阶梯看看别的阶段吧。"
         :tone="grade?.tone"
@@ -199,10 +222,13 @@ function enterTopic(topic: Topic): void {
             class="fx-tap flex h-full flex-col gap-2 rounded-tile border-2 border-line bg-surface p-4 shadow-press"
           >
             <span class="flex items-center gap-2">
-              <span class="text-2xl" aria-hidden="true">{{ item.lesson?.emoji ?? '📘' }}</span>
+              <KIcon :name="lessonIcon(item.lesson)" size="lg" weight="duotone" />
               <span class="font-display text-base text-ink">{{ item.lesson?.title ?? '一节课' }}</span>
             </span>
-            <span class="font-numeric text-sm text-star-deep">⭐ {{ item.completion.stars }}</span>
+            <span class="flex items-center gap-1 font-numeric text-sm text-star-deep">
+              <KIcon :name="STAT_ICONS.stars" size="xs" weight="fill" />
+              {{ item.completion.stars }}
+            </span>
             <span class="font-body text-xs text-ink-faint">
               {{ catalog.category(item.completion.categoryId)?.name }}
             </span>
@@ -219,8 +245,9 @@ function enterTopic(topic: Topic): void {
 
     <!-- 地图下方的兜底入口：内容还没铺开时，孩子依然有路可走 -->
     <section v-if="!hasAnyContent" class="rounded-blob border-2 border-dashed border-line bg-surface/60 p-6">
-      <p class="font-display text-lg text-ink">
-        这个世界还在长大 🌱
+      <p class="flex items-center gap-2 font-display text-lg text-ink">
+        这个世界还在长大
+        <KIcon name="plant" size="md" weight="duotone" />
       </p>
       <p class="mt-2 font-body text-sm text-ink-soft">
         课程内容会一份一份地长出来。你可以先去成长阶梯看看别的阶段，或者让爸爸妈妈在家长中心查看学习建议。

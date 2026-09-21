@@ -6,7 +6,7 @@ import { computed, ref, watch } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 
-import { KButton } from '@/ui'
+import { KButton, KVisual } from '@/ui'
 import { findDropTarget, usePointerDrag } from '../usePointerDrag'
 
 /**
@@ -203,7 +203,7 @@ function check(): void {
         :style="toneVars(zone.tone ?? 'neutral')"
       >
         <p class="flex items-center gap-2 font-display text-base leading-tight text-[var(--tone-deep)]">
-          <span class="text-2xl" aria-hidden="true">{{ zone.emoji ?? '🧺' }}</span>
+          <KVisual :icon="zone.icon" :emoji="zone.emoji" size="md" />
           {{ zone.label }}
         </p>
 
@@ -226,7 +226,7 @@ function check(): void {
             @pointerdown="drag.start($event, item.id)"
             @click="selectItem(item.id)"
           >
-            <span class="text-xl" aria-hidden="true">{{ item.emoji ?? '⬜' }}</span>
+            <KVisual :icon="item.icon" :emoji="item.emoji" size="sm" />
             <span class="font-display text-sm text-[var(--tone-deep)]">{{ item.label }}</span>
           </button>
 
@@ -266,7 +266,7 @@ function check(): void {
           @pointerdown="drag.start($event, item.id)"
           @click="selectItem(item.id)"
         >
-          <span class="text-xl" aria-hidden="true">{{ item.emoji ?? '⬜' }}</span>
+          <KVisual :icon="item.icon" :emoji="item.emoji" size="sm" />
           <span class="font-display text-sm text-[var(--tone-deep)]">{{ item.label }}</span>
         </button>
 
@@ -282,7 +282,7 @@ function check(): void {
       :style="[ghostStyle, toneVars(ghostItem.tone ?? 'neutral')]"
       aria-hidden="true"
     >
-      <span class="text-xl">{{ ghostItem.emoji ?? '⬜' }}</span>
+      <KVisual :icon="ghostItem.icon" :emoji="ghostItem.emoji" size="sm" />
       <span class="font-display text-sm text-[var(--tone-deep)]">{{ ghostItem.label }}</span>
     </span>
 

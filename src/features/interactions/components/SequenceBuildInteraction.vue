@@ -2,11 +2,12 @@
 import type { InteractionComponentEmits } from '../contract'
 
 import type { ProgramBlock, SequenceBuildPayload } from '@/domain'
+import type { AppIconName } from '@/domain'
 import { computed, ref, watch } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 
-import { KButton } from '@/ui'
+import { KButton, KIcon, KVisual } from '@/ui'
 import { findDropTarget, usePointerDrag } from '../usePointerDrag'
 
 /**
@@ -21,9 +22,13 @@ const { payload, disabled = false } = defineProps<{
 
 const emit = defineEmits<InteractionComponentEmits>()
 
-/** 内容侧没写角色或目标时给一个通用形象，舞台不至于空着 */
-const ACTOR_FALLBACK = { emoji: '🤖', label: '小机器人' }
-const TARGET_FALLBACK = { emoji: '🏁', label: '终点' }
+/**
+ * 内容侧没写角色或目标时给一个通用形象，舞台不至于空着。
+ * 两个常量都标注同一个类型，模板里就不必为 `payload.actor ?? ACTOR_FALLBACK`
+ * 的联合类型做特判。
+ */
+const ACTOR_FALLBACK: { emoji?: string, icon?: AppIconName, label: string } = { emoji: '🤖', label: '小机器人' }
+const TARGET_FALLBACK: { emoji?: string, icon?: AppIconName, label: string } = { emoji: '🏁', label: '终点' }
 
 const program = ref<ProgramBlock[]>([])
 const running = ref(false)
@@ -137,16 +142,16 @@ function run(): void {
     >
       <div class="relative h-24">
         <div class="absolute top-1/2 right-0 flex -translate-y-1/2 flex-col items-center gap-1">
-          <span class="text-5xl" aria-hidden="true">{{ target.emoji }}</span>
+          <KVisual :icon="target.icon" :emoji="target.emoji" size="xl" />
           <span class="font-body text-xs text-ink-soft">{{ target.label }}</span>
         </div>
         <div class="absolute inset-x-12 top-1/2 border-t-2 border-dashed border-[var(--tone-line)]" aria-hidden="true" />
         <div
-          class="absolute top-1/2 -translate-y-1/2 text-5xl transition-all duration-[600ms] ease-bounce"
+          class="absolute top-1/2 -translate-y-1/2 transition-all duration-[600ms] ease-bounce"
           :style="{ left: running ? 'calc(100% - 3.5rem)' : '0.25rem' }"
           aria-hidden="true"
         >
-          {{ actor.emoji }}
+          <KVisual :icon="actor.icon" :emoji="actor.emoji" size="xl" />
         </div>
       </div>
       <p class="text-center font-body text-sm text-ink-soft">
@@ -184,7 +189,7 @@ function run(): void {
           )"
           @click="removeAt(index)"
         >
-          <span aria-hidden="true">{{ block.emoji ?? '🧩' }}</span>
+          <KVisual :icon="block.icon" :emoji="block.emoji" size="sm" />
           <span class="font-numeric text-xs text-ink-faint">{{ index + 1 }}</span>
           <span>{{ block.label }}</span>
         </button>
@@ -192,11 +197,11 @@ function run(): void {
         <div
           v-if="!disabled"
           :data-slot-index="program.length"
-          class="grid h-11 w-16 place-items-center rounded-chip border-2 border-dashed border-[var(--tone-line)] text-lg text-ink-faint"
+          class="grid h-11 w-16 place-items-center rounded-chip border-2 border-dashed border-[var(--tone-line)] text-ink-faint"
           :class="hoverSlot === program.length && 'fx-drop-active'"
           aria-hidden="true"
         >
-          ＋
+          <KIcon name="plus" size="md" />
         </div>
       </div>
     </div>
@@ -217,7 +222,7 @@ function run(): void {
         @pointerdown="start($event, block.id)"
         @click="appendBlock(block.id)"
       >
-        <span aria-hidden="true">{{ block.emoji ?? '🧩' }}</span>
+        <KVisual :icon="block.icon" :emoji="block.emoji" size="sm" />
         <span>{{ block.label }}</span>
         <span v-if="block.limit !== undefined" class="font-numeric text-xs text-ink-faint">
           ×{{ block.limit - usedCount(block.id) }}

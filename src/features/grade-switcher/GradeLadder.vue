@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 import { useCatalogStore, useProfileStore } from '@/stores'
+import { KIconTile } from '@/ui'
 
 /**
  * 成长阶梯（年级切换）
@@ -44,12 +45,12 @@ function stateOf(gradeId: GradeId): 'current' | 'passed' | 'ahead' {
         :aria-current="stateOf(grade.id) === 'current' ? 'step' : undefined"
         @click="profile.switchGrade(grade.id)"
       >
-        <span
-          :class="cn('text-3xl', stateOf(grade.id) === 'ahead' && 'opacity-45 grayscale')"
-          aria-hidden="true"
-        >
-          {{ grade.emoji }}
-        </span>
+        <KIconTile
+          size="md"
+          :icon="grade.icon"
+          :tone="grade.tone"
+          :class="cn(stateOf(grade.id) === 'ahead' && 'opacity-45 grayscale')"
+        />
         <span class="font-display text-lg text-ink">{{ grade.name }}</span>
         <span class="font-body text-[11px] text-ink-faint">{{ grade.ageRange }}</span>
         <span

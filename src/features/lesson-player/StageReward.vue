@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { MascotAvatar } from '@/features/mascot'
 import { useCatalogStore, useProgressStore } from '@/stores'
-import { KButton } from '@/ui'
+import { KButton, KIcon, KVisual, TONE_ICONS } from '@/ui'
 
 /**
  * 奖励步骤
@@ -48,6 +48,12 @@ const unlockedTopics = computed(() =>
     .filter((topic): topic is Topic => Boolean(topic)),
 )
 
+/** 主题没写 icon 时按所属领域的色调取默认图标，与课程地图上的节点保持一致 */
+function topicIcon(topic: Topic) {
+  const tone = catalog.category(topic.categoryId)?.tone
+  return topic.icon ?? (tone ? TONE_ICONS[tone] : 'star-four')
+}
+
 function goRewards(): void {
   router.push({ name: ROUTE_NAMES.rewards })
 }
@@ -67,20 +73,20 @@ function goRewards(): void {
     </div>
 
     <div class="flex items-center gap-3" :aria-label="`本次获得 ${stars} 颗星星`">
-      <span
+      <KIcon
         v-for="index in 3"
         :key="index"
-        :class="index <= stars ? 'animate-pop-in text-5xl' : 'text-5xl opacity-25 grayscale'"
+        name="star"
+        size="2xl"
+        :weight="index <= stars ? 'fill' : 'bold'"
+        :class="index <= stars ? 'animate-pop-in text-star' : 'text-ink-faint opacity-30'"
         :style="{ animationDelay: `${index * 120}ms` }"
-        aria-hidden="true"
-      >
-        ⭐
-      </span>
+      />
       <span class="sr-only">获得 {{ stars }} 颗星星</span>
     </div>
 
     <div v-if="badge && badgeEarned" class="flex items-center gap-3 rounded-blob border-2 border-badge/35 bg-badge-soft px-6 py-4">
-      <span class="text-4xl" aria-hidden="true">{{ badge.emoji }}</span>
+      <KIcon :name="badge.icon" size="xl" weight="duotone" tone="badge" />
       <div class="text-left">
         <p class="font-display text-lg text-badge-deep">
           得到新徽章：{{ badge.name }}
@@ -92,23 +98,26 @@ function goRewards(): void {
     </div>
 
     <div v-if="unlockedTopics.length > 0" class="rounded-blob border-2 border-line bg-surface px-6 py-4">
-      <p class="font-display text-base text-ink">
-        🔓 解锁了新的地方
+      <p class="flex items-center justify-center gap-1.5 font-display text-base text-ink">
+        <KIcon name="lock-open" size="sm" />
+        解锁了新的地方
       </p>
       <ul class="mt-2 flex flex-wrap justify-center gap-2">
         <li
           v-for="topic in unlockedTopics"
           :key="topic.id"
-          class="rounded-chip bg-paper-deep px-3 py-1 font-body text-sm text-ink-soft"
+          class="flex items-center gap-1.5 rounded-chip bg-paper-deep px-3 py-1 font-body text-sm text-ink-soft"
         >
-          {{ topic.emoji }} {{ topic.title }}
+          <KVisual :icon="topicIcon(topic)" size="sm" />
+          {{ topic.title }}
         </li>
       </ul>
     </div>
 
     <div class="flex flex-wrap justify-center gap-3">
       <KButton size="lg" variant="star" @click="goRewards">
-        🎁 去奖励中心看看
+        <KIcon name="gift" size="sm" />
+        去奖励中心看看
       </KButton>
       <KButton size="lg" variant="soft" @click="emit('restart')">
         再玩一次

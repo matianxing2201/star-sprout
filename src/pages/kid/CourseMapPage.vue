@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { LessonPath } from '@/features/lesson-path'
 import { useCatalogStore, useProgressStore } from '@/stores'
-import { KButton, KEmptyState, KProgress, KSectionTitle, KStatTile, KTag } from '@/ui'
+import { KButton, KEmptyState, KIcon, KIconTile, KProgress, KSectionTitle, KStatTile, KTag, STAT_ICONS, TONE_ICONS } from '@/ui'
 
 /**
  * 课程地图
@@ -44,7 +44,8 @@ function start(lessonId: string): void {
   <div v-if="category && grade" class="flex flex-col gap-8">
     <div class="flex flex-wrap items-center gap-3">
       <KButton variant="ghost" size="sm" :to="{ name: ROUTE_NAMES.categories, params: { gradeId } }">
-        ← 回到{{ grade.name }}的领域
+        <KIcon name="arrow-left" size="sm" />
+        回到{{ grade.name }}的领域
       </KButton>
       <KTag :tone="category.tone" size="sm">
         {{ grade.name }}
@@ -52,23 +53,27 @@ function start(lessonId: string): void {
     </div>
 
     <KSectionTitle
-      :eyebrow="`${category.emoji} ${category.name}`"
+      :eyebrow="category.name"
       :title="topics.length > 0 ? '可以选择的路' : '这条路正在铺'"
       :description="category.summary"
       :tone="category.tone"
-    />
+    >
+      <template #action>
+        <KIconTile :icon="category.icon ?? TONE_ICONS[category.tone]" :tone="category.tone" size="md" />
+      </template>
+    </KSectionTitle>
 
     <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <KStatTile emoji="🧩" :value="topics.length" label="学习主题" :tone="category.tone" />
-      <KStatTile emoji="🎯" :value="lessonCount" label="可以探索的课程" :tone="category.tone" />
+      <KStatTile icon="puzzle" :value="topics.length" label="学习主题" :tone="category.tone" />
+      <KStatTile :icon="STAT_ICONS.lessons" :value="lessonCount" label="可以探索的课程" :tone="category.tone" />
       <KStatTile
-        emoji="✅"
+        icon="check-circle"
         :value="`${completedTopics}/${Math.max(1, topics.length)}`"
         label="完成的主题"
         tone="energy"
       />
       <KStatTile
-        emoji="📈"
+        :icon="STAT_ICONS.mastery"
         :value="`${Math.round(mastery.mastery * 100)}%`"
         label="掌握程度"
         :hint="mastery.attempts > 0 ? `作答 ${mastery.attempts} 次` : '还没有作答记录'"
@@ -104,7 +109,7 @@ function start(lessonId: string): void {
 
   <KEmptyState
     v-else
-    emoji="🧭"
+    icon="compass"
     title="没有找到这个领域"
     description="也许它属于别的阶段，我们带你回去看看。"
   >

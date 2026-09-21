@@ -94,13 +94,13 @@ export function rewardSpec(tier: RewardTier): RewardTierSpec {
 /* ------------------------------------------------------------------ */
 
 export const GROWTH_LEVELS: GrowthLevel[] = [
-  { id: 'seed', name: '小种子', emoji: '🌱', from: 0 },
-  { id: 'sprout', name: '小芽芽', emoji: '🌿', from: 20 },
-  { id: 'sapling', name: '小树苗', emoji: '🌳', from: 60 },
-  { id: 'ranger', name: '森林探险家', emoji: '🏕️', from: 130 },
-  { id: 'navigator', name: '星图领航员', emoji: '🧭', from: 240 },
-  { id: 'captain', name: '探索队长', emoji: '🚀', from: 400 },
-  { id: 'master', name: '学习世界大师', emoji: '👑', from: 640 },
+  { id: 'seed', name: '小种子', icon: 'acorn', from: 0 },
+  { id: 'sprout', name: '小芽芽', icon: 'plant', from: 20 },
+  { id: 'sapling', name: '小树苗', icon: 'tree', from: 60 },
+  { id: 'ranger', name: '森林探险家', icon: 'compass', from: 130 },
+  { id: 'navigator', name: '星图领航员', icon: 'map', from: 240 },
+  { id: 'captain', name: '探索队长', icon: 'rocket', from: 400 },
+  { id: 'master', name: '学习世界大师', icon: 'trophy', from: 640 },
 ]
 
 export function levelForStars(stars: number): GrowthLevel {

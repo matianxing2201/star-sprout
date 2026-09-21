@@ -40,7 +40,7 @@ function topicsOf(categoryId: string) {
 
     <KEmptyState
       v-if="categories.length === 0"
-      emoji="📦"
+      icon="grid"
       title="这个年级的领域还在整理"
       description="内容团队正在把课程体系整理成可以探索的任务。"
     />

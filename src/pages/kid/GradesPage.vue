@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { GradeLadder } from '@/features/grade-switcher'
 import { useCatalogStore, useProfileStore } from '@/stores'
-import { KButton, KSectionTitle, KTag } from '@/ui'
+import { KButton, KIcon, KIconTile, KSectionTitle, KTag, TONE_ICONS } from '@/ui'
 
 /**
  * 年级选择 / 成长阶梯
@@ -42,7 +42,7 @@ function enter(): void {
     <section v-if="current" class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
       <div class="rounded-blob border-2 border-line bg-surface p-6 shadow-sticker">
         <div class="flex items-center gap-4">
-          <span class="text-5xl" aria-hidden="true">{{ current.emoji }}</span>
+          <KIconTile :icon="current.icon" :tone="current.tone" size="lg" />
           <div>
             <h2 class="font-display text-2xl text-ink">
               {{ current.name }}
@@ -58,8 +58,9 @@ function enter(): void {
         </p>
 
         <div class="mt-5 rounded-tile border-2 border-dashed border-line-strong bg-paper-deep/60 p-4">
-          <p class="font-display text-base text-ink">
-            🔭 下一阶段会有什么？
+          <p class="flex items-center gap-2 font-display text-base text-ink">
+            <KIcon name="binoculars" size="sm" />
+            下一阶段会有什么？
           </p>
           <p class="mt-1 font-body text-sm text-ink-soft">
             {{ current.nextHint }}
@@ -68,7 +69,8 @@ function enter(): void {
 
         <div class="mt-5 flex flex-wrap gap-3">
           <KButton size="lg" :tone="current.tone" @click="enter">
-            进入{{ current.name }} →
+            进入{{ current.name }}
+            <KIcon name="arrow-right" size="sm" />
           </KButton>
         </div>
       </div>
@@ -81,7 +83,8 @@ function enter(): void {
         <ul class="mt-4 flex flex-wrap gap-2">
           <li v-for="category in categories" :key="category.id">
             <KTag :tone="category.tone" size="md">
-              {{ category.emoji }} {{ category.name }}
+              <KIcon :name="category.icon ?? TONE_ICONS[category.tone]" size="sm" />
+              {{ category.name }}
             </KTag>
           </li>
         </ul>

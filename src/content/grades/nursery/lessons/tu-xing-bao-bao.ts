@@ -12,7 +12,7 @@ export const tuXingBaoBaoLesson: Lesson = {
   categoryId: 'nursery-math',
   topicId: 'nursery-math-shapes',
   title: '图形宝宝找家',
-  emoji: '🔺',
+  icon: 'shapes',
   question: '圆形、三角形和正方形，长得有什么不一样？',
   mascot: 'fox',
   minutes: 7,
@@ -51,9 +51,9 @@ export const tuXingBaoBaoLesson: Lesson = {
       knowledgePointIds: ['kp-shape-circle', 'kp-shape-triangle', 'kp-shape-square'],
       discovery: {
         cards: [
-          { id: 'c-circle', emoji: '⭕', tone: 'math', title: '圆形', body: '圆圆的，没有角，可以滚来滚去。' },
-          { id: 'c-triangle', emoji: '🔺', tone: 'science', title: '三角形', body: '有三条边、三个角，像小山一样。' },
-          { id: 'c-square', emoji: '🟦', tone: 'explore', title: '正方形', body: '有四条边，四条边一样长。' },
+          { id: 'c-circle', icon: 'globe', tone: 'math', title: '圆形', body: '圆圆的，没有角，可以滚来滚去。' },
+          { id: 'c-triangle', icon: 'shapes', tone: 'science', title: '三角形', body: '有三条边、三个角，像小山一样。' },
+          { id: 'c-square', icon: 'cube', tone: 'explore', title: '正方形', body: '有四条边，四条边一样长。' },
         ],
       },
     },
