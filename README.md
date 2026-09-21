@@ -26,10 +26,6 @@ pnpm dev          # http://localhost:5173
 | `pnpm typecheck`              | `vue-tsc --noEmit`（含 `.vue` 模板） |
 | `pnpm lint` / `pnpm lint:fix` | ESLint（@antfu/eslint-config）       |
 | `pnpm test`                   | Vitest 单测                          |
-| `pnpm fonts:sync`             | 重新生成自托管字体子集               |
-| `pnpm icons:sync`             | 重新生成图标常量                     |
-
-> **字体自托管**：展示字体放在 `src/assets/fonts/`，由 `pnpm fonts:sync` 从字体源拉取并**按源码实际用字裁剪**成 woff2 子集——不依赖 Google Fonts CDN（国内不可达，会拖慢首屏）。新增文案若引入全新汉字，重跑一次 `pnpm fonts:sync` 即可纳入子集；只有默认的拉丁数字字体（Baloo 2）无需重跑。中文正文刻意不用网络字体，直接走系统字体栈。
 
 ---
 

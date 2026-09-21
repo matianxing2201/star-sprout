@@ -17,8 +17,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "icons:sync": "node scripts/sync-icons.mjs",
-    "fonts:sync": "node scripts/sync-fonts.mjs"
+    "icons:sync": "node scripts/sync-icons.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^15.0.0",

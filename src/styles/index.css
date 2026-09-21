@@ -1,8 +1,7 @@
 /**
  * 样式入口
- * 顺序固定：字体 → Tailwind → 令牌 → 基础层 → 动画组合层
+ * 顺序固定：Tailwind → 令牌 → 基础层 → 动画组合层
  */
-@import './fonts.css';
 @import 'tailwindcss';
 
 @import './tokens.css';
