@@ -84,7 +84,7 @@ const collected = computed(() =>
           我的星星罐
         </p>
         <p class="mt-3 flex flex-wrap items-baseline gap-3">
-          <KIcon name="star" size="2xl" weight="fill" class="animate-breathe text-star-deep" />
+          <KIcon name="star" size="2xl" weight="fill" class="text-star-deep" />
           <span class="font-numeric text-6xl leading-none font-extrabold text-star-deep">
             {{ progress.growth.stars }}
           </span>

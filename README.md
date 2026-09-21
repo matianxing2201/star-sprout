@@ -75,10 +75,14 @@ src/
 ├── composables/    useLessonSession · useMotion · useFocusTrap
 ├── app/            main.ts · router · layouts
 ├── pages/          kid（7 页）· parent（3 页）
-└── styles/         设计令牌 · 基础层 · 动画组合层
+├── styles/         设计令牌 · 基础层 · 动画组合层
+└── prototypes/     一次性原型：首页视觉方向探索（只在开发环境、不进入生产构建）
 ```
 
 **依赖方向只能向下**：`domain ← content ← data ← stores ← features/ui ← pages ← app`。
+
+`prototypes/` 是**临时的**：它只被 `pages/` 通过动态导入引用，且门控在 `import.meta.env.DEV` 之下，
+所以生产构建里连 chunk 都不会生成。方向选定后整个目录会被删掉 —— 详见它的 `README.md`。
 
 ---
 

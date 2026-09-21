@@ -90,7 +90,7 @@ const activeName = computed(() => route.name)
               name="star"
               size="md"
               weight="fill"
-              class="animate-breathe text-star-deep"
+              class="text-star-deep"
             />
             <span class="font-numeric text-lg leading-none font-extrabold text-star-deep">
               {{ progress.growth.stars }}

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { AppIconName, Lesson, Topic, UiTone } from '@/domain'
-import { computed, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/app/router/route-names'
 import { MascotBubble } from '@/features/mascot'
 import { WorldMap, WorldSpotlight } from '@/features/world-map'
@@ -24,6 +24,37 @@ const profile = useProfileStore()
 const catalog = useCatalogStore()
 const progress = useProgressStore()
 const router = useRouter()
+const route = useRoute()
+
+/*
+ * 原型面（一次性代码，见 src/prototypes/README.md）
+ * ==============================================
+ * 三个视觉方向 + 现状，用 ?variant= 切换，方便在**真实外壳与真实数据**下比较。
+ *
+ * 两道闸门，缺一不可：
+ *   1. `import.meta.env.DEV` —— 生产构建里这两个常量直接变成 null，动态导入被摇掉；
+ *   2. `?variant=` 存在 —— 不带参数时首页就是生产版本，行为一字不变。
+ * `src/styles/design-contract.spec.ts` 里有契约守着这两条。
+ */
+const PrototypeStage = import.meta.env.DEV
+  ? defineAsyncComponent(() => import('@/prototypes/PrototypeStage.vue'))
+  : null
+
+const PrototypeSwitcher = import.meta.env.DEV
+  ? defineAsyncComponent(() => import('@/prototypes/PrototypeSwitcher.vue'))
+  : null
+
+/** 唯一需要首页自己认识的值：`now` = 参照项，渲染生产版本本身方便对比 */
+const PROTOTYPE_BASELINE = 'now'
+
+const prototypeVariant = computed(() =>
+  import.meta.env.DEV ? String(route.query.variant ?? '') : '',
+)
+
+const showPrototype = computed(() => prototypeVariant.value !== '')
+const showVariant = computed(() => showPrototype.value && prototypeVariant.value !== PROTOTYPE_BASELINE)
+/** 重放入场动画：换 key 让变体重新挂载 */
+const replayToken = ref(0)
 
 onMounted(() => progress.refresh())
 
@@ -94,7 +125,14 @@ function lessonIcon(lesson: Lesson | undefined): AppIconName {
 </script>
 
 <template>
-  <div class="flex flex-col gap-10">
+  <!-- 原型方向（只在开发环境 + 带 ?variant= 时出现） -->
+  <PrototypeStage
+    v-if="showVariant"
+    :key="replayToken"
+    :variant="prototypeVariant"
+  />
+
+  <div v-else class="flex flex-col gap-10">
     <!-- 角色引入 + 今日状态 -->
     <section class="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
       <div class="rounded-blob border-2 border-line bg-surface p-6 shadow-sticker">
@@ -262,4 +300,10 @@ function lessonIcon(lesson: Lesson | undefined): AppIconName {
       </div>
     </section>
   </div>
+
+  <!-- 浮动切换器：脚手架，不套项目样式 -->
+  <PrototypeSwitcher
+    v-if="showPrototype"
+    v-model:replay-token="replayToken"
+  />
 </template>

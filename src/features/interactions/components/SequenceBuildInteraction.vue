@@ -146,12 +146,19 @@ function run(): void {
           <span class="font-body text-xs text-ink-soft">{{ target.label }}</span>
         </div>
         <div class="absolute inset-x-12 top-1/2 border-t-2 border-dashed border-[var(--tone-line)]" aria-hidden="true" />
-        <div
-          class="absolute top-1/2 -translate-y-1/2 transition-all duration-[600ms] ease-bounce"
-          :style="{ left: running ? 'calc(100% - 3.5rem)' : '0.25rem' }"
-          aria-hidden="true"
-        >
-          <KVisual :icon="actor.icon" :emoji="actor.emoji" size="xl" />
+        <!--
+          角色沿轨道走过去。外层撑满轨道宽度，位移由内层的 translateX 承担：
+          这样 100% 指的就是轨道宽度，而动的只有 transform。
+          原来动的是 `left`（布局属性）+ `transition-all` + 600ms ——
+          布局动画会触发重排，而且时长超出了动效预算（见 design-contract.spec.ts）。
+        -->
+        <div class="absolute inset-x-0 top-1/2 -translate-y-1/2" aria-hidden="true">
+          <div
+            class="transition-transform duration-settle ease-soft"
+            :style="{ transform: running ? 'translateX(calc(100% - 3.5rem))' : 'translateX(0.25rem)' }"
+          >
+            <KVisual :icon="actor.icon" :emoji="actor.emoji" size="xl" />
+          </div>
         </div>
       </div>
       <p class="text-center font-body text-sm text-ink-soft">

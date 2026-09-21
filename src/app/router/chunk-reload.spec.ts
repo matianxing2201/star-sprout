@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import {
   CHUNK_RELOAD_FLAG,
@@ -177,19 +177,33 @@ describe('installChunkReloadGuard', () => {
 })
 
 describe('应用兜底界面', () => {
+  // 这个 wrapper 提到外面来：如果断言失败就抛，卸载语句会被跳过，
+  // 挂载着的 App 就留在了 document 里，污染同一个文件里后面的用例
+  // （评审看到过一次偶发失败，这是最可能的原因之一）。
+  let wrapper: { unmount: () => void, vm: { $nextTick: () => Promise<void> } } | undefined
+
   beforeEach(() => {
     chunkLoadFailed.value = false
   })
 
+  afterEach(() => {
+    wrapper?.unmount()
+    wrapper = undefined
+    chunkLoadFailed.value = false
+  })
+
   it('chunkLoadFailed 为真时显示人话提示，而不是让页面毫无反应', async () => {
-    const { mount } = await import('@vue/test-utils')
+    const { flushPromises, mount } = await import('@vue/test-utils')
     const App = (await import('@/App.vue')).default
 
     // 提示用 Teleport 挂到 body，所以要读 document，而不是 wrapper
-    const wrapper = mount(App, { global: { stubs: { RouterView: true } } })
+    wrapper = mount(App, { global: { stubs: { RouterView: true } } })
+    await flushPromises()
     expect(document.body.textContent).not.toContain('这一页没找到路')
 
     chunkLoadFailed.value = true
+    // nextTick 只保证一次渲染刷新；Teleport 落到 body 上再读才稳
+    await flushPromises()
     await wrapper.vm.$nextTick()
 
     const text = document.body.textContent ?? ''
@@ -198,8 +212,5 @@ describe('应用兜底界面', () => {
     // 给孩子看的文案不能吓人
     expect(text).not.toContain('错误')
     expect(text).not.toContain('失败')
-
-    chunkLoadFailed.value = false
-    wrapper.unmount()
   })
 })

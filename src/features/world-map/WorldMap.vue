@@ -95,10 +95,13 @@ function placeLabelAbove(node: WorldMapNode): boolean {
     class="relative overflow-hidden rounded-blob border-2 border-line bg-paper-deep shadow-sticker"
     :aria-label="layout?.title ?? '学习地图'"
   >
-    <!-- 装饰层：纸雕地图的底色与行走的小路 -->
+    <!--
+      装饰层只留「行走的小路」。
+      原来这里还有两团大半径模糊光斑 —— 那是通用的模板化装饰：跟地图上任何一个
+      具体的地方都无关，放到任何页面上都成立。删掉而不是换一种通用装饰，
+      因为地图本身已经有具体内容（节点、蜿蜒的虚线小路、每个地方的名字）。
+    -->
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-      <div class="absolute -top-16 -left-10 size-56 rounded-full bg-star-soft/70 blur-2xl" />
-      <div class="absolute -right-12 -bottom-20 size-64 rounded-full bg-explore-soft/60 blur-2xl" />
       <svg class="absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none">
         <path
           v-for="(path, index) in layout?.paths ?? []"

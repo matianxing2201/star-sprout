@@ -30,7 +30,7 @@ const {
       :name="icon"
       size="2xl"
       weight="duotone"
-      class="animate-breathe text-[var(--tone-deep)]"
+      class="animate-pop-in text-[var(--tone-deep)]"
     />
 
     <h3 class="font-display text-xl text-[var(--tone-deep)]">
