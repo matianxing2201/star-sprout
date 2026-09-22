@@ -1,4 +1,5 @@
 import type { GradeContent } from '../types'
+import { autumnColorsLesson } from './lessons/autumn-colors'
 import { bingQuNaErLeLesson } from './lessons/bing-qu-na-er-le'
 import { chunXiaoLesson } from './lessons/chun-xiao'
 import { measureWordsLesson } from './lessons/measure-words'
@@ -11,5 +12,5 @@ export const nurseryContent: GradeContent = {
   grade,
   categories,
   topics,
-  lessons: [chunXiaoLesson, tuXingBaoBaoLesson, bingQuNaErLeLesson, measureWordsLesson],
+  lessons: [chunXiaoLesson, tuXingBaoBaoLesson, bingQuNaErLeLesson, measureWordsLesson, autumnColorsLesson],
 }

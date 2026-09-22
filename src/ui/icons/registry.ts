@@ -106,6 +106,8 @@ import IconGlobeBold from '~icons/ph/globe-hemisphere-west-bold'
 import IconGlobeDuotone from '~icons/ph/globe-hemisphere-west-duotone'
 import IconGraduationCapBold from '~icons/ph/graduation-cap-bold'
 import IconGraduationCapDuotone from '~icons/ph/graduation-cap-duotone'
+import IconGrainsBold from '~icons/ph/grains-bold'
+import IconGrainsDuotone from '~icons/ph/grains-duotone'
 import IconGridBold from '~icons/ph/grid-four-bold'
 import IconHandBold from '~icons/ph/hand-bold'
 import IconClickHandBold from '~icons/ph/hand-pointing-bold'
@@ -124,6 +126,7 @@ import IconKeyBold from '~icons/ph/key-bold'
 import IconKeyDuotone from '~icons/ph/key-duotone'
 import IconLadderBold from '~icons/ph/ladder-bold'
 import IconLeafBold from '~icons/ph/leaf-bold'
+import IconLeafDuotone from '~icons/ph/leaf-duotone'
 import IconLightbulbBold from '~icons/ph/lightbulb-bold'
 import IconLightbulbDuotone from '~icons/ph/lightbulb-duotone'
 import IconEnergyBold from '~icons/ph/lightning-bold'
@@ -334,8 +337,9 @@ const ICON_VARIANTS = {
   'basket': { bold: IconBasketBold },
   'rocket': { bold: IconRocketBold, duotone: IconRocketDuotone },
   'confetti': { bold: IconConfettiBold },
-  'leaf': { bold: IconLeafBold },
+  'leaf': { bold: IconLeafBold, duotone: IconLeafDuotone },
   'flower': { bold: IconFlowerBold, duotone: IconFlowerDuotone },
+  'grains': { bold: IconGrainsBold, duotone: IconGrainsDuotone },
   'carrot': { bold: IconCarrotBold, duotone: IconCarrotDuotone },
   'bird': { bold: IconBirdBold, duotone: IconBirdDuotone },
   'butterfly': { bold: IconButterflyBold },

@@ -134,6 +134,7 @@ export const APP_ICON_NAMES = [
   /* 自然与场景 */
   'leaf',
   'flower',
+  'grains',
   'carrot',
   'bird',
   'butterfly',
