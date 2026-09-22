@@ -3,6 +3,7 @@ import type { InteractionComponentEmits } from '../contract'
 
 import type { DragSortPayload } from '@/domain'
 import { computed, ref } from 'vue'
+import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 
 import { KButton, KIcon, KVisual } from '@/ui'
@@ -95,6 +96,18 @@ function tapItem(id: string): void {
   pickedId.value = null
 }
 
+/**
+ * 选中态的边框色。
+ *
+ * 为什么不直接写在 .fx-picked 里：那个类在 components 层，
+ * 排在 Tailwind 的 utilities 之前 —— 用普通的 border-color 压不过
+ * 组件上的 `border-[var(--tone-line)]`。这里把实色色调塞进变量，
+ * 让 .fx-picked 去引用，就不用为这件事破例用 !important。
+ */
+function pickedStyle(isPicked: boolean) {
+  return isPicked ? { '--tone-picked-line': 'var(--tone)' } : {}
+}
+
 function check(): void {
   if (disabled)
     return
@@ -138,9 +151,10 @@ function check(): void {
         :class="cn(
           'fx-pressable flex w-full touch-none items-center gap-3 rounded-tile border-2 border-[var(--tone-line)] bg-surface px-4 py-3 text-left shadow-sticker',
           'disabled:cursor-default',
-          pickedId === item.id && 'border-[var(--tone)] bg-[var(--tone-soft)]',
+          pickedId === item.id && 'fx-picked',
           isDragging(item.id) && 'fx-dragging pointer-events-none',
         )"
+        :style="[toneVars('think'), pickedStyle(pickedId === item.id)]"
         @pointerdown="drag.start($event, item.id)"
         @click="tapItem(item.id)"
       >

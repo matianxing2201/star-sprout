@@ -1,4 +1,5 @@
 import type { MascotId } from '../mascot/types'
+import type { AudioClipId } from '../shared/audio'
 import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
@@ -48,6 +49,8 @@ export const INTERACTION_KINDS = [
   'sequence-build',
   /** 量词印章：给物品盖上正确的量词，并拼出「一座城堡」这样的短语 */
   'measure-stamp',
+  /** 填数字：按条件把数字贴进方格（七段数码管，笔画可以遮住） */
+  'number-tile',
 ] as const
 
 export type InteractionKind = (typeof INTERACTION_KINDS)[number]
@@ -66,6 +69,12 @@ export interface InteractionBase {
   stars?: number
   /** 是否允许跳过（长任务给孩子的“出口”） */
   skippable?: boolean
+  /**
+   * 整个互动的范读音频。
+   * 用于「先听一遍，再动手」的场合（例如整组字念一遍）。
+   * 单个选项的发声用 InteractionOption.audioClipId。
+   */
+  audioClipId?: AudioClipId
 }
 
 /* ------------------------------------------------------------------ */
@@ -83,6 +92,8 @@ export interface InteractionOption {
   /** 选错时的专属提示 */
   hint?: string
   tone?: ToneKey
+  /** 点击这一项时播放的范读（认字卡要能点一下听读音） */
+  audioClipId?: AudioClipId
 }
 
 export interface ChooseOnePayload {
@@ -165,6 +176,8 @@ export interface ConnectNode {
   label: string
   icon?: AppIconName
   emoji?: string
+  /** 点中这个节点时播放的范读（「汉字找朋友」要能听到读音） */
+  audioClipId?: AudioClipId
 }
 
 export interface ConnectLinePayload {
@@ -180,6 +193,8 @@ export interface MemoryCard {
   label: string
   icon?: AppIconName
   emoji?: string
+  /** 翻开这张牌时播放的范读（认字卡翻到就要读出那个字） */
+  audioClipId?: AudioClipId
 }
 
 export interface MemoryPairPayload {
@@ -314,6 +329,46 @@ export interface MeasureStampPayload {
 }
 
 /* ------------------------------------------------------------------ */
+/* 填数字（number-tile）                                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 一个待填的格子。
+ *
+ * 「被遮住的数字」是怎么表达的
+ * ---------------------------
+ * 数字用七段数码管画出来，每一段有编号：
+ *
+ *        ⓪
+ *      ⑤  ①
+ *        ⑥
+ *      ④  ②
+ *        ③
+ *
+ * `visibleStrokes` 只列**露出来**的那几段 —— 和图里一样，孩子看到的是
+ * 残缺的笔画，靠「这是几」加上题面的条件去猜。整段都不给（undefined）
+ * 就是这个格子被完全遮住，只能靠条件推。
+ */
+export interface NumberSlot {
+  id: string
+  /** 这一格正确的数字 */
+  answer: number
+  /** 露出来的笔画编号（0~6）；不给表示整格被遮住 */
+  visibleStrokes?: number[]
+  /** 针对这一格的条件，答错时作为提示回给孩子；不写则退回互动级的 hint */
+  rule?: string
+}
+
+export interface NumberTilePayload {
+  /** 从左往右的格子，数组顺序就是位置顺序 */
+  slots: NumberSlot[]
+  /** 可以拖的数字块，显示时会打乱 */
+  tiles: number[]
+  /** 整题的条件，逐条摆出来让孩子随时回头看 */
+  clues: string[]
+}
+
+/* ------------------------------------------------------------------ */
 /* 判别联合                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -331,6 +386,7 @@ export interface InteractionPayloadMap {
   'hotspot-explore': HotspotExplorePayload
   'sequence-build': SequenceBuildPayload
   'measure-stamp': MeasureStampPayload
+  'number-tile': NumberTilePayload
 }
 
 export type InteractionSpec = {

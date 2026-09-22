@@ -1,6 +1,7 @@
 import type { CategoryId, GradeId, KnowledgePoint, TopicId } from '../catalog/types'
 import type { InteractionSpec } from '../interaction/types'
 import type { MascotId } from '../mascot/types'
+import type { AudioClipId } from '../shared/audio'
 import type { AppIconName } from '../shared/icons'
 import type { ToneKey } from '../shared/tone'
 
@@ -81,6 +82,14 @@ interface TaskBase {
   instruction?: string
   /** 该步骤中角色要说的话（会展示在角色气泡里） */
   mascotLine?: string
+  /**
+   * 这一步的范读音频片段。
+   *
+   * 挂在任务上而不是挂在每一句话上：孩子在这一步里该听到的是**一个整体**
+   * （整篇诗、整组字），而不是一句句割裂的碎片。
+   * 需要逐字、逐句发声的场合（认字卡），用 interaction 上的 audioClipId。
+   */
+  audioClipId?: AudioClipId
   /**
    * 这一步考察的知识点。
    * 家长端的「薄弱知识点」完全由它推导 —— 没有它就无法做个性化推荐，

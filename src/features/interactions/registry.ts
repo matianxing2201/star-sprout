@@ -12,6 +12,7 @@ import DrawInteraction from './components/DrawInteraction.vue'
 import HotspotExploreInteraction from './components/HotspotExploreInteraction.vue'
 import MeasureStampInteraction from './components/MeasureStampInteraction.vue'
 import MemoryPairInteraction from './components/MemoryPairInteraction.vue'
+import NumberTileInteraction from './components/NumberTileInteraction.vue'
 import SequenceBuildInteraction from './components/SequenceBuildInteraction.vue'
 import SliderExploreInteraction from './components/SliderExploreInteraction.vue'
 import TapTargetInteraction from './components/TapTargetInteraction.vue'
@@ -40,6 +41,7 @@ export const INTERACTION_REGISTRY: Record<InteractionKind, InteractionComponent>
   'hotspot-explore': HotspotExploreInteraction,
   'sequence-build': SequenceBuildInteraction,
   'measure-stamp': MeasureStampInteraction,
+  'number-tile': NumberTileInteraction,
 }
 
 export function resolveInteraction(kind: InteractionKind): InteractionComponent {

@@ -10,6 +10,7 @@ import { APP_ICON_NAMES, GRADE_IDS, TOPIC_KINDS } from '@/domain'
 import { BADGE_IDS } from '@/domain/growth/types'
 import { INTERACTION_KINDS, PROGRAM_BLOCK_KINDS } from '@/domain/interaction/types'
 import { MASCOT_IDS } from '@/domain/mascot/types'
+import { AUDIO_CLIP_ID_PATTERN } from '@/domain/shared/audio'
 import { TONE_KEYS } from '@/domain/shared/tone'
 
 /** 一整个内容包：目录 + 课程 + 跨学科世界 + 八个年级的地图 + 徽章 */
@@ -68,6 +69,18 @@ const programBlockKindSchema = z.enum(SCHEMA_VALUE_SETS.programBlockKinds)
 /** 百分比坐标：学习地图与场景热点共用 */
 const percentSchema = z.number().min(0).max(100)
 
+/**
+ * 范读音頻片段 id。
+ *
+ * 只校验形状，不校验「文件是否真的存在」—— 文件由 scripts/generate-audio.mjs
+ * 在构建期生成，内容包在写的时候它可能还没生成。
+ * 「内容引用了片段但没生成」由 audio.spec.ts 在跑完 audio:sync 之后点名。
+ */
+const audioClipIdSchema = z.string().regex(
+  AUDIO_CLIP_ID_PATTERN,
+  '音频片段 id 必须是 kebab-case（它会直接变成文件名）',
+)
+
 /** 互动通用外壳里每个 kind 都会读到的字段 */
 const interactionBaseShape = {
   prompt: z.string().min(1),
@@ -76,6 +89,7 @@ const interactionBaseShape = {
   retryLine: z.string().optional(),
   stars: z.number().int().nonnegative().optional(),
   skippable: z.boolean().optional(),
+  audioClipId: audioClipIdSchema.optional(),
 }
 
 /* ------------------------------------------------------------------ */
@@ -144,6 +158,7 @@ const interactionOptionSchema = z.object({
   correct: z.boolean().optional(),
   hint: z.string().optional(),
   tone: toneSchema.optional(),
+  audioClipId: audioClipIdSchema.optional(),
 })
 
 const sceneTargetSchema = z.object({
@@ -179,6 +194,7 @@ const connectNodeSchema = z.object({
   label: z.string().min(1),
   emoji: z.string().optional(),
   icon: iconSchema.optional(),
+  audioClipId: audioClipIdSchema.optional(),
 })
 
 const memoryCardSchema = z.object({
@@ -187,6 +203,7 @@ const memoryCardSchema = z.object({
   label: z.string().min(1),
   emoji: z.string().optional(),
   icon: iconSchema.optional(),
+  audioClipId: audioClipIdSchema.optional(),
 })
 
 const colorFillRegionSchema = z.object({
@@ -430,6 +447,52 @@ const measureStampSchema = z.object({
   }),
 })
 
+const numberTileSchema = z.object({
+  kind: z.literal('number-tile'),
+  ...interactionBaseShape,
+  payload: z.object({
+    slots: z.array(z.object({
+      id: z.string().min(1),
+      answer: z.number().int().min(0).max(9),
+      visibleStrokes: z.array(z.number().int().min(0).max(6)).optional(),
+      rule: z.string().min(1).optional(),
+    })).min(1),
+    tiles: z.array(z.number().int().min(0).max(9)).min(1),
+    clues: z.array(z.string().min(1)).min(1),
+  }).superRefine((payload, context) => {
+    const slotIds = new Set(payload.slots.map(slot => slot.id))
+    if (slotIds.size !== payload.slots.length)
+      context.addIssue({ code: 'custom', message: '填数字的格子 id 重复了' })
+
+    // 每个格子只能填一次：数字块的数量必须够，而且不能出现重复的数字块
+    if (payload.tiles.length !== payload.slots.length) {
+      context.addIssue({
+        code: 'custom',
+        message: `数字块有 ${payload.tiles.length} 个，格子有 ${payload.slots.length} 个，两边必须一样多`,
+      })
+    }
+    if (new Set(payload.tiles).size !== payload.tiles.length)
+      context.addIssue({ code: 'custom', message: '数字块里出现了重复的数字' })
+
+    // 答案必须是数字块里有的，否则这题无解
+    const tileSet = new Set(payload.tiles)
+    for (const slot of payload.slots) {
+      if (!tileSet.has(slot.answer)) {
+        context.addIssue({
+          code: 'custom',
+          message: `格子 ${slot.id} 的答案 ${slot.answer} 不在数字块里，这题填不出来`,
+        })
+      }
+    }
+
+    // 露出的笔画重复没有意义，孩子看到的每个格子应当长得不一样
+    const strokeKeys = payload.slots.map(slot => (slot.visibleStrokes ?? []).slice().sort().join('-'))
+    const filled = strokeKeys.filter(key => key.length > 0)
+    if (new Set(filled).size !== filled.length)
+      context.addIssue({ code: 'custom', message: '有两个格子露出了相同的笔画，孩子分不出它们' })
+  }),
+})
+
 export const interactionSchema: z.ZodType<InteractionSpec> = z.discriminatedUnion('kind', [
   chooseOneSchema,
   chooseManySchema,
@@ -444,6 +507,7 @@ export const interactionSchema: z.ZodType<InteractionSpec> = z.discriminatedUnio
   hotspotExploreSchema,
   sequenceBuildSchema,
   measureStampSchema,
+  numberTileSchema,
 ])
 
 /* ------------------------------------------------------------------ */
@@ -455,6 +519,7 @@ const taskBaseShape = {
   title: z.string().min(1),
   instruction: z.string().optional(),
   mascotLine: z.string().optional(),
+  audioClipId: audioClipIdSchema.optional(),
 }
 
 /** 角色引入 */

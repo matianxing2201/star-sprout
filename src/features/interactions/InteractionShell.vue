@@ -2,6 +2,7 @@
 import type { InteractionResult, InteractionSpec, MascotId } from '@/domain'
 
 import { computed } from 'vue'
+import { ListenButton } from '@/features/audio'
 import { MascotBubble } from '@/features/mascot'
 import { KButton, KIcon } from '@/ui'
 
@@ -92,6 +93,15 @@ const mood = computed(() => {
         <span>正在锻炼：{{ meta.ability }}</span>
       </p>
     </header>
+
+    <!--
+      整组范读：认字课要「先听一遍整体，再一个一个认」，
+      所以发声的入口摆在题面上、而不是只藏在每一张卡里。
+      spec.audioClipId 是可选的 —— 没有范读的互动这里什么都不长。
+    -->
+    <div v-if="spec.audioClipId" class="flex justify-center">
+      <ListenButton :clip-id="spec.audioClipId" label="先听一遍" />
+    </div>
 
     <div
       class="relative min-h-[18rem] rounded-blob border-2 border-line bg-paper-deep/55 p-4 sm:p-6"

@@ -4,6 +4,7 @@ import type { MemoryCard, MemoryPairPayload } from '@/domain'
 
 import { computed, onBeforeUnmount, ref } from 'vue'
 
+import { useAudioClip } from '@/features/audio'
 import { cn } from '@/shared/utils'
 import { KIcon, KVisual } from '@/ui'
 
@@ -20,6 +21,8 @@ const { payload, disabled = false } = defineProps<{
 }>()
 
 const emit = defineEmits<InteractionComponentEmits>()
+
+const { play } = useAudioClip()
 
 function shuffled(cards: MemoryCard[]): MemoryCard[] {
   const result = [...cards]
@@ -67,6 +70,12 @@ function flip(card: MemoryCard): void {
     return
 
   flippedIds.value = [...flippedIds.value, card.id]
+
+  // 翻到哪张就念哪张 —— 翻翻乐在识字课里是「翻过来，听它叫什么」。
+  // 用 `play` 不用 `toggle`：翻牌本来就该出声，翻一张变成开关会很别扭。
+  if (card.audioClipId)
+    play(card.audioClipId)
+
   if (flippedIds.value.length < 2)
     return
 

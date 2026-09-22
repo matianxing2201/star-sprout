@@ -6,6 +6,7 @@ import type { ConnectLinePayload } from '@/domain'
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 import { toneVars } from '@/domain'
 
+import { useAudioClip } from '@/features/audio'
 import { cn } from '@/shared/utils'
 import { KVisual } from '@/ui'
 import { findDropTarget, usePointerDrag } from '../usePointerDrag'
@@ -23,6 +24,8 @@ const { payload, disabled = false } = defineProps<{
 }>()
 
 const emit = defineEmits<InteractionComponentEmits>()
+
+const { play } = useAudioClip()
 
 /** 左 id → 右 id。一个节点只能有一条线 */
 const links = ref<Record<string, string>>({})
@@ -159,9 +162,17 @@ function scheduleMeasure(): void {
   frame = requestAnimationFrame(measure)
 }
 
+/** 「汉字找朋友」里，点左节点首先是想听它念什么 —— 听音和选中一起发生 */
+function playLeft(id: string): void {
+  const node = payload.left.find(item => item.id === id)
+  if (node?.audioClipId)
+    play(node.audioClipId)
+}
+
 function selectLeft(id: string): void {
   if (disabled || done.value || judging.value)
     return
+  playLeft(id)
   selectedLeft.value = selectedLeft.value === id ? null : id
 }
 
@@ -169,6 +180,7 @@ function onLeftPointerDown(event: PointerEvent, id: string): void {
   if (disabled || done.value || judging.value)
     return
   pointerAt = Date.now()
+  playLeft(id)
   selectedLeft.value = id
   startDrag(event, id)
 }

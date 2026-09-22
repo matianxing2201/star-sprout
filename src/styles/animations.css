@@ -111,6 +111,33 @@
     box-shadow: 0 0 0 6px rgb(245 184 46 / 22%);
   }
 
+  /* 已经点选、拿在手里的卡片。
+     只换边框和浅底色是不够的 —— 浅色底在托盘上几乎看不出差别，
+     孩子点完不知道有没有选中。所以这里三件事一起做：
+     抬高（阴影）、放大、描边加粗，动静足够大到一眼可见。
+
+     颜色由 `--tone-picked-line` 传入，不写死在这里：
+     components 层排在 utilities 之前，写 `border-color` 压不过组件上的
+     `border-[var(--tone-line)]` 原子类，只能靠内容侧把边框色塞进变量
+     （见 pickedStyle()）。这样就不必在这个文件里破例提升优先级。 */
+  .fx-picked {
+    transform: translateY(-4px) scale(1.06);
+    border-color: var(--tone-picked-line);
+    border-width: 3px;
+    box-shadow:
+      var(--shadow-lift),
+      0 0 0 5px var(--tone-glow);
+    transition:
+      transform var(--duration-quick) var(--ease-bounce),
+      box-shadow var(--duration-quick) var(--ease-soft),
+      border-color var(--duration-quick) var(--ease-soft);
+  }
+
+  /* 点选后手指又移上来时，别再被 .fx-pressable:hover 拉回原大小 */
+  .fx-picked:hover {
+    transform: translateY(-4px) scale(1.06);
+  }
+
   /* 奖励：星星飞入收藏栏 */
   .fx-star-fly {
     animation: star-fly var(--duration-celebrate) var(--ease-soft) both;

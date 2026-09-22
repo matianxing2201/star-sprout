@@ -5,6 +5,7 @@ import type { ChooseOnePayload, InteractionOption } from '@/domain'
 import { computed, ref } from 'vue'
 import { toneVars } from '@/domain'
 
+import { ListenButton, useAudioClip } from '@/features/audio'
 import { cn } from '@/shared/utils'
 import { KIcon, KVisual } from '@/ui'
 
@@ -22,6 +23,8 @@ const emit = defineEmits<InteractionComponentEmits>()
 
 const pickedId = ref<string | null>(null)
 const wrongId = ref<string | null>(null)
+
+const { toggle } = useAudioClip()
 
 const columns = computed(() => {
   const count = payload.options.length
@@ -50,18 +53,28 @@ function optionIcon(option: InteractionOption) {
   return option.icon ?? (option.emoji || option.image ? undefined : 'question' as const)
 }
 
-function pick(id: string, correct: boolean | undefined, hint: string | undefined): void {
+/**
+ * 点一张字卡：先把它的音念出来，再判对错。
+ *
+ * 顺序是刻意的 —— 认字课里「点一下」首先是「听它念什么」，
+ * 判对错是其次。听音在判定之前发生，即使点错了也已经听到了正确发音；
+ * 点对了则 `toggle` 停在「正在念」，那一个字会一直响到孩子再点一下为止。
+ */
+function pick(option: InteractionOption): void {
   if (disabled || pickedId.value)
     return
 
-  if (correct) {
-    pickedId.value = id
-    emit('solved', id)
+  if (option.audioClipId)
+    toggle(option.audioClipId)
+
+  if (option.correct) {
+    pickedId.value = option.id
+    emit('solved', option.id)
     return
   }
 
-  wrongId.value = id
-  emit('missed', hint)
+  wrongId.value = option.id
+  emit('missed', option.hint)
   setTimeout(() => {
     wrongId.value = null
   }, 640)
@@ -83,7 +96,7 @@ function pick(id: string, correct: boolean | undefined, hint: string | undefined
         wrongId === option.id && 'fx-gently border-gently bg-gently-soft',
       )"
       :style="toneVars(option.tone ?? 'neutral')"
-      @click="pick(option.id, option.correct, option.hint)"
+      @click="pick(option)"
     >
       <KVisual
         :icon="optionIcon(option)"
@@ -93,6 +106,18 @@ function pick(id: string, correct: boolean | undefined, hint: string | undefined
         :tone="option.tone"
       />
       <span class="font-display text-lg leading-tight text-[var(--tone-deep)]">{{ option.label }}</span>
+      <!--
+        卡片角上的小喇叭：整张卡都能点，但它让「这里可以听」变得看得出来。
+        点了会 toggle，听过的字再点一下就能停 —— 不用去够那颗按钮。
+      -->
+      <ListenButton
+        v-if="option.audioClipId"
+        :clip-id="option.audioClipId"
+        size="sm"
+        :tone="option.tone ?? 'language'"
+        class="absolute -bottom-2 -right-2"
+        label="听这个字"
+      />
       <span
         v-if="pickedId === option.id"
         class="absolute -top-3 -right-3 grid size-8 place-items-center rounded-chip bg-success text-white shadow-press"

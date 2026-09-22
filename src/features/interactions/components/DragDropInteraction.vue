@@ -102,6 +102,18 @@ function isDragging(id: string): boolean {
   return drag.dragging.value === id
 }
 
+/**
+ * 选中态的边框色。
+ *
+ * 为什么不直接写在 .fx-picked 里：那个类在 components 层，
+ * 排在 Tailwind 的 utilities 之前 —— 用普通的 border-color 压不过
+ * 组件上的 `border-[var(--tone-line)]`。这里把实色色调塞进变量，
+ * 让 .fx-picked 去引用，就不用为这件事破例用 !important。
+ */
+function pickedStyle(isPicked: boolean) {
+  return isPicked ? { '--tone-picked-line': 'var(--tone)' } : {}
+}
+
 /** 手指会盖住卡片，所以被拖动的那张另外浮在指针上方一点点 */
 const ghostItem = computed(() => {
   const id = drag.dragging.value
@@ -218,11 +230,11 @@ function check(): void {
             :class="cn(
               'fx-pressable flex touch-none items-center gap-1.5 rounded-chip border-2 border-[var(--tone-line)] bg-surface px-3 py-2 shadow-press',
               'disabled:cursor-default',
-              pickedId === item.id && 'border-[var(--tone)] bg-[var(--tone-soft)]',
+              pickedId === item.id && 'fx-picked',
               gentleIds.includes(item.id) && 'fx-gently border-gently bg-gently-soft',
               isDragging(item.id) && 'fx-dragging pointer-events-none',
             )"
-            :style="toneVars(item.tone ?? 'neutral')"
+            :style="[toneVars(item.tone ?? 'neutral'), pickedStyle(pickedId === item.id)]"
             @pointerdown="drag.start($event, item.id)"
             @click="selectItem(item.id)"
           >
@@ -258,11 +270,11 @@ function check(): void {
           :class="cn(
             'fx-pressable flex touch-none items-center gap-1.5 rounded-chip border-2 border-[var(--tone-line)] bg-surface px-3 py-2 shadow-sticker',
             'disabled:cursor-default',
-            pickedId === item.id && 'border-[var(--tone)] bg-[var(--tone-soft)]',
+            pickedId === item.id && 'fx-picked',
             gentleIds.includes(item.id) && 'fx-gently border-gently bg-gently-soft',
             isDragging(item.id) && 'fx-dragging pointer-events-none',
           )"
-          :style="toneVars(item.tone ?? 'neutral')"
+          :style="[toneVars(item.tone ?? 'neutral'), pickedStyle(pickedId === item.id)]"
           @pointerdown="drag.start($event, item.id)"
           @click="selectItem(item.id)"
         >

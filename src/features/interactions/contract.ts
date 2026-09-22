@@ -56,4 +56,5 @@ export const INTERACTION_META: Record<InteractionKind, Omit<InteractionMeta, 'ki
   'hotspot-explore': { label: '找一找', icon: 'binoculars', ability: '探索与发现' },
   'sequence-build': { label: '搭指令', icon: 'puzzle', ability: '顺序与编程思维' },
   'measure-stamp': { label: '盖量词印章', icon: 'stamp', ability: '词语搭配与语感' },
+  'number-tile': { label: '填数字', icon: 'grid', ability: '推理与数感' },
 }
