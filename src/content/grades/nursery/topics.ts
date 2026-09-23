@@ -96,6 +96,28 @@ export const topics: Topic[] = [
     lessonIds: ['nursery-math-number-friends-1'],
   },
   {
+    id: 'nursery-math-find-pattern',
+    gradeId: 'nursery',
+    categoryId: 'nursery-math',
+    title: '找规律',
+    icon: 'list-checks',
+    kind: 'standard',
+    order: 3,
+    level: 1,
+    objectives: [
+      '能认出「一个隔一个」和「顺着数」这两种规律',
+      '能利用空格两边的数，把中间缺的那个找回来',
+      '愿意把一排数字完整地数一遍，再下结论',
+    ],
+    knowledgePoints: [
+      { id: 'kp-pattern-abab', label: '一个隔一个：两样东西轮流来，隔一个就重复', detail: '3 7 3 7 3 —— 第 1、3、5 格都是 3' },
+      { id: 'kp-pattern-add-one', label: '顺着数：从左到右每次多 1', detail: '1 2 3 4 5 —— 后面的比前面的大 1' },
+      { id: 'kp-pattern-sub-one', label: '倒着数：从左到右每次少 1', detail: '9 8 7 6 5 —— 后面的比前面的小 1' },
+      { id: 'kp-pattern-blank', label: '空格两边的数会把中间那个夹出来', detail: '空格前后都是 3，说明中间是另一个数' },
+    ],
+    lessonIds: ['nursery-math-find-pattern-1'],
+  },
+  {
     id: 'nursery-science-ice',
     gradeId: 'nursery',
     categoryId: 'nursery-science',

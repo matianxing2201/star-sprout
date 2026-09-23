@@ -493,6 +493,51 @@ const numberTileSchema = z.object({
   }),
 })
 
+/**
+ * 找规律（find-pattern）：5 个方框排成一排，只有 1 格空着。
+ *
+ * 这里把「中班做不了的题」直接挡在数据入口，不靠写内容的人记住规则：
+ *   - 5 格固定、只有 1 个空格（空格由 `blankIndex` 表达，结构上写不出两个）
+ *   - 数字 1~10 —— 0 一律不给进（比「尽量少用」更稳）
+ *   - 备选 3~4 个、互不相同、**必须含答案**（否则这题无解）
+ *   - 备选要贴近题面（[min-1, max+1]）—— 太远的数字等于白送答案：
+ *     题面是 5 旁边一个空格，选项写 1 / 5 / 10，孩子挑中间那个就完了
+ *
+ * 「规律只能是 ABAB / 顺数 +1 / 倒数 -1」不在这里：那要先填出完整序列才能判断，
+ * 属于**内容**的结构检查，放在 `content.spec.ts`（那里能看到整节课的题）。
+ */
+const findPatternSchema = z.object({
+  kind: z.literal('find-pattern'),
+  ...interactionBaseShape,
+  payload: z.object({
+    sequence: z.array(z.number().int().min(1).max(10)).length(5),
+    blankIndex: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+    options: z.array(z.number().int().min(1).max(10)).min(3).max(4),
+    hint: z.string().min(1).optional(),
+  }).superRefine((payload, context) => {
+    if (new Set(payload.options).size !== payload.options.length) {
+      context.addIssue({ code: 'custom', message: '找规律的备选数字里出现了重复' })
+      return
+    }
+
+    const answer = payload.sequence[payload.blankIndex]
+    if (!payload.options.includes(answer)) {
+      context.addIssue({ code: 'custom', message: `备选数字里没有正确答案 ${answer}，这题无解` })
+      return
+    }
+
+    const min = Math.min(...payload.sequence)
+    const max = Math.max(...payload.sequence)
+    const tooFar = payload.options.filter(value => value < min - 1 || value > max + 1)
+    if (tooFar.length > 0) {
+      context.addIssue({
+        code: 'custom',
+        message: `备选 ${tooFar.join('、')} 离题面数字（${min}~${max}）太远，等于送答案`,
+      })
+    }
+  }),
+})
+
 export const interactionSchema: z.ZodType<InteractionSpec> = z.discriminatedUnion('kind', [
   chooseOneSchema,
   chooseManySchema,
@@ -508,6 +553,7 @@ export const interactionSchema: z.ZodType<InteractionSpec> = z.discriminatedUnio
   sequenceBuildSchema,
   measureStampSchema,
   numberTileSchema,
+  findPatternSchema,
 ])
 
 /* ------------------------------------------------------------------ */

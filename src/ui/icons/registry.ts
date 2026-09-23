@@ -58,6 +58,7 @@ import IconCalendarBold from '~icons/ph/calendar-blank-bold'
 import IconCarBold from '~icons/ph/car-bold'
 import IconCarDuotone from '~icons/ph/car-duotone'
 import IconCardsBold from '~icons/ph/cards-bold'
+import IconCardsDuotone from '~icons/ph/cards-duotone'
 import IconCarrotBold from '~icons/ph/carrot-bold'
 import IconCarrotDuotone from '~icons/ph/carrot-duotone'
 import IconCastleBold from '~icons/ph/castle-turret-bold'
@@ -133,6 +134,7 @@ import IconEnergyBold from '~icons/ph/lightning-bold'
 import IconEnergyDuotone from '~icons/ph/lightning-duotone'
 import IconLinkBold from '~icons/ph/link-bold'
 import IconListChecksBold from '~icons/ph/list-checks-bold'
+import IconListChecksDuotone from '~icons/ph/list-checks-duotone'
 import IconLockBold from '~icons/ph/lock-bold'
 import IconLockDuotone from '~icons/ph/lock-duotone'
 import IconLockOpenBold from '~icons/ph/lock-open-bold'
@@ -151,6 +153,7 @@ import IconStageDuotone from '~icons/ph/microphone-stage-duotone'
 import IconMicrophoneDuotone from '~icons/ph/microphone-stage-duotone'
 import IconMicroscopeBold from '~icons/ph/microscope-bold'
 import IconMinusBold from '~icons/ph/minus-bold'
+import IconMinusDuotone from '~icons/ph/minus-duotone'
 import IconMoonBold from '~icons/ph/moon-stars-bold'
 import IconMoonDuotone from '~icons/ph/moon-stars-duotone'
 import IconMusicNoteBold from '~icons/ph/music-note-bold'
@@ -171,6 +174,7 @@ import IconPlantBold from '~icons/ph/plant-bold'
 import IconPlantDuotone from '~icons/ph/plant-duotone'
 import IconPlayBold from '~icons/ph/play-bold'
 import IconPlusBold from '~icons/ph/plus-bold'
+import IconPlusDuotone from '~icons/ph/plus-duotone'
 import IconPolygonBold from '~icons/ph/polygon-bold'
 import IconPuzzleBold from '~icons/ph/puzzle-piece-bold'
 import IconPuzzleDuotone from '~icons/ph/puzzle-piece-duotone'
@@ -236,8 +240,8 @@ const ICON_VARIANTS = {
   'check': { bold: IconCheckBold },
   'check-circle': { bold: IconCheckCircleBold },
   'close': { bold: IconCloseBold },
-  'plus': { bold: IconPlusBold },
-  'minus': { bold: IconMinusBold },
+  'plus': { bold: IconPlusBold, duotone: IconPlusDuotone },
+  'minus': { bold: IconMinusBold, duotone: IconMinusDuotone },
   'refresh': { bold: IconRefreshBold },
   'play': { bold: IconPlayBold },
   'drag-handle': { bold: IconDragHandleBold },
@@ -316,7 +320,7 @@ const ICON_VARIANTS = {
   'brain': { bold: IconBrainBold, duotone: IconBrainDuotone },
   'code': { bold: IconCodeBold, duotone: IconCodeDuotone },
   'grid': { bold: IconGridBold },
-  'list-checks': { bold: IconListChecksBold },
+  'list-checks': { bold: IconListChecksBold, duotone: IconListChecksDuotone },
   'clock': { bold: IconClockBold, duotone: IconClockDuotone },
   'hourglass': { bold: IconHourglassBold, duotone: IconHourglassDuotone },
   'calendar': { bold: IconCalendarBold },
@@ -332,7 +336,7 @@ const ICON_VARIANTS = {
   'detective': { bold: IconDetectiveBold, duotone: IconDetectiveDuotone },
   'puzzle': { bold: IconPuzzleBold, duotone: IconPuzzleDuotone },
   'link': { bold: IconLinkBold },
-  'cards': { bold: IconCardsBold },
+  'cards': { bold: IconCardsBold, duotone: IconCardsDuotone },
   'sliders': { bold: IconSlidersBold },
   'basket': { bold: IconBasketBold },
   'rocket': { bold: IconRocketBold, duotone: IconRocketDuotone },

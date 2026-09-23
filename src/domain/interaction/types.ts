@@ -51,6 +51,7 @@ export const INTERACTION_KINDS = [
   'measure-stamp',
   /** 填数字：按条件把数字贴进方格（七段数码管，笔画可以遮住） */
   'number-tile',
+  'find-pattern',
 ] as const
 
 export type InteractionKind = (typeof INTERACTION_KINDS)[number]
@@ -369,6 +370,42 @@ export interface NumberTilePayload {
 }
 
 /* ------------------------------------------------------------------ */
+/* 找规律（find-pattern）                                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 找规律：5 个方框排成一排，只有 1 格空着，把缺的那个数找回来。
+ *
+ * 面向 4~5 岁（中班）。题目的三条硬约束都由**结构**保证，不靠人记住：
+ *
+ *   - 「只有 1 个空格」  → 空格位置只有一个 `blankIndex`，结构上不可能写两个
+ *   - 「5 个方框」        → `sequence` 长度固定 5（schema 强制）
+ *   - 「10 以内」         → 数字范围 1~10（schema 强制；0 直接不给进，比"尽量少用"更稳）
+ *
+ * **内容声明真值，组件只负责比较**：
+ * `sequence` 是完整的 5 个数，孩子只看得到除 `blankIndex` 之外的那 4 个。
+ * 这样「答案是什么」「规律是什么」都属于内容，
+ * 而「规律只能是 ABAB / 顺数 +1 / 倒数 -1」可以由契约测试整段检查
+ * （乘法、隔 2 个数这类中班做不了的规律会被自动挡在外面）。
+ */
+export interface FindPatternPayload {
+  /** 5 个位置的完整答案；写题时按完整序列写，空格由 `blankIndex` 指出 */
+  sequence: number[]
+  /** 空着的是第几格 —— 全题**只有**这一个空格 */
+  blankIndex: 0 | 1 | 2 | 3 | 4
+  /** 孩子可点的备选数字：含正确答案、互不相同、都在 1~10 */
+  options: number[]
+  /**
+   * 这一题的方向，答错时**立刻**由角色说出来。
+   *
+   * 与 `InteractionBase.hint` 的关系：那个是外壳在第 2 次答错时才给的通用提示，
+   * 这个是**第一次**就给出的、针对这一题的方向。
+   * 不写则退回外壳的 nudge —— 宁可不说话，也不要编一句通用鼓励。
+   */
+  hint?: string
+}
+
+/* ------------------------------------------------------------------ */
 /* 判别联合                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -387,6 +424,7 @@ export interface InteractionPayloadMap {
   'sequence-build': SequenceBuildPayload
   'measure-stamp': MeasureStampPayload
   'number-tile': NumberTilePayload
+  'find-pattern': FindPatternPayload
 }
 
 export type InteractionSpec = {

@@ -80,4 +80,5 @@ export const INTERACTION_META: Record<InteractionKind, Omit<InteractionMeta, 'ki
   'sequence-build': { label: '搭指令', icon: 'puzzle', ability: '顺序与编程思维' },
   'measure-stamp': { label: '盖量词印章', icon: 'stamp', ability: '词语搭配与语感' },
   'number-tile': { label: '填数字', icon: 'grid', ability: '推理与数感' },
+  'find-pattern': { label: '找规律', icon: 'list-checks', ability: '规律与推理' },
 }

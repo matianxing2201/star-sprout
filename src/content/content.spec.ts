@@ -181,6 +181,60 @@ describe('课程数据模型', () => {
     expect(leaks).toEqual([])
   })
 
+  it('找规律题只允许 ABAB / 顺数 +1 / 倒数 -1（中班做不了乘法与隔 2）', () => {
+    // 这条是**内容结构**检查，schema 做不了：schema 只能看到「5 个 1~10 的数」，
+    // 要判断「这是不是合法规律」必须先把空格填出来看整段序列。
+    //
+    // 「恰好命中一种」同时挡住两类问题：
+    //   命中 0 种 → 这题是乘法 / 隔 2 / 全相同 之类中班做不了的形状
+    //   命中 2 种 → 这题有两种读法，孩子会不知道该信哪个
+    const violations: string[] = []
+    let found = 0
+
+    for (const lesson of contentPack.lessons) {
+      for (const task of lesson.tasks) {
+        if (task.kind !== 'interaction' && task.kind !== 'practice' && task.kind !== 'challenge')
+          continue
+
+        for (const interaction of task.interactions) {
+          if (interaction.kind !== 'find-pattern')
+            continue
+
+          found++
+          const { sequence, blankIndex } = interaction.payload
+          const where = `${lesson.id}/${interaction.prompt}`
+
+          // ABAB：第 1、3、5 格同一个数，第 2、4 格另一个数，且两者必须不同
+          //   （全相同不算 —— 那是「没有规律」的退化形状）
+          const isABAB = sequence[0] === sequence[2]
+            && sequence[2] === sequence[4]
+            && sequence[1] === sequence[3]
+            && sequence[0] !== sequence[1]
+          // 顺数 +1 / 倒数 -1：每一格比前一格多 1 / 少 1
+          const isAdd = sequence.every((value, index) => index === 0 || value === sequence[index - 1] + 1)
+          const isSub = sequence.every((value, index) => index === 0 || value === sequence[index - 1] - 1)
+
+          const hits = [isABAB, isAdd, isSub].filter(Boolean).length
+
+          if (hits !== 1) {
+            violations.push(
+              `${where}：整段是 [${sequence.join(', ')}]，空格在第 ${blankIndex + 1} 位，命中 ${hits} 种规律（应当恰好 1 种）`,
+            )
+          }
+
+          // 空格必须真的是空的那一位 —— 结构上只可能有一个，但答案要在里面
+          if (sequence[blankIndex] === undefined) {
+            violations.push(`${where}：blankIndex ${blankIndex} 超出 5 格范围`)
+          }
+        }
+      }
+    }
+
+    // 反向断言：一条都没找到说明这个主题还没写，断言在空转
+    expect(found, '内容里没有找规律题，这条契约已经失效').toBeGreaterThan(0)
+    expect(violations, '下面这些题的规律不在「ABAB / +1 / -1」三种之内').toEqual([])
+  })
+
   it('互动类型都在注册表覆盖的范围内', () => {
     for (const lesson of contentPack.lessons) {
       for (const task of lesson.tasks) {

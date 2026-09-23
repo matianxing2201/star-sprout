@@ -3,6 +3,7 @@ import { autumnColorsLesson } from './lessons/autumn-colors'
 import { autumnWordsLesson } from './lessons/autumn-words'
 import { bingQuNaErLeLesson } from './lessons/bing-qu-na-er-le'
 import { chunXiaoLesson } from './lessons/chun-xiao'
+import { findPatternLesson } from './lessons/find-pattern'
 import { measureWordsLesson } from './lessons/measure-words'
 import { numberFriendsLesson } from './lessons/number-friends'
 import { tuXingBaoBaoLesson } from './lessons/tu-xing-bao-bao'
@@ -14,5 +15,5 @@ export const nurseryContent: GradeContent = {
   grade,
   categories,
   topics,
-  lessons: [chunXiaoLesson, tuXingBaoBaoLesson, numberFriendsLesson, bingQuNaErLeLesson, measureWordsLesson, autumnColorsLesson, autumnWordsLesson],
+  lessons: [chunXiaoLesson, findPatternLesson, tuXingBaoBaoLesson, numberFriendsLesson, bingQuNaErLeLesson, measureWordsLesson, autumnColorsLesson, autumnWordsLesson],
 }

@@ -9,6 +9,7 @@ import ConnectLineInteraction from './components/ConnectLineInteraction.vue'
 import DragDropInteraction from './components/DragDropInteraction.vue'
 import DragSortInteraction from './components/DragSortInteraction.vue'
 import DrawInteraction from './components/DrawInteraction.vue'
+import FindPatternInteraction from './components/FindPatternInteraction.vue'
 import HotspotExploreInteraction from './components/HotspotExploreInteraction.vue'
 import MeasureStampInteraction from './components/MeasureStampInteraction.vue'
 import MemoryPairInteraction from './components/MemoryPairInteraction.vue'
@@ -42,6 +43,7 @@ export const INTERACTION_REGISTRY: Record<InteractionKind, InteractionComponent>
   'sequence-build': SequenceBuildInteraction,
   'measure-stamp': MeasureStampInteraction,
   'number-tile': NumberTileInteraction,
+  'find-pattern': FindPatternInteraction,
 }
 
 export function resolveInteraction(kind: InteractionKind): InteractionComponent {
