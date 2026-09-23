@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { InteractionResult, InteractionSpec, MascotId } from '@/domain'
+import type { InteractionPerformance } from './contract'
 
-import { computed } from 'vue'
+import type { InteractionResult, InteractionSpec, MascotId } from '@/domain'
+import { computed, ref } from 'vue'
 import { ListenButton } from '@/features/audio'
 import { MascotBubble } from '@/features/mascot'
+
 import { KButton, KIcon } from '@/ui'
 
 import { INTERACTION_META } from './contract'
@@ -48,6 +50,16 @@ const {
 const component = computed(() => resolveInteraction(spec.kind))
 
 /**
+ * 互动通过表演通道报告的过程。
+ * 角色与进度都由这里渲染 —— 组件不自己说话，也不自己画进度条。
+ */
+const performance = ref<InteractionPerformance>({})
+
+function onPerform(next: InteractionPerformance): void {
+  performance.value = next
+}
+
+/**
  * 玩法标签。
  * 孩子看到的不是「互动类型」这种术语，而是「选一选」「连一连」——
  * 这回答了产品判断标准里的「我一眼能不能知道这里是什么」。
@@ -70,10 +82,25 @@ function onSkip(): void {
 }
 
 const mood = computed(() => {
+  // 答对了就是庆祝，互动报告的舞台心情让位
   if (solved.value)
     return 'cheering' as const
+  if (performance.value.character?.mood)
+    return performance.value.character.mood
   return attempts.value > 0 ? ('thinking' as const) : ('happy' as const)
 })
+
+/**
+ * 角色台词：答对/跳过时用结算台词；否则优先听互动的报告 ——
+ * 「三块积木都放好了」比通用的「真棒」有用得多，因为它是**具体**的。
+ */
+const line = computed(() => {
+  if (solved.value || skipped.value)
+    return coachLine.value || spec.prompt
+  return performance.value.character?.line ?? coachLine.value ?? spec.prompt
+})
+
+const progress = computed(() => performance.value.progress)
 </script>
 
 <template>
@@ -88,10 +115,23 @@ const mood = computed(() => {
         就是照着玩法起的名字 —— 再报一次玩法名会变成两行一样的字（实测过）。
         玩法名（`meta.label`）留给家长端的能力统计用，不在孩子这一屏重复出现。
       -->
-      <p class="mt-2 flex items-center gap-1.5 font-body text-xs text-ink-faint">
-        <KIcon :name="meta.icon" size="sm" />
-        <span>正在锻炼：{{ meta.ability }}</span>
-      </p>
+      <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <p class="flex items-center gap-1.5 font-body text-xs text-ink-faint">
+          <KIcon :name="meta.icon" size="sm" />
+          <span>正在锻炼：{{ meta.ability }}</span>
+        </p>
+        <!--
+          累积可见：互动报告进度时显示。规范第四节第 3 条要求「边做边看得见」，
+          否则孩子要到最后一刻才知道自己离完成还差多远。
+        -->
+        <p
+          v-if="progress"
+          class="rounded-chip bg-paper-deep px-2 py-0.5 font-body text-xs text-ink-soft"
+          aria-live="polite"
+        >
+          已完成 {{ progress.done }} / {{ progress.total }}
+        </p>
+      </div>
     </header>
 
     <!--
@@ -112,10 +152,11 @@ const mood = computed(() => {
         :disabled="solved || skipped"
         @solved="onSolved"
         @missed="onMissed"
+        @perform="onPerform"
       />
     </div>
 
-    <MascotBubble :id="mascot" :text="coachLine || spec.prompt" :mood="mood">
+    <MascotBubble :id="mascot" :text="line" :mood="mood">
       <div v-if="canRevealHint || spec.skippable" class="mt-3 flex flex-wrap gap-2">
         <KButton
           v-if="canRevealHint"

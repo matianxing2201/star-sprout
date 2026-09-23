@@ -9,6 +9,14 @@ export const MASCOT_IDS = ['bear', 'rabbit', 'cat', 'fox', 'panda', 'robot'] as 
 
 export type MascotId = (typeof MASCOT_IDS)[number]
 
+export const MASCOT_MOODS = ['happy', 'curious', 'thinking', 'cheering'] as const
+
+/**
+ * 角色心情。**词汇属于领域**：外壳、角色气泡与互动的「表演通道」都用同一个类型，
+ * 不要各自内联一份联合类型（那会在第四处漏掉，然后静默失败）。
+ */
+export type MascotMood = (typeof MASCOT_MOODS)[number]
+
 /** 角色的语气风格，决定文案措辞与动效强度 */
 export type MascotVoice = 'warm' | 'lively' | 'calm' | 'clever' | 'cuddly' | 'curious'
 

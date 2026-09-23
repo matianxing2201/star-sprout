@@ -3,7 +3,7 @@ import type { InteractionComponentEmits } from '../contract'
 
 import type { ProgramBlock, SequenceBuildPayload } from '@/domain'
 import type { AppIconName } from '@/domain'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { toneVars } from '@/domain'
 import { cn } from '@/shared/utils'
 
@@ -33,6 +33,12 @@ const TARGET_FALLBACK: { emoji?: string, icon?: AppIconName, label: string } = {
 const program = ref<ProgramBlock[]>([])
 const running = ref(false)
 const hoverSlot = ref<number | null>(null)
+/** 刚放进去的那一格：给它一个落位确认拍 */
+const justInserted = ref<number | null>(null)
+/** 执行到第几步（0 = 没在跑）。角色与积木都跟着它走 */
+const activeStep = ref(0)
+let stepTimer: ReturnType<typeof setTimeout> | undefined
+let confirmTimer: ReturnType<typeof setTimeout> | undefined
 
 const actor = computed(() => payload.actor ?? ACTOR_FALLBACK)
 const target = computed(() => payload.target ?? TARGET_FALLBACK)
@@ -69,6 +75,20 @@ watch(point, (next) => {
   hoverSlot.value = slot === null ? null : Number.parseInt(slot, 10)
 })
 
+/**
+ * 角色走到第几步。
+ * 起点是 0.25rem（静止位），每一步等分到 100% - 3.5rem（终点），
+ * 所以 k=0 时正好等于静止位，不会在起跑那一瞬跳 2px。
+ */
+const actorStyle = computed(() => {
+  if (!running.value)
+    return 'translateX(0.25rem)'
+
+  const total = Math.max(payload.solution.length, 1)
+  const ratio = activeStep.value / total
+  return `translateX(calc(0.25rem + (100% - 3.75rem) * ${ratio}))`
+})
+
 function usedCount(blockId: string): number {
   return program.value.filter(block => block.id === blockId).length
 }
@@ -87,7 +107,33 @@ function insertBlock(blockId: string, index: number): void {
 
   const at = Math.min(Math.max(index, 0), program.value.length)
   program.value.splice(at, 0, block)
+  justInserted.value = at
+  if (confirmTimer)
+    clearTimeout(confirmTimer)
+  confirmTimer = setTimeout(() => {
+    justInserted.value = null
+  }, 320)
 }
+
+/**
+ * 累积可见（规范第四节第 3 条）：每放一块就报一次进度。
+ * 搭满时额外给角色一句**具体**的观察 —— 这时候该由它说「程序搭好了」，
+ * 而不是等到最后由外壳说一句通用的「真棒」。
+ */
+watch(
+  program,
+  (next) => {
+    emit('perform', { progress: { done: next.length, total: payload.solution.length } })
+
+    if (next.length === payload.solution.length) {
+      emit('perform', {
+        character: { mood: 'curious', line: `${next.length} 步都摆好了，让它走一趟？` },
+      })
+    }
+  },
+  // splice 是**原地**改动，引用不变 —— 不加 deep 这条 watch 根本不会触发
+  { deep: true },
+)
 
 /** 触摸屏与键盘的路径：点一下积木就接到程序末尾，不用按住拖 */
 function appendBlock(blockId: string): void {
@@ -124,13 +170,39 @@ function run(): void {
     return
   }
 
-  // 先让角色真的走一趟，再报完成 —— 600ms 内结束，不拖沓
+  // 让角色**一步步**走完，每一步亮一格积木 ——
+  // 原来是「位移 600ms 之后直接报完成」，孩子看不出每一步做了什么。
+  // 单步节奏 200ms（与 duration-quick 同值，每步都收干净再走下一步），
+  // 三步共 600ms，总时长与原来持平，但过程现在**看得见**。
   running.value = true
-  setTimeout(() => {
-    running.value = false
-    emit('solved', ids)
-  }, 600)
+  activeStep.value = 0
+
+  const total = payload.solution.length
+  const step = (): void => {
+    activeStep.value += 1
+
+    if (activeStep.value >= total) {
+      emit('perform', { character: { mood: 'cheering', line: `${total} 步都走到了！` } })
+      stepTimer = setTimeout(() => {
+        running.value = false
+        activeStep.value = 0
+        emit('solved', ids)
+      }, 240)
+      return
+    }
+    stepTimer = setTimeout(step, 200)
+  }
+
+  // 第一步**立刻**走：孩子刚按了「出发」，延迟一拍才动是明显的卡顿
+  step()
 }
+
+onBeforeUnmount(() => {
+  if (stepTimer)
+    clearTimeout(stepTimer)
+  if (confirmTimer)
+    clearTimeout(confirmTimer)
+})
 </script>
 
 <template>
@@ -154,8 +226,8 @@ function run(): void {
         -->
         <div class="absolute inset-x-0 top-1/2 -translate-y-1/2" aria-hidden="true">
           <div
-            class="transition-transform duration-settle ease-soft"
-            :style="{ transform: running ? 'translateX(calc(100% - 3.5rem))' : 'translateX(0.25rem)' }"
+            class="transition-transform duration-quick ease-soft"
+            :style="{ transform: actorStyle }"
           >
             <KVisual :icon="actor.icon" :emoji="actor.emoji" size="xl" />
           </div>
@@ -190,8 +262,10 @@ function run(): void {
           type="button"
           :disabled="disabled"
           :aria-label="`第 ${index + 1} 步：${block.label}，点一下拿掉`"
+          :data-confirm="justInserted === index ? 'true' : undefined"
+          :data-running="running && index < activeStep ? 'true' : undefined"
           :class="cn(
-            'flex items-center gap-1.5 rounded-chip border-2 border-[var(--tone-line)] bg-[var(--tone-soft)] px-3 py-2 font-display text-sm text-[var(--tone-deep)] shadow-press',
+            'sb-block flex items-center gap-1.5 rounded-chip border-2 border-[var(--tone-line)] bg-[var(--tone-soft)] px-3 py-2 font-display text-sm text-[var(--tone-deep)] shadow-press',
             hoverSlot === index && 'fx-drop-active',
           )"
           @click="removeAt(index)"
@@ -249,3 +323,46 @@ function run(): void {
     </KButton>
   </div>
 </template>
+
+<style scoped>
+/*
+  落位确认拍（confirm）：积木刚放下去时弹一下，让孩子知道「这一步记上了」。
+  执行中（data-running）：这一步已经跑过 —— 逐拍执行的意义就在这条高亮上，
+  否则孩子看到的只是一次整体位移，看不出「第 2 步做了什么」。
+*/
+.sb-block {
+  transition:
+    transform var(--duration-quick) var(--ease-soft),
+    box-shadow var(--duration-quick) var(--ease-soft);
+}
+
+.sb-block[data-confirm='true'] {
+  animation: sb-confirm var(--duration-settle) var(--ease-bounce) both;
+}
+
+.sb-block[data-running='true'] {
+  background: var(--tone);
+  color: var(--color-paper);
+}
+
+.sb-block[data-running='true'] .font-numeric {
+  color: color-mix(in srgb, var(--color-paper) 75%, transparent);
+}
+
+@keyframes sb-confirm {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.92);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+</style>

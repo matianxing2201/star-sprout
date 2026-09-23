@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MascotId } from '@/domain'
+import type { MascotId, MascotMood } from '@/domain'
 
 import { computed } from 'vue'
 import { getMascot } from '@/domain'
@@ -20,7 +20,7 @@ const {
   id: MascotId
   text: string
   size?: 'sm' | 'md' | 'lg'
-  mood?: 'happy' | 'curious' | 'thinking' | 'cheering'
+  mood?: MascotMood
   align?: 'left' | 'right'
 }>()
 
