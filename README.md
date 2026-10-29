@@ -71,37 +71,6 @@ src/
 
 ## 部署
 
-线上地址：<https://starsprout.njldgq.workers.dev>
+项目通过 GitHub Actions 自动发布到 GitHub Pages。推送到 `main` 分支或在 Actions 页面手动运行 **Deploy to GitHub Pages** 工作流即可触发构建和部署。构建会生成单页应用回退页面，直接访问或刷新站内子路由也能正常打开。
 
-纯静态站点，构建产物 `dist/` 由 Cloudflare Workers 托管，配置见 [wrangler.jsonc](./wrangler.jsonc) —— 启用了 `single-page-application` 回退，直接访问或刷新子路由不会 404。
-
-### 自动发布
-
-仓库接入 Cloudflare Workers Builds，push 到 `main` 自动构建并部署，开 PR 会自动生成预览地址。
-
-在 Cloudflare Dashboard → **Workers & Pages** → `starsprout` → **Settings** → **Builds** 连接本仓库，构建配置：
-
-| 配置项   | 值                    |
-| -------- | --------------------- |
-| 生产分支 | `main`                |
-| 构建命令 | `pnpm build`          |
-| 部署命令 | `npx wrangler deploy` |
-| 环境变量 | `NODE_VERSION=22`     |
-
-> `NODE_VERSION` 必须显式指定，构建镜像的默认 Node 版本可能低于 `engines` 要求的 `>=20.19.0`。
-
-### 手动发布
-
-```bash
-pnpm build
-CLOUDFLARE_API_TOKEN=xxx npx wrangler deploy
-```
-
-Token 在 Cloudflare Dashboard → **My Profile** → **API Tokens** 创建（Custom token），权限需要：
-
-| 类型    | 权限                    |
-| ------- | ----------------------- |
-| Account | Workers Scripts → Edit  |
-| Account | Account Settings → Read |
-
-后期接数据库 / KV / 对象存储时，再补 `D1 → Edit`、`Workers KV Storage → Edit`、`R2 → Edit`。
+首次启用时，在 GitHub 仓库 **Settings → Pages → Build and deployment** 中将 **Source** 设为 **GitHub Actions**。后续部署状态和访问地址可在 Actions 工作流运行结果及 Pages 设置页查看。无需配置部署密钥。

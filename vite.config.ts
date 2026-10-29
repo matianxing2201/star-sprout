@@ -6,6 +6,10 @@ import Icons from 'unplugin-icons/vite'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  // GitHub Pages serves project sites below /<repository>/.
+  base: process.env.GITHUB_ACTIONS === 'true'
+    ? `/${process.env.GITHUB_REPOSITORY?.split('/')[1] ?? ''}/`
+    : '/',
   plugins: [
     vue(),
     tailwindcss(),
