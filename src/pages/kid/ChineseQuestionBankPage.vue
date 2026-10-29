@@ -20,6 +20,7 @@ const illustrationFailed = ref(false)
 const currentUnit = computed(() => bank.units[unitIndex.value]!)
 const currentPoint = computed<CurriculumKnowledgePoint>(() => currentUnit.value.knowledgePoints[pointIndex.value]!)
 const currentQuestion = computed(() => currentPoint.value.questions[questionIndex.value]!)
+const illustrationUrl = computed(() => `${import.meta.env.BASE_URL}${currentQuestion.value.illustration.replace(/^\//, '')}`)
 const correct = computed(() => selectedAnswer.value === currentQuestion.value.answerId)
 const pointsInUnit = computed(() => currentUnit.value.knowledgePoints.length)
 
@@ -173,7 +174,7 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
               <div class="relative flex min-h-56 items-center bg-language-soft p-3 sm:p-4">
                 <img
                   v-if="!illustrationFailed"
-                  :src="currentQuestion.illustration"
+                  :src="illustrationUrl"
                   :alt="`童书插图：${currentPoint.title}`"
                   class="aspect-[3/2] w-full rounded-tile object-contain shadow-press"
                   width="640"

@@ -13,6 +13,11 @@ const router = useRouter();
 const question = computed(() =>
   grade1MathQuestions.find((item) => item.id === route.params.questionId)
 );
+const illustrationUrl = computed(() =>
+  question.value
+    ? `${import.meta.env.BASE_URL}${question.value.illustration.replace(/^\//, '')}`
+    : ''
+);
 const groupQuestions = computed(() =>
   question.value
     ? grade1MathQuestions.filter(
@@ -120,7 +125,7 @@ if (
           class="relative flex min-h-72 items-center justify-center bg-white p-5 sm:p-7"
         >
           <img
-            :src="question.illustration"
+            :src="illustrationUrl"
             :alt="question.illustrationAlt"
             class="aspect-[3/2] w-full rounded-tile object-contain"
             width="768"
