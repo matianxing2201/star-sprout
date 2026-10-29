@@ -12,8 +12,7 @@ import { categories as preschoolCategories, grade as preschoolGrade } from './pr
 /**
  * 八个年级的内容包，顺序 = 成长阶梯的顺序。
  *
- * 只有中班与一年级已经有可玩的示例课程；其余年级目前只有目录（领域与知识方向），
- * 主题与课程等教案到位后填进各自文件夹即可 —— 页面、路由、组件都不需要改动。
+ * 当前保留八个年级的目录（领域与知识方向），不加载课程或题目。
  */
 export const GRADE_CONTENTS: GradeContent[] = [
   nurseryContent,

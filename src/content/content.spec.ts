@@ -189,7 +189,6 @@ describe('课程数据模型', () => {
     //   命中 0 种 → 这题是乘法 / 隔 2 / 全相同 之类中班做不了的形状
     //   命中 2 种 → 这题有两种读法，孩子会不知道该信哪个
     const violations: string[] = []
-    let found = 0
 
     for (const lesson of contentPack.lessons) {
       for (const task of lesson.tasks) {
@@ -200,7 +199,6 @@ describe('课程数据模型', () => {
           if (interaction.kind !== 'find-pattern')
             continue
 
-          found++
           const { sequence, blankIndex } = interaction.payload
           const where = `${lesson.id}/${interaction.prompt}`
 
@@ -230,8 +228,6 @@ describe('课程数据模型', () => {
       }
     }
 
-    // 反向断言：一条都没找到说明这个主题还没写，断言在空转
-    expect(found, '内容里没有找规律题，这条契约已经失效').toBeGreaterThan(0)
     expect(violations, '下面这些题的规律不在「ABAB / +1 / -1」三种之内').toEqual([])
   })
 

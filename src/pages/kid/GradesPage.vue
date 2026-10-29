@@ -8,12 +8,10 @@ import { useCatalogStore, useProfileStore } from '@/stores'
 import { KButton, KIcon, KIconTile, KSectionTitle, KTag, TONE_ICONS } from '@/ui'
 
 /**
- * 年级选择 / 成长阶梯
+ * 年级大纲入口
  * ==================
  *
- * 需求明确禁止下拉框，并要求孩子能理解“我现在在哪、下一阶段有什么”。
- * 因此这里做成一条可以走上去的阶梯，当前阶段被点亮，
- * 选中之后立刻告诉孩子“这个阶段会学什么、之后会学什么”。
+ * 选择年级后查看该阶段的学科分类、学习重点与能力范围。
  */
 const profile = useProfileStore()
 const catalog = useCatalogStore()
@@ -21,7 +19,6 @@ const router = useRouter()
 
 const current = computed(() => catalog.grade(profile.gradeId))
 const categories = computed(() => catalog.categoriesOf(profile.gradeId))
-const topics = computed(() => catalog.topics.filter(topic => topic.gradeId === profile.gradeId))
 
 function enter(): void {
   router.push({ name: ROUTE_NAMES.categories, params: { gradeId: profile.gradeId } })
@@ -31,9 +28,9 @@ function enter(): void {
 <template>
   <div class="flex flex-col gap-8">
     <KSectionTitle
-      eyebrow="成长阶梯"
-      title="现在走到哪一级了？"
-      description="点一点，看看每个阶段会玩到什么。换阶段不会丢掉已经收集的星星。"
+      eyebrow="年级大纲"
+      title="按年级查看学习内容"
+      description="选择一个年级，查看对应的学科分类、学习重点和能力范围。"
       tone="star"
     />
 
@@ -60,10 +57,10 @@ function enter(): void {
         <div class="mt-5 rounded-tile border-2 border-dashed border-line-strong bg-paper-deep/60 p-4">
           <p class="flex items-center gap-2 font-display text-base text-ink">
             <KIcon name="binoculars" size="sm" />
-            下一阶段会有什么？
+            本年级学习范围
           </p>
           <p class="mt-1 font-body text-sm text-ink-soft">
-            {{ current.nextHint }}
+            共 {{ categories.length }} 个学科分类，涵盖本阶段的主要学习方向。
           </p>
         </div>
 
@@ -76,8 +73,8 @@ function enter(): void {
       </div>
 
       <div class="rounded-blob border-2 border-line bg-surface p-6 shadow-sticker">
-        <p class="font-body text-xs font-bold tracking-[0.2em] text-ink-faint uppercase">
-          这个阶段的领域
+          <p class="font-body text-xs font-bold tracking-[0.2em] text-ink-faint uppercase">
+          本年级大纲
         </p>
 
         <ul class="mt-4 flex flex-wrap gap-2">
@@ -95,15 +92,15 @@ function enter(): void {
               {{ categories.length }}
             </p>
             <p class="font-body text-xs text-ink-soft">
-              个学习领域
+              个学科分类
             </p>
           </div>
           <div class="rounded-tile bg-paper-deep p-3">
             <p class="font-numeric text-2xl font-extrabold text-ink">
-              {{ topics.length }}
+              {{ categories.reduce((total, category) => total + category.skills.length, 0) }}
             </p>
             <p class="font-body text-xs text-ink-soft">
-              个学习主题
+              项学习内容
             </p>
           </div>
         </div>

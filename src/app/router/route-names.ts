@@ -7,26 +7,34 @@
  */
 export const ROUTE_NAMES = {
   /** 首页 / 学习世界 */
-  home: 'home',
+  home: "home",
   /** 年级选择（成长阶梯） */
-  grades: 'grades',
+  grades: "grades",
+  /** 幼小衔接知识地图 */
+  readiness: "readiness",
   /** 学习领域（二级分类） */
-  categories: 'categories',
+  categories: "categories",
+  /** 学科题库 */
+  questionBank: "question-bank",
+  /** 一年级上册数学大纲 */
+  mathOutline: "math-outline",
+  /** 一年级上册数学练习题 */
+  mathQuestion: "math-question",
   /** 课程地图（主题路径） */
-  courseMap: 'course-map',
+  courseMap: "course-map",
   /** 课程学习页 */
-  lesson: 'lesson',
+  lesson: "lesson",
   /** 奖励中心 */
-  rewards: 'rewards',
+  rewards: "rewards",
   /** 我的成长 */
-  growth: 'growth',
+  growth: "growth",
   /** 家长中心（与儿童端完全分开） */
-  parent: 'parent',
-  parentReport: 'parent-report',
-  parentSettings: 'parent-settings',
+  parent: "parent",
+  parentReport: "parent-report",
+  parentSettings: "parent-settings",
   /** 仅开发环境：图标词汇表总览，供内容作者挑图标名 */
-  iconGallery: 'icon-gallery',
-  notFound: 'not-found',
-} as const
+  iconGallery: "icon-gallery",
+  notFound: "not-found",
+} as const;
 
-export type RouteName = (typeof ROUTE_NAMES)[keyof typeof ROUTE_NAMES]
+export type RouteName = (typeof ROUTE_NAMES)[keyof typeof ROUTE_NAMES];

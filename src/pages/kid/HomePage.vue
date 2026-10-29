@@ -193,6 +193,9 @@ function lessonIcon(lesson: Lesson | undefined): AppIconName {
         tone="star"
       >
         <template #action>
+          <KButton variant="soft" size="sm" :to="{ name: ROUTE_NAMES.readiness }">
+            幼小衔接知识地图
+          </KButton>
           <KButton variant="soft" size="sm" :to="{ name: ROUTE_NAMES.categories, params: { gradeId: profile.gradeId } }">
             看全部领域
           </KButton>

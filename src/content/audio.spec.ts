@@ -95,13 +95,6 @@ describe('内容里的范读', () => {
     expect(invalid.map(item => `${item.where} → ${item.id}`)).toEqual([])
   })
 
-  it('这一课确实用上了范读（识字启蒙的「声音」一环不能空着）', () => {
-    // 识字启蒙的路线是「图片→汉字→声音→游戏→记忆」，
-    // 范读要是没接上，「声音」这一环就是空的 —— 那这一课就没落地。
-    const ids = declaredClipIds().map(item => item.id)
-    expect(ids.length).toBeGreaterThan(0)
-  })
-
   it('已生成的音频文件与声明的 clipId 对得上（没配密钥时跳过）', () => {
     // 这一条只在跑过 audio:sync 的机器上有意义：
     // CI 无密钥、不生成，此时它必须安静跳过而不是判失败。

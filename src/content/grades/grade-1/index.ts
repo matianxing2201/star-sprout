@@ -1,5 +1,4 @@
 import type { GradeContent } from '../types'
-import { xiaoTuZiLesson } from './lessons/xiao-tu-zi'
 import { categories, grade } from './taxonomy'
 import { topics } from './topics'
 
@@ -8,5 +7,5 @@ export const grade1Content: GradeContent = {
   grade,
   categories,
   topics,
-  lessons: [xiaoTuZiLesson],
+  lessons: [],
 }

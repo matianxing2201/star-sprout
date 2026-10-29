@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { Category } from '@/domain'
+import type { Category } from "@/domain";
 
-import { computed } from 'vue'
-import { toneVars } from '@/domain'
-import { cn } from '@/shared/utils'
-import { KIconTile, KProgress, KTag, TONE_ICONS } from '@/ui'
+import { computed } from "vue";
+import { toneVars } from "@/domain";
+import { KIconTile, KTag, TONE_ICONS } from "@/ui";
 
 /**
  * 领域卡片（二级分类）
@@ -15,27 +14,20 @@ import { KIconTile, KProgress, KTag, TONE_ICONS } from '@/ui'
  */
 const {
   category,
-  topicCount,
-  lessonCount,
-  mastery,
-  available,
+  questionCount = 0,
+  outlineCount = 0,
 } = defineProps<{
-  category: Category
-  topicCount: number
-  lessonCount: number
-  mastery: number
-  /** 是否有可玩的内容；没有时卡片仍然可点，进去看到“内容准备中” */
-  available: boolean
-}>()
+  category: Category;
+  questionCount?: number;
+  outlineCount?: number;
+}>();
 
-const skills = computed(() => category.skills.slice(0, 6))
-const restCount = computed(() => Math.max(0, category.skills.length - skills.value.length))
+const skills = computed(() => category.skills);
 </script>
 
 <template>
   <div
-    class="flex h-full flex-col rounded-card border-2 border-[var(--tone-line)] bg-surface p-5 shadow-sticker transition-transform"
-    :class="cn('fx-tap hover:shadow-lift')"
+    class="flex h-full flex-col rounded-card border-2 border-[var(--tone-line)] bg-surface p-5 shadow-sticker"
     :style="toneVars(category.tone)"
   >
     <div class="flex items-start gap-3">
@@ -60,24 +52,30 @@ const restCount = computed(() => Math.max(0, category.skills.length - skills.val
           {{ skill }}
         </KTag>
       </li>
-      <li v-if="restCount > 0">
-        <KTag tone="neutral" size="sm">
-          +{{ restCount }}
-        </KTag>
+    </ul>
+
+    <p class="mt-4 font-body text-xs font-bold tracking-wide text-ink-faint">
+      学习重点
+    </p>
+    <ul class="mt-2 flex flex-wrap gap-1.5">
+      <li v-for="focus in category.focus" :key="focus">
+        <KTag tone="neutral" size="sm">{{ focus }}</KTag>
       </li>
     </ul>
 
-    <div class="mt-auto pt-5">
-      <KProgress
-        :value="mastery"
-        :tone="category.tone"
-        size="sm"
-        :label="available ? `掌握程度 · ${lessonCount} 节探索` : '内容准备中'"
-        show-value
-      />
-      <p class="mt-2 font-body text-xs text-ink-faint">
-        {{ topicCount > 0 ? `${topicCount} 个学习主题` : '等待教案' }}
-      </p>
-    </div>
+    <p
+      v-if="questionCount > 0"
+      class="mt-auto flex items-center justify-between border-t border-line pt-4 font-body text-xs font-bold text-language-deep"
+    >
+      <span>一年级上册 · {{ questionCount }} 道题</span>
+      <KIcon name="arrow-right" size="sm" />
+    </p>
+    <p
+      v-else-if="outlineCount > 0"
+      class="mt-auto flex items-center justify-between border-t border-line pt-4 font-body text-xs font-bold text-math-deep"
+    >
+      <span>一年级上册 · {{ outlineCount }} 个主题</span>
+      <KIcon name="arrow-right" size="sm" />
+    </p>
   </div>
 </template>

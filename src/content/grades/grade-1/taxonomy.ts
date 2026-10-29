@@ -1,6 +1,6 @@
 import type { Category, Grade } from '@/domain'
 
-/** 一年级：从幼儿园进入小学，开始以正式学科为主。 */
+/** 一年级大纲只保留语文、数学、英语三科。 */
 export const grade: Grade = {
   id: 'grade-1',
   name: '一年级',
@@ -10,11 +10,11 @@ export const grade: Grade = {
   icon: 'tree',
   tone: 'language',
   tagline: '背上书包，做真正的小学生',
-  summary: '进入正式学科学习，在语文、数学、英语等学科上打牢基础，同时保护学习兴趣与自主性。',
+  summary: '从语文、数学、英语三科打牢基础，同时保护学习兴趣与自主性。',
   nextHint: '到了二年级，你会学乘法口诀，还能写出完整的小故事！',
 }
 
-/** 一年级二级分类：8 个学科领域。 */
+/** 一年级三个学科分类。 */
 export const categories: Category[] = [
   {
     id: 'grade-1-chinese',
@@ -48,60 +48,5 @@ export const categories: Category[] = [
     focus: ['字母单词', '听说习惯', '情景表达'],
     skills: ['字母', '单词', '词汇', '句型', '听力', '口语', '阅读启蒙', '英语儿歌', '情景表达'],
     order: 3,
-  },
-  {
-    id: 'grade-1-science',
-    gradeId: 'grade-1',
-    name: '科学',
-    icon: 'flask',
-    tone: 'science',
-    summary: '观察身边的动植物与天气，在简单实验里认识材料、声音、光、水和空气。',
-    focus: ['自然观察', '材料认知', '动手实验'],
-    skills: ['动物', '植物', '天气', '材料', '声音', '光', '水', '空气', '简单实验'],
-    order: 4,
-  },
-  {
-    id: 'grade-1-moral',
-    gradeId: 'grade-1',
-    name: '道德与法治',
-    icon: 'scales',
-    tone: 'moral',
-    summary: '在家庭、学校与公共生活中学会礼貌、守规则、懂安全、有责任。',
-    focus: ['礼貌与规则', '安全意识', '责任意识'],
-    skills: ['家庭', '学校', '同学', '礼貌', '规则', '安全', '公共生活', '责任'],
-    order: 5,
-  },
-  {
-    id: 'grade-1-art',
-    gradeId: 'grade-1',
-    name: '艺术',
-    icon: 'palette',
-    tone: 'art',
-    summary: '音乐与美术并重，在绘画、手工和欣赏中表达自己的感受。',
-    focus: ['音乐感受', '美术表现', '欣赏习惯'],
-    skills: ['音乐', '美术', '创意绘画', '手工', '欣赏'],
-    order: 6,
-  },
-  {
-    id: 'grade-1-pe',
-    gradeId: 'grade-1',
-    name: '体育与健康',
-    icon: 'run',
-    tone: 'life',
-    summary: '通过基础运动与体育游戏认识身体，养成健康习惯和运动安全常识。',
-    focus: ['基础运动', '身体认知', '健康习惯'],
-    skills: ['基础运动', '身体认知', '健康习惯', '体育游戏', '安全'],
-    order: 7,
-  },
-  {
-    id: 'grade-1-it',
-    gradeId: 'grade-1',
-    name: '信息科技启蒙',
-    icon: 'code',
-    tone: 'code',
-    summary: '认识计算机和数字世界，学会用鼠标、键盘完成简单操作。',
-    focus: ['鼠标键盘操作', '信息意识', '数字世界认知'],
-    skills: ['计算机认知', '鼠标', '键盘', '文件', '信息', '简单数字世界认知'],
-    order: 8,
   },
 ]
