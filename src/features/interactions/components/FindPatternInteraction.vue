@@ -36,6 +36,11 @@ const emit = defineEmits<InteractionComponentEmits>()
 
 const answer = computed(() => payload.sequence[payload.blankIndex])
 
+function boxLabel(index: number, value: number): string {
+  const place = payload.illustration ? '石板' : '方框'
+  return index === payload.blankIndex ? `空着的${place}` : `第 ${index + 1} 格是 ${value}`
+}
+
 const filledValue = ref<number | null>(null)
 const wrongValue = ref<number | null>(null)
 /** focus 拍：刚被点中的那个选项（无论对错） */
@@ -74,7 +79,61 @@ function pick(value: number): void {
 <template>
   <div class="flex flex-col items-center gap-6">
     <!-- 五个方框排成一排；文字尽量少，孩子要靠数字本身读题 -->
-    <div class="grid w-full max-w-md grid-cols-5 gap-2" role="list" aria-label="一排五个方框，有一个空着">
+    <div
+      v-if="payload.illustration"
+      class="relative aspect-[4/3] w-full overflow-hidden rounded-blob border-2 border-line bg-math-soft sm:aspect-[3/1]"
+      role="img"
+      :aria-label="payload.illustration.description"
+    >
+      <img
+        :src="payload.illustration.backgroundImage"
+        alt=""
+        aria-hidden="true"
+        class="absolute inset-0 size-full object-cover"
+      >
+      <img
+        :src="payload.illustration.characterImage"
+        alt=""
+        aria-hidden="true"
+        class="absolute bottom-2 left-2 z-10 h-16 w-16 rounded-lg border border-line/60 bg-white object-contain sm:bottom-3 sm:left-3 sm:h-20 sm:w-20"
+      >
+      <div
+        class="absolute inset-x-3 top-1/2 grid -translate-y-1/2 grid-cols-5 gap-1.5 sm:inset-x-[15%] sm:gap-3"
+        role="list"
+        aria-label="公园小路上的数字顺序，有一个空位"
+      >
+        <div
+          v-for="(value, index) in payload.sequence"
+          :key="index"
+          role="listitem"
+          :aria-label="boxLabel(index, value)"
+          :data-confirm="index === payload.blankIndex && filledValue !== null ? 'true' : undefined"
+          :class="cn(
+            'fp-box grid aspect-square place-items-center rounded-[38%] border-2 shadow-sticker sm:rounded-[42%]',
+            index === payload.blankIndex
+              ? (filledValue !== null
+                ? 'border-success bg-success-soft/95'
+                : 'border-dashed border-[var(--tone-line)] bg-white/90')
+              : 'border-white bg-white/95',
+          )"
+        >
+          <span
+            v-if="index === payload.blankIndex"
+            class="font-display text-xl sm:text-3xl"
+            :class="filledValue !== null ? 'text-success-deep' : 'text-ink-faint'"
+          >
+            {{ filledValue !== null ? filledValue : '?' }}
+          </span>
+          <span v-else class="font-display text-xl text-ink sm:text-3xl">{{ value }}</span>
+        </div>
+      </div>
+    </div>
+    <div
+      v-else
+      class="grid w-full max-w-md grid-cols-5 gap-2"
+      role="list"
+      aria-label="一排五个方框，有一个空着"
+    >
       <div
         v-for="(value, index) in payload.sequence"
         :key="index"

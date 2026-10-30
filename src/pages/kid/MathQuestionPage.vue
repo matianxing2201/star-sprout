@@ -28,6 +28,9 @@ const groupQuestions = computed(() =>
 const questionIndex = computed(() =>
   groupQuestions.value.findIndex((item) => item.id === route.params.questionId)
 );
+const overallQuestionIndex = computed(() =>
+  grade1MathQuestions.findIndex((item) => item.id === route.params.questionId)
+);
 const currentTopic = computed(() =>
   grade1MathTopics.find((item) => item.id === question.value?.topicId)
 );
@@ -62,7 +65,7 @@ function backToOutline(): void {
 function continueQuestions(): void {
   if (selectedAnswer.value === null) return;
 
-  const nextQuestion = groupQuestions.value[questionIndex.value + 1];
+  const nextQuestion = grade1MathQuestions[overallQuestionIndex.value + 1];
   if (!nextQuestion) {
     backToOutline();
     return;
@@ -213,7 +216,9 @@ if (
       >
         <KButton variant="soft" tone="math" @click="continueQuestions">
           {{
-            questionIndex + 1 < groupQuestions.length ? "下一题" : "完成这一组"
+            overallQuestionIndex + 1 < grade1MathQuestions.length
+              ? "下一题"
+              : "完成练习"
           }}
           <KIcon name="arrow-right" size="sm" />
         </KButton>

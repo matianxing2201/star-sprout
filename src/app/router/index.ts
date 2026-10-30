@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import { installChunkReloadGuard } from './chunk-reload'
 import { routes } from './routes'
@@ -15,7 +15,7 @@ const DEFAULT_TITLE = `${BRAND} · 儿童自主探索学习空间`
  */
 export function createAppRouter() {
   const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHashHistory(import.meta.env.BASE_URL),
     routes,
     scrollBehavior(_to, _from, savedPosition) {
       if (savedPosition != null)

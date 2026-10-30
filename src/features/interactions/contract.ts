@@ -67,6 +67,7 @@ export interface InteractionMeta {
 
 export const INTERACTION_META: Record<InteractionKind, Omit<InteractionMeta, 'kind'>> = {
   'choose-one': { label: '选一选', icon: 'click-hand', ability: '观察与判断' },
+  'number-entry': { label: '填数字', icon: 'grid', ability: '数值计算' },
   'choose-many': { label: '全都找出来', icon: 'magnifier', ability: '分类与归纳' },
   'tap-target': { label: '点一点', icon: 'target', ability: '观察力' },
   'drag-sort': { label: '排一排', icon: 'sort', ability: '顺序与逻辑' },

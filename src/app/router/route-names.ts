@@ -20,6 +20,10 @@ export const ROUTE_NAMES = {
   mathOutline: "math-outline",
   /** 一年级上册数学练习题 */
   mathQuestion: "math-question",
+  /** 仅开发环境：第二单元单题样例 */
+  mathUnitTwoSample: "math-unit-two-sample",
+  /** 一年级上册数学第二单元互动练习 */
+  mathUnitTwoPractice: "math-unit-two-practice",
   /** 课程地图（主题路径） */
   courseMap: "course-map",
   /** 课程学习页 */

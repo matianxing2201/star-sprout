@@ -5,6 +5,7 @@ import type { InteractionKind } from '@/domain'
 import ChooseManyInteraction from './components/ChooseManyInteraction.vue'
 import ChooseOneInteraction from './components/ChooseOneInteraction.vue'
 import ColorFillInteraction from './components/ColorFillInteraction.vue'
+import NumberEntryInteraction from './components/NumberEntryInteraction.vue'
 import ConnectLineInteraction from './components/ConnectLineInteraction.vue'
 import DragDropInteraction from './components/DragDropInteraction.vue'
 import DragSortInteraction from './components/DragSortInteraction.vue'
@@ -30,6 +31,7 @@ import TapTargetInteraction from './components/TapTargetInteraction.vue'
  */
 export const INTERACTION_REGISTRY: Record<InteractionKind, InteractionComponent> = {
   'choose-one': ChooseOneInteraction,
+  'number-entry': NumberEntryInteraction,
   'choose-many': ChooseManyInteraction,
   'tap-target': TapTargetInteraction,
   'drag-sort': DragSortInteraction,

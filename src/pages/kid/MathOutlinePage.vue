@@ -27,6 +27,14 @@ function questionsForPoint(pointId: string) {
   );
 }
 
+function isUnitTwoKnowledgePoint(pointId: string): boolean {
+  return ['kp-cnm-p008', 'kp-cnm-p009', 'kp-cnm-p010', 'kp-cnm-p011', 'kp-cnm-p012', 'kp-cnm-p013', 'kp-cnm-p253'].includes(pointId)
+}
+
+function unitTwoQuestionCount(): number {
+  return 6
+}
+
 if (gradeId.value !== "grade-1" || categoryId.value !== "grade-1-math") {
   router.replace({
     name: ROUTE_NAMES.categories,
@@ -142,7 +150,19 @@ if (gradeId.value !== "grade-1" || categoryId.value !== "grade-1-math") {
                     {{ point.detail }}
                   </p>
                   <RouterLink
-                    v-if="questionsForPoint(point.id).length > 0"
+                    v-if="isUnitTwoKnowledgePoint(point.id)"
+                    :to="{
+                      name: ROUTE_NAMES.mathUnitTwoPractice,
+                      params: { gradeId, categoryId },
+                      query: { knowledgePointId: point.id },
+                    }"
+                    class="mt-3 inline-flex items-center gap-1 rounded-chip bg-math-deep px-3 py-1.5 font-body text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+                  >
+                    开始练习 · {{ unitTwoQuestionCount() }} 题
+                    <KIcon name="arrow-right" size="xs" />
+                  </RouterLink>
+                  <RouterLink
+                    v-else-if="questionsForPoint(point.id).length > 0"
                     :to="{
                       name: ROUTE_NAMES.mathQuestion,
                       params: {

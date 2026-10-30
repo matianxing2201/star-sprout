@@ -25,6 +25,8 @@ import type { ToneKey } from '../shared/tone'
 export const INTERACTION_KINDS = [
   /** 单选：点一个就对 */
   'choose-one',
+  /** 填数字：按题目要求输入数值答案 */
+  'number-entry',
   /** 多选：选出所有符合条件的 */
   'choose-many',
   /** 场景点击：在图里点出目标（找不同 / 找信息） */
@@ -103,6 +105,12 @@ export interface ChooseOnePayload {
   columns?: 2 | 3 | 4
   /** 选项是“卡片”还是“场景里的大图” */
   layout?: 'card' | 'scene'
+}
+
+export interface NumberEntryPayload {
+  answer: string
+  maxDigits?: number
+  placeholder?: string
 }
 
 export interface ChooseManyPayload {
@@ -383,7 +391,7 @@ export interface NumberTilePayload {
  *   - 「10 以内」         → 数字范围 1~10（schema 强制；0 直接不给进，比"尽量少用"更稳）
  *
  * **内容声明真值，组件只负责比较**：
- * `sequence` 是完整的 5 个数，孩子只看得到除 `blankIndex` 之外的那 4 个。
+ * `sequence` 是完整数列，孩子只看得到除 `blankIndex` 之外的数字。
  * 这样「答案是什么」「规律是什么」都属于内容，
  * 而「规律只能是 ABAB / 顺数 +1 / 倒数 -1」可以由契约测试整段检查
  * （乘法、隔 2 个数这类中班做不了的规律会被自动挡在外面）。
@@ -403,6 +411,15 @@ export interface FindPatternPayload {
    * 不写则退回外壳的 nudge —— 宁可不说话，也不要编一句通用鼓励。
    */
   hint?: string
+  /**
+   * 可选的看图表达：背景与角色来自图片，准确数列仍由组件绘制。
+   */
+  illustration?: {
+    backgroundImage: string
+    characterImage: string
+    description: string
+    prompt?: string
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -411,6 +428,7 @@ export interface FindPatternPayload {
 
 export interface InteractionPayloadMap {
   'choose-one': ChooseOnePayload
+  'number-entry': NumberEntryPayload
   'choose-many': ChooseManyPayload
   'tap-target': TapTargetPayload
   'drag-sort': DragSortPayload

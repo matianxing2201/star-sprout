@@ -514,6 +514,11 @@ const findPatternSchema = z.object({
     blankIndex: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
     options: z.array(z.number().int().min(1).max(10)).min(3).max(4),
     hint: z.string().min(1).optional(),
+    illustration: z.object({
+      backgroundImage: z.string().min(1),
+      characterImage: z.string().min(1),
+      description: z.string().min(1),
+    }).optional(),
   }).superRefine((payload, context) => {
     if (new Set(payload.options).size !== payload.options.length) {
       context.addIssue({ code: 'custom', message: '找规律的备选数字里出现了重复' })

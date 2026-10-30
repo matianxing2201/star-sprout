@@ -25,9 +25,15 @@ import { useInteraction } from './useInteraction'
 const {
   spec,
   mascot = 'fox',
+  mascotEmoji,
+  mascotAvatarImage,
+  initialLine,
 } = defineProps<{
   spec: InteractionSpec
   mascot?: MascotId
+  mascotEmoji?: string
+  mascotAvatarImage?: string
+  initialLine?: string
 }>()
 
 const emit = defineEmits<{
@@ -97,7 +103,7 @@ const mood = computed(() => {
 const line = computed(() => {
   if (solved.value || skipped.value)
     return coachLine.value || spec.prompt
-  return performance.value.character?.line ?? coachLine.value ?? spec.prompt
+  return performance.value.character?.line || coachLine.value || initialLine || spec.prompt
 })
 
 const progress = computed(() => performance.value.progress)
@@ -156,7 +162,13 @@ const progress = computed(() => performance.value.progress)
       />
     </div>
 
-    <MascotBubble :id="mascot" :text="line" :mood="mood">
+    <MascotBubble
+      :id="mascot"
+      :text="line"
+      :mood="mood"
+      :avatar-emoji="mascotEmoji"
+      :avatar-image="mascotAvatarImage"
+    >
       <div v-if="canRevealHint || spec.skippable" class="mt-3 flex flex-wrap gap-2">
         <KButton
           v-if="canRevealHint"

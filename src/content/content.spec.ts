@@ -204,7 +204,8 @@ describe('课程数据模型', () => {
 
           // ABAB：第 1、3、5 格同一个数，第 2、4 格另一个数，且两者必须不同
           //   （全相同不算 —— 那是「没有规律」的退化形状）
-          const isABAB = sequence[0] === sequence[2]
+          const isABAB = sequence.length === 5
+            && sequence[0] === sequence[2]
             && sequence[2] === sequence[4]
             && sequence[1] === sequence[3]
             && sequence[0] !== sequence[1]
@@ -222,7 +223,7 @@ describe('课程数据模型', () => {
 
           // 空格必须真的是空的那一位 —— 结构上只可能有一个，但答案要在里面
           if (sequence[blankIndex] === undefined) {
-            violations.push(`${where}：blankIndex ${blankIndex} 超出 5 格范围`)
+            violations.push(`${where}：blankIndex ${blankIndex} 超出 ${sequence.length} 格范围`)
           }
         }
       }

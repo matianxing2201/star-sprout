@@ -41,6 +41,12 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: "一年级上册数学大纲" },
       },
       {
+        path: "learn/:gradeId/:categoryId/unit-two-practice",
+        name: ROUTE_NAMES.mathUnitTwoPractice,
+        component: async () => import("@/pages/kid/MathUnitTwoPracticePage.vue"),
+        meta: { title: "第二单元互动练习" },
+      },
+      {
         path: "learn/:gradeId/:categoryId",
         name: ROUTE_NAMES.questionBank,
         component: async () =>
@@ -69,5 +75,12 @@ if (import.meta.env.DEV) {
     name: ROUTE_NAMES.iconGallery,
     component: async () => import("@/pages/dev/IconGalleryPage.vue"),
     meta: { title: "图标总览" },
+  });
+  routes.push({
+    path: "/dev/math-unit-two-sample",
+    name: ROUTE_NAMES.mathUnitTwoSample,
+    component: async () =>
+      import("@/pages/dev/MathUnitTwoSamplePage.vue"),
+    meta: { title: "第二单元互动样题" },
   });
 }

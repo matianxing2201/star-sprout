@@ -16,12 +16,16 @@ const {
   size = 'md',
   mood = 'happy',
   align = 'left',
+  avatarEmoji,
+  avatarImage,
 } = defineProps<{
   id: MascotId
   text: string
   size?: 'sm' | 'md' | 'lg'
   mood?: MascotMood
   align?: 'left' | 'right'
+  avatarEmoji?: string
+  avatarImage?: string
 }>()
 
 const mascot = computed(() => getMascot(id))
@@ -32,7 +36,21 @@ const mascot = computed(() => getMascot(id))
     class="flex items-start gap-3"
     :class="align === 'right' && 'flex-row-reverse'"
   >
-    <MascotAvatar :id="id" :size="size === 'sm' ? 'sm' : 'md'" :mood="mood" />
+    <img
+      v-if="avatarImage"
+      :src="avatarImage"
+      alt=""
+      class="size-14 shrink-0 object-contain"
+      aria-hidden="true"
+    >
+    <span
+      v-else-if="avatarEmoji"
+      class="grid size-12 shrink-0 place-items-center rounded-full border-2 border-math-line bg-math-soft text-3xl sm:size-14"
+      aria-hidden="true"
+    >
+      {{ avatarEmoji }}
+    </span>
+    <MascotAvatar v-else :id="id" :size="size === 'sm' ? 'sm' : 'md'" :mood="mood" />
 
     <div
       class="relative max-w-prose rounded-blob rounded-tl-md border-2 bg-surface px-5 py-3 shadow-sticker"
