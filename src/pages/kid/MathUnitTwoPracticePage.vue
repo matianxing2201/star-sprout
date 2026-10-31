@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { ROUTE_NAMES } from '@/app/router/route-names'
+import { unitTwoAnswer, unitTwoChoices } from '@/content/grades/grade-1/math-unit-two-choice'
 import {
   characterAsset,
   grade1MathUnitTwoExtensionTasks,
@@ -12,10 +13,8 @@ import {
   interactionFor,
   isDiagnosticTask,
 } from '@/content/grades/grade-1/math-unit-two-practice'
-import { InteractionShell } from '@/features/interactions'
 import { publicAsset } from '@/shared/utils'
 import { KButton, KIcon, KTag } from '@/ui'
-import MathUnitTwoPictureScene from './MathUnitTwoPictureScene.vue'
 import MathUnitTwoSummary from './MathUnitTwoSummary.vue'
 
 const STORAGE_PREFIX = 'starsprout:g1-math-u2-practice:v1'
@@ -65,20 +64,6 @@ const diagnosticTasks = computed(() => sessionOriginalTasks.value.filter(isDiagn
 const remainingOriginals = computed(() => sessionOriginalTasks.value.filter(task => !isDiagnosticTask(task)))
 const allTasks = computed(() => [...sessionOriginalTasks.value, ...sessionExtensionTasks.value])
 
-const sectionTitles: Record<UnitTwoSection, string> = {
-  diagnostic: '开场快测',
-  original: '原题练习',
-  extension: '举一反三',
-  review: '错题回顾',
-  summary: '学习总结',
-}
-const sectionDescriptions: Record<UnitTwoSection, string> = {
-  diagnostic: '每个知识点先做一道，看看今天从哪里开始。',
-  original: '按原题逐题练习，题干和原有选项都保留。',
-  extension: '每个知识点再练两道同题型变式。',
-  review: '把刚才答错过的题再做一次，自己订正。',
-  summary: '今天的第二单元学习记录。',
-}
 const stageTasks = computed<UnitTwoTask[]>(() => {
   if (section.value === 'diagnostic')
     return diagnosticTasks.value
@@ -92,9 +77,9 @@ const stageTasks = computed<UnitTwoTask[]>(() => {
   return []
 })
 const currentTask = computed(() => stageTasks.value[position.value])
-const displayLabel = computed(() => currentTask.value?.label === '原题' && mode.value === 'picture'
-  ? '原题 · 同题型看图变式'
-  : currentTask.value?.label ?? '')
+watch(currentTask, () => {
+  mode.value = 'digital'
+}, { immediate: true })
 const isSummary = computed(() => section.value === 'summary')
 const totalTasks = computed(() => sessionOriginalTasks.value.length + sessionExtensionTasks.value.length)
 const completedOriginalCount = computed(() => completed.value.filter(id => sessionOriginalTasks.value.some(task => task.id === id)).length)
@@ -106,14 +91,7 @@ const correctOnFirstTry = computed(() => Object.values(firstCompletionResult.val
 const firstTryAccuracy = computed(() => completed.value.length
   ? Math.round(correctOnFirstTry.value / completed.value.length * 100)
   : 0)
-const activeResult = computed(() => currentTask.value ? resultByTask.value[currentTask.value.id]?.[mode.value] ?? null : null)
 const activeSpec = computed(() => currentTask.value ? interactionFor(currentTask.value, mode.value) : null)
-const isReviewing = computed(() => section.value === 'review')
-const canAdvance = computed(() => isReviewing.value
-  ? Boolean(currentTask.value && reviewDone.value.includes(currentTask.value.id))
-  : Boolean(activeResult.value?.correct))
-const currentNumber = computed(() => position.value + 1)
-const sectionProgress = computed(() => stageTasks.value.length ? Math.round(position.value / stageTasks.value.length * 100) : 100)
 
 const pointSummary = computed(() => {
   const points = [...new Map(sessionOriginalTasks.value.map(task => [task.knowledgePointId, task.knowledgePoint])).entries()]
@@ -194,6 +172,43 @@ watch(() => route.query.knowledgePointId, () => {
   extensionOrder.value = []
   restoreProgress()
 })
+
+const firstChoice = ref<string | null>(null)
+const isIllustratedSample = computed(() => Boolean(currentTask.value))
+watch([isIllustratedSample, mode], ([illustrated]) => {
+  if (illustrated)
+    mode.value = 'digital'
+}, { immediate: true })
+const answerText = computed(() => currentTask.value ? unitTwoAnswer(currentTask.value) : '')
+const sampleChoices = computed(() => currentTask.value ? unitTwoChoices(currentTask.value) : [])
+const sampleIndex = computed(() => Number(currentTask.value?.sourceId?.match(/_q(\d)$/)?.[1] ?? 1))
+const illustrationPath = computed(() => {
+  const task = currentTask.value
+  if (!task)
+    return ''
+  if (task.sourceId?.startsWith('cnm_p008_q'))
+    return `/images/questions/g1-math/g1m-u2-p1-q${sampleIndex.value}.png`
+  return `/images/questions/g1-math/u2-${task.sourceId ?? task.id}.png`
+})
+const secondSample = computed(() => currentTask.value?.sourceId === 'cnm_p008_q2')
+watch([currentTask, section], () => {
+  const answer = section.value === 'review' ? null : currentTask.value && resultByTask.value[currentTask.value.id]?.digital?.answer
+  firstChoice.value = typeof answer === 'string' ? answer : null
+}, { immediate: true })
+function chooseFirst(value: string): void {
+  if (firstChoice.value !== null || !currentTask.value)
+    return
+  firstChoice.value = value
+  const result: InteractionResult = { interactionKind: 'choose-one', correct: value === answerText.value, attempts: 1, usedHint: false, skipped: false, stars: value === answerText.value ? 3 : 0, answer: value }
+  onResolved(result)
+  if (section.value !== 'review' && !result.correct) {
+    if (!completed.value.includes(currentTask.value.id))
+      completed.value.push(currentTask.value.id)
+    firstCompletionResult.value[currentTask.value.id] = result
+    if (!missed.value.includes(currentTask.value.id))
+      missed.value.push(currentTask.value.id)
+  }
+}
 
 function onResolved(result: InteractionResult): void {
   const task = currentTask.value
@@ -307,7 +322,7 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
       </div>
     </div>
 
-    <header class="relative overflow-hidden rounded-blob border-2 border-math-line bg-math-soft px-5 py-6 shadow-sticker sm:px-8 sm:py-8">
+    <header v-if="!isIllustratedSample" class="relative overflow-hidden rounded-blob border-2 border-math-line bg-math-soft px-5 py-6 shadow-sticker sm:px-8 sm:py-8">
       <div class="pointer-events-none absolute -right-8 -top-12 size-48 rounded-full bg-white/45" />
       <div class="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div>
@@ -318,7 +333,7 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
             {{ sessionKnowledgePoint ? `练习：${sessionKnowledgePoint}` : '第二单元练习' }}
           </h1>
           <p class="mt-3 max-w-2xl font-body text-sm leading-relaxed text-ink-soft sm:text-base">
-            {{ sessionKnowledgePoint ? `先快测（计入原题进度），再完成本知识点剩余 ${sessionOriginalTasks.length - 1} 道原题和 ${sessionExtensionTasks.length} 道拓展题。` : '先快测，再完成 28 道原题和 14 道同类变式。' }}每道题都可以切换“数字互动”或“看图互动”。
+            {{ sessionKnowledgePoint ? `先快测（计入原题进度），再完成本知识点剩余 ${sessionOriginalTasks.length - 1} 道原题和 ${sessionExtensionTasks.length} 道拓展题。` : '先快测，再完成 28 道原题和 14 道同类变式。' }}每道题都可以看图思考，再选择答案。
           </p>
         </div>
         <div class="flex items-end gap-1.5 rounded-card border-2 border-white/80 bg-white/75 px-3 py-2 shadow-press">
@@ -341,110 +356,63 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
     </header>
 
     <template v-if="!isSummary && currentTask && activeSpec">
-      <section class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_17rem]">
-        <div class="rounded-card border-2 border-line bg-surface p-4 shadow-sticker sm:p-6">
-          <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p class="font-body text-xs font-extrabold tracking-[0.15em] text-math-deep uppercase">
-                {{ sectionTitles[section] }} · {{ currentNumber }} / {{ stageTasks.length }}
+      <template v-if="isIllustratedSample">
+        <header class="rounded-blob border-2 border-math-line bg-math-soft px-5 py-5 sm:px-7">
+          <p class="font-body text-xs font-extrabold text-math-deep">
+            {{ currentTask.knowledgePoint }}
+          </p><h1 class="mt-2 font-display text-2xl text-ink sm:text-3xl">
+            看图想一想
+          </h1><p class="mt-2 font-body text-sm text-ink-soft">
+            仔细观察图中的数量和变化，再选择答案。
+          </p>
+        </header>
+        <section class="overflow-hidden rounded-card border-2 border-line bg-surface shadow-sticker">
+          <div class="grid lg:grid-cols-[minmax(0,1.5fr)_minmax(19rem,1fr)]">
+            <div class="relative flex items-center justify-center bg-white p-5 sm:p-7">
+              <div class="relative aspect-[3/2] w-full">
+                <img :src="publicAsset(illustrationPath)" :alt="`${currentTask.prompt}的题目插图`" class="h-full w-full object-contain">
+                <span v-for="stone in currentTask.sourceId === 'cnm_p009_q4' ? [{ n: '9', x: 38, y: 50 }, { n: '5', x: 54.5, y: 50 }, { n: '8', x: 71, y: 50 }, { n: '6', x: 88, y: 50 }] : currentTask.sourceId === 'cnm_p009_q1' ? [{ n: '7', x: 43, y: 59 }, { n: '?', x: 65, y: 59 }, { n: '9', x: 87, y: 59 }] : currentTask.id === 'ext-p008-a' ? [{ n: '6', x: 41.5, y: 50 }, { n: '7', x: 64, y: 50 }, { n: '?', x: 86.5, y: 50 }] : currentTask.id === 'ext-p009-a' ? [{ n: '5', x: 43, y: 59 }, { n: '?', x: 65, y: 59 }, { n: '7', x: 87, y: 59 }] : !currentTask.sourceId?.startsWith('cnm_p008_q') ? [] : sampleIndex === 4 ? [6, 7, 8, 9, 10].map((n, i) => ({ n, x: 18 + i * 18, y: 68 })) : sampleIndex === 3 ? [] : secondSample ? [{ n: '?', x: 25, y: 72 }, { n: '8', x: 54, y: 70 }, { n: '9', x: 81, y: 69 }] : [{ n: '8', x: 33, y: 70 }, { n: '9', x: 58, y: 58 }, { n: '?', x: 84, y: 46 }]" :key="stone.n" class="absolute -translate-x-1/2 -translate-y-1/2 font-display text-3xl font-bold text-ink sm:text-5xl" :style="{ left: `${stone.x}%`, top: `${stone.y}%` }" aria-hidden="true">{{ stone.n }}</span>
+              </div>
+              <div v-if="['ext-p012-b', 'ext-p013-a', 'ext-p013-b'].includes(currentTask.id)" class="absolute bottom-4 left-5 right-5 flex justify-around gap-1 font-body text-xs font-bold text-ink-soft" aria-label="图中步骤说明">
+                <span v-for="label in currentTask.id === 'ext-p012-b' ? ['剩下', '第一次吃', '第二次吃'] : currentTask.id === 'ext-p013-a' ? ['原来', '买来后', '送出后'] : ['原来', '吃掉后', '买来后']" :key="label" class="rounded-chip bg-white/95 px-2 py-1">{{ label }}</span>
+              </div>
+              <span class="absolute left-8 top-8 rounded-chip bg-white/90 px-3 py-1.5 font-body text-xs font-extrabold text-math-deep shadow-press">仔细看一看</span>
+            </div>
+            <div class="flex flex-col justify-center p-5 sm:p-7">
+              <p class="font-body text-xs font-extrabold tracking-[0.16em] text-math-deep">
+                想一想
               </p>
-              <h2 class="mt-1 font-display text-xl text-ink">
-                {{ currentTask.knowledgePoint }}
+              <h2 class="mt-2 font-display text-2xl leading-relaxed text-ink sm:text-3xl">
+                {{ currentTask.prompt }}
               </h2>
-              <p class="mt-1 font-body text-xs text-ink-faint">
-                {{ displayLabel }}<template v-if="currentTask.sourceId">
-                  · {{ currentTask.sourceId }}
-                </template>
-              </p>
-            </div>
-            <KTag :tone="currentTask.label === '原题' ? 'math' : 'star'" size="sm">
-              {{ mode === 'picture' && currentTask.label === '原题' ? '同题型变式' : currentTask.label }}
-            </KTag>
-          </div>
-          <div class="mb-5 h-2 overflow-hidden rounded-chip bg-paper-deep">
-            <div class="h-full rounded-chip bg-math-deep transition-[width] duration-300" :style="{ width: `${sectionProgress}%` }" />
-          </div>
-
-          <div class="mb-5 flex justify-center">
-            <div class="flex rounded-chip border border-line bg-paper p-1" role="group" aria-label="选择互动方式">
-              <button type="button" class="rounded-chip px-4 py-2 font-body text-sm font-bold transition-colors" :class="mode === 'digital' ? 'bg-surface text-ink shadow-press' : 'text-ink-soft'" :aria-pressed="mode === 'digital'" @click="mode = 'digital'">
-                数字互动
-              </button>
-              <button type="button" class="rounded-chip px-4 py-2 font-body text-sm font-bold transition-colors" :class="mode === 'picture' ? 'bg-surface text-ink shadow-press' : 'text-ink-soft'" :aria-pressed="mode === 'picture'" @click="mode = 'picture'">
-                看图互动
-              </button>
-            </div>
-          </div>
-
-          <MathUnitTwoPictureScene v-if="mode === 'picture' && !currentTask.picture.sequence" :picture="currentTask.picture" />
-
-          <KeepAlive :max="2">
-            <InteractionShell
-              v-if="isReviewing || !activeResult?.correct"
-              :key="`${section}-${currentTask.id}-${mode}`"
-              :spec="activeSpec"
-              mascot="rabbit"
-              :mascot-avatar-image="publicAsset(characterAsset(mode === 'digital' ? 'peppa' : currentTask.picture.character))"
-              :initial-line="mode === 'digital' ? '我们先把原题读清楚，一步一步来。' : `${currentTask.picture.characterName}陪你一起看图思考。`"
-              @resolved="onResolved"
-            />
-          </KeepAlive>
-          <div v-if="!isReviewing && activeResult?.correct" class="rounded-tile border-2 border-success bg-success-soft px-5 py-4" aria-live="polite">
-            <p class="flex items-center gap-2 font-display text-lg text-success-deep">
-              <KIcon name="check-circle" size="sm" tone="success" />答对啦！
-            </p>
-            <p class="mt-1.5 font-body text-sm leading-relaxed text-ink-soft">
-              {{ mode === 'digital' ? currentTask.explanation : currentTask.picture.explanation }}
-            </p>
-            <p v-if="currentTask.sourceId" class="mt-2 font-body text-xs text-ink-faint">
-              原题答案：{{ currentTask.answer }}
-            </p>
-          </div>
-
-          <div v-if="isReviewing && reviewDone.includes(currentTask.id)" class="mt-4 rounded-tile border-2 border-success bg-success-soft px-4 py-3 font-body text-sm leading-relaxed text-success-deep">
-            <p>{{ reviewCorrect.includes(currentTask.id) ? '订正成功，已经把这道题重新做对了。' : '这次已经完成；可以回看提示，再和家长一起讲一遍思路。' }}</p>
-            <p class="mt-1.5 text-ink-soft">
-              {{ mode === 'digital' ? currentTask.explanation : currentTask.picture.explanation }}
-            </p>
-          </div>
-          <div v-if="canAdvance" class="mt-5 flex justify-end">
-            <KButton variant="primary" tone="math" size="lg" @click="nextQuestion">
-              {{ currentNumber < stageTasks.length ? '下一题' : section === 'diagnostic' ? '进入原题练习' : section === 'original' ? '进入举一反三' : section === 'extension' ? (missed.length ? '开始错题订正' : '查看学习总结') : '查看学习总结' }}
-              <KIcon name="arrow-right" size="sm" />
-            </KButton>
-          </div>
-        </div>
-
-        <aside class="flex flex-col gap-4">
-          <div class="rounded-card border-2 border-line bg-paper p-5 shadow-press">
-            <div class="flex items-center gap-2 font-display text-lg text-ink">
-              <KIcon name="sparkle" size="sm" tone="math" />本部分安排
-            </div>
-            <p class="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-              {{ sectionDescriptions[section] }}
-            </p>
-            <div class="mt-4 space-y-2 font-body text-xs text-ink-soft">
-              <p class="flex justify-between">
-                <span>原题</span><strong>{{ completedOriginalCount }} / {{ sessionOriginalTasks.length }}</strong>
-              </p>
-              <p class="flex justify-between">
-                <span>拓展题</span><strong>{{ completedExtensionCount }} / {{ sessionExtensionTasks.length }}</strong>
-              </p>
-              <p class="flex justify-between">
-                <span>待回顾错题</span><strong>{{ missed.length }} 道</strong>
-              </p>
+              <ol class="mt-6 grid grid-cols-2 gap-3">
+                <li v-for="(choice, index) in sampleChoices" :key="choice">
+                  <button type="button" class="fx-pressable flex min-h-16 w-full items-center gap-3 rounded-tile border-2 px-4 py-3 text-left" :class="firstChoice === null ? 'border-line bg-paper hover:border-math-deep hover:bg-math-soft' : choice === answerText ? 'border-success bg-success-soft' : firstChoice === choice ? 'border-gently bg-gently-soft' : 'border-line bg-paper opacity-70'" :disabled="firstChoice !== null" @click="chooseFirst(choice)">
+                    <span class="grid size-9 place-items-center rounded-full border-2 border-math-line font-numeric text-xs font-extrabold text-math-deep">{{ ['A', 'B', 'C', 'D'][index] }}</span><span class="font-display text-xl text-ink">{{ choice }}</span>
+                  </button>
+                </li>
+              </ol>
+              <div v-if="firstChoice !== null" class="mt-5 rounded-tile border-2 p-4" :class="firstChoice === answerText ? 'border-success bg-success-soft' : 'border-gently bg-gently-soft'" aria-live="polite">
+                <p class="font-display text-lg text-ink">
+                  {{ firstChoice === answerText ? '数得真仔细！' : '来看看怎么数' }}
+                </p><p class="mt-2 font-body text-sm text-ink-soft">
+                  {{ currentTask.explanation }}
+                </p>
+              </div>
+              <KButton
+                v-if="firstChoice !== null"
+                class="mt-5 self-end"
+                variant="primary"
+                tone="math"
+                size="lg"
+                @click="nextQuestion"
+              >
+                下一题 <KIcon name="arrow-right" size="sm" />
+              </KButton>
             </div>
           </div>
-          <div class="rounded-card border-2 border-math-line/70 bg-math-soft/60 p-5">
-            <p class="font-body text-xs font-extrabold tracking-[0.14em] text-math-deep uppercase">
-              题型规则
-            </p>
-            <p class="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-              同一道题切换表达方式，数学任务保持一致。数列题固定 5 格；加法、减法、比较和应用题继续按各自题型作答。
-            </p>
-          </div>
-        </aside>
-      </section>
+        </section>
+      </template>
     </template>
 
     <MathUnitTwoSummary
@@ -469,7 +437,7 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
       原题来源：
       <a href="https://github.com/xiaoyang111222/cn-math-taxonomy/blob/main/data/questions.json" target="_blank" rel="noreferrer" class="font-semibold text-math-deep underline underline-offset-2">cn-math-taxonomy · 第二单元共 28 题</a>
       · 依据 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noreferrer" class="font-semibold text-math-deep underline underline-offset-2">CC BY-NC 4.0</a>
-      · 原题文字和原选项保留；看图互动为同题型变式。
+      · 结合原题制作图文选择练习。
     </footer>
   </main>
 </template>

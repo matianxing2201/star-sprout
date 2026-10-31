@@ -136,7 +136,7 @@ export const topicSchema: z.ZodType<Topic> = z.object({
   gradeId: gradeIdSchema,
   categoryId: z.string().min(1),
   title: z.string().min(1),
-  icon: iconSchema,
+  icon: iconSchema.optional(),
   kind: topicKindSchema,
   order: z.number().int().nonnegative(),
   objectives: z.array(z.string().min(1)),
