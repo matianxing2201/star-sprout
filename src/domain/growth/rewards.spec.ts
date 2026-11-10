@@ -94,7 +94,7 @@ describe('徽章规则', () => {
       lessonsCompleted: 5,
       perfectLessons: 2,
       learningDays: 4,
-      categoryLessons: { 'nursery-math': 3 },
+      categoryLessons: { 'grade-1-math': 3 },
       topicStars: { t1: 6 },
     })
 
@@ -104,7 +104,7 @@ describe('徽章规则', () => {
     expect(matchesBadgeRule({ type: 'lessons', count: 5 }, stats)).toBe(true)
     expect(matchesBadgeRule({ type: 'perfect-lessons', count: 2 }, stats)).toBe(true)
     expect(matchesBadgeRule({ type: 'learning-days', days: 4 }, stats)).toBe(true)
-    expect(matchesBadgeRule({ type: 'category-lessons', categoryId: 'nursery-math', count: 3 }, stats)).toBe(true)
+    expect(matchesBadgeRule({ type: 'category-lessons', categoryId: 'grade-1-math', count: 3 }, stats)).toBe(true)
     expect(matchesBadgeRule({ type: 'category-lessons', categoryId: 'nope', count: 1 }, stats)).toBe(false)
     expect(matchesBadgeRule({ type: 'topic-stars', topicId: 't1', count: 6 }, stats)).toBe(true)
   })

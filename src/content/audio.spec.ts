@@ -84,7 +84,7 @@ describe('范读路径规则', () => {
     // audioClipPath 给出的是**站点路径**（/audio/x.mp3），
     // 它对应的源文件必须是 public/audio/x.mp3 —— 这是 vite 的约定。
     // 两者错位时不会报错，只会「点了没声音」，所以在这里钉住。
-    expect(audioClipPath('nursery-literacy-autumn-words-cao')).toBe('/audio/nursery-literacy-autumn-words-cao.mp3')
+    expect(audioClipPath('grade-1-literacy-autumn-words-cao')).toBe('/audio/grade-1-literacy-autumn-words-cao.mp3')
     expect(join(process.cwd(), 'public', AUDIO_CLIP_DIR)).toBe(join(process.cwd(), 'public/audio'))
   })
 })

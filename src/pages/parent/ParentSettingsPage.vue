@@ -223,7 +223,7 @@ function confirmResetProfile(): void {
           星芽 <span class="font-numeric text-xs tracking-[0.12em] text-ink-faint">StarSprout</span>
         </p>
         <p class="mt-1 font-body text-xs text-ink-faint">
-          4–12 岁自主探索学习空间
+          小学 1–6 年级自主探索学习空间
         </p>
         <p class="mt-4 font-body text-sm leading-relaxed text-ink-soft">
           课程内容采用数据驱动的方式组织：年级、领域、主题、课程与知识点都由内容包中的数据描述，

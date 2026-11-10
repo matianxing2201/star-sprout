@@ -83,10 +83,10 @@ const MIMO_VOICE = process.env.MIMO_VOICE ?? '冰糖'
 /**
  * 默认风格指令。
  *
- * 识字课的对象是中班 4–5 岁，这一段是产品决策而不是技术默认：
+ * 识字课面向小学低年级：
  * 语速放慢、吐字清晰，孩子才听得出声调；温柔亲切，才愿意跟着念。
  */
-const DEFAULT_STYLE = '语速放慢，吐字清晰，温柔亲切，像幼儿园老师带小朋友认字。'
+const DEFAULT_STYLE = '语速放慢，吐字清晰，温柔亲切，像小学老师带孩子认字。'
 
 /* ------------------------------------------------------------------ */
 /* 读取内容里声明过的片段                                              */
@@ -124,7 +124,7 @@ function collectClips() {
 
     // 片段 id 常常抽成常量（一处定义、多处引用：同一份范读既挂在字卡上、
     // 又挂在连线的节点上）。脚本不做 TS 求值，所以先把
-    //   const CLIP_CAO = 'nursery-literacy-autumn-words-cao'
+    //   const CLIP_CAO = 'grade-1-literacy-autumn-words-cao'
     // 这样的字符串常量收进来，遇到 audioText(CLIP_CAO, '草。') 才知道 id 是什么。
     const constants = new Map()
     for (const m of source.matchAll(/\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*'([^']*)'/g))

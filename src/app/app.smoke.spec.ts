@@ -46,11 +46,11 @@ describe('应用冒烟测试', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
-  it('内容包已经装配：8 个年级、全部领域都有归属的学习世界', () => {
-    expect(contentPack.grades).toHaveLength(8)
+  it('内容包已经装配：6 个年级、全部领域都有归属的学习世界', () => {
+    expect(contentPack.grades).toHaveLength(6)
     expect(contentPack.categories.length).toBeGreaterThan(50)
     expect(contentPack.worlds.length).toBeGreaterThan(0)
-    expect(Object.keys(contentPack.maps)).toHaveLength(8)
+    expect(Object.keys(contentPack.maps)).toHaveLength(6)
   })
 
   it('首页渲染出角色问候、今日任务色块与学习地图', async () => {
@@ -61,8 +61,8 @@ describe('应用冒烟测试', () => {
     expect(text).toContain('今天要探索什么')
     expect(text).toContain('我的学习地图')
 
-    // 地图节点应当来自内容包：把中班地图上的每个世界名都检查一遍
-    for (const node of contentPack.maps.nursery.nodes) {
+    // 地图节点应当来自内容包：把当前年级地图上的每个世界名都检查一遍
+    for (const node of contentPack.maps['grade-1'].nodes) {
       const world = contentPack.worlds.find(item => item.id === node.worldId)
       expect(world).toBeDefined()
       expect(text).toContain(world!.name)
@@ -71,7 +71,7 @@ describe('应用冒烟测试', () => {
     wrapper.unmount()
   })
 
-  it('八个年级的领域页都能打开', async () => {
+  it('六个年级的领域页都能打开', async () => {
     const { wrapper, router } = mountApp()
 
     for (const grade of contentPack.grades) {

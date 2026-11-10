@@ -10,8 +10,6 @@ export const ROUTE_NAMES = {
   home: "home",
   /** 年级选择（成长阶梯） */
   grades: "grades",
-  /** 幼小衔接知识地图 */
-  readiness: "readiness",
   /** 学习领域（二级分类） */
   categories: "categories",
   /** 学科题库 */
@@ -22,6 +20,8 @@ export const ROUTE_NAMES = {
   mathQuestion: "math-question",
   /** 仅开发环境：第二单元单题样例 */
   mathUnitTwoSample: "math-unit-two-sample",
+  /** 仅开发环境：语文第二单元单题样例 */
+  chineseUnitTwoSample: "chinese-unit-two-sample",
   /** 一年级上册数学第二单元互动练习 */
   mathUnitTwoPractice: "math-unit-two-practice",
   /** 课程地图（主题路径） */

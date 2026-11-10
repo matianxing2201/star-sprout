@@ -83,4 +83,11 @@ if (import.meta.env.DEV) {
       import("@/pages/dev/MathUnitTwoSamplePage.vue"),
     meta: { title: "第二单元互动样题" },
   });
+  routes.push({
+    path: "/dev/chinese-unit-two-sample",
+    name: ROUTE_NAMES.chineseUnitTwoSample,
+    component: async () =>
+      import("@/pages/dev/ChineseUnitTwoSamplePage.vue"),
+    meta: { title: "语文第二单元互动样题" },
+  });
 }

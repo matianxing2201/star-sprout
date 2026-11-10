@@ -464,12 +464,5 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
       @next-knowledge-point="continueToNextKnowledgePoint"
       @return-to-outline="returnToOutline"
     />
-
-    <footer class="rounded-tile border border-line bg-paper/80 px-4 py-3 font-body text-xs leading-relaxed text-ink-faint">
-      原题来源：
-      <a href="https://github.com/xiaoyang111222/cn-math-taxonomy/blob/main/data/questions.json" target="_blank" rel="noreferrer" class="font-semibold text-math-deep underline underline-offset-2">cn-math-taxonomy · 第二单元共 28 题</a>
-      · 依据 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noreferrer" class="font-semibold text-math-deep underline underline-offset-2">CC BY-NC 4.0</a>
-      · 原题文字和原选项保留；看图互动为同题型变式。
-    </footer>
   </main>
 </template>

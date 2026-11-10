@@ -6,8 +6,8 @@
  * 它唯一的作用是让 scripts/generate-audio.mjs 能用一条正则
  * 从课程文件里把「要读的文字」扫出来。
  *
- *     audioText('nursery-literacy-autumn-words-cao', '草。')
- *     audioText('nursery-literacy-autumn-words-recital', '草、叶、花、谷。', '一字一顿，慢慢念。')
+ *     audioText('grade-1-literacy-autumn-words-cao', '草。')
+ *     audioText('grade-1-literacy-autumn-words-recital', '草、叶、花、谷。', '一字一顿，慢慢念。')
  *
  * 为什么不另建一份「文案清单」：那一定会和课程漂移 ——
  * 课上改了词，清单忘了改，孩子听到的就是上一版。把文字写在用到它的地方，

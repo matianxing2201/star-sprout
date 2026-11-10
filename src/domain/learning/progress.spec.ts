@@ -15,7 +15,7 @@ import {
 function makeTopic(id: string, categoryId: string, order: number, lessonIds: string[]): Topic {
   return {
     id,
-    gradeId: 'nursery',
+    gradeId: 'grade-1',
     categoryId,
     title: id,
     icon: 'puzzle',
@@ -32,8 +32,8 @@ function makeCompletion(lessonId: string, topicId: string, at: number, stars = 3
   return {
     lessonId,
     topicId,
-    gradeId: 'nursery',
-    categoryId: 'nursery-math',
+    gradeId: 'grade-1',
+    categoryId: 'grade-1-math',
     stars,
     seconds: 240,
     completedAt: at,
@@ -44,8 +44,8 @@ function makeAttempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
   return {
     lessonId: 'l1',
     topicId: 't1',
-    gradeId: 'nursery',
-    categoryId: 'nursery-math',
+    gradeId: 'grade-1',
+    categoryId: 'grade-1-math',
     taskId: 'task-1',
     taskKind: 'practice',
     knowledgePointIds: ['kp-a'],
@@ -114,7 +114,7 @@ describe('buildTopicProgressMap', () => {
   })
 
   it('没有课程的主题不挡路（教案未到的主题不该锁死后面的路）', () => {
-    // 真实场景：中班语言表达的顺序是
+    // 真实场景：一年级语言表达的顺序是
     //   1《春晓》(有课) → 2 挑战朗诵(暂无课) → 3 秘密花园(暂无课) → 4 量词小魔法师(有课)
     // 如果空主题照常参与串链，第 4 个主题会永远锁死 —— 孩子看到一条走不通的路。
     const topics = [
@@ -169,7 +169,7 @@ describe('buildTopicProgressMap', () => {
 
 describe('computeMastery 与薄弱点', () => {
   it('没有作答记录时掌握度为 0，且不会除零', () => {
-    const mastery = computeMastery('nursery', 'nursery-math', [])
+    const mastery = computeMastery('grade-1', 'grade-1-math', [])
 
     expect(mastery.mastery).toBe(0)
     expect(mastery.correctRate).toBe(0)
@@ -178,7 +178,7 @@ describe('computeMastery 与薄弱点', () => {
 
   it('全部答对时正确率为 1', () => {
     const attempts = [makeAttempt(), makeAttempt(), makeAttempt()]
-    const mastery = computeMastery('nursery', 'nursery-math', attempts)
+    const mastery = computeMastery('grade-1', 'grade-1-math', attempts)
 
     expect(mastery.correctRate).toBe(1)
     expect(mastery.attempts).toBe(3)
@@ -187,11 +187,11 @@ describe('computeMastery 与薄弱点', () => {
   it('只统计当前领域与年级的记录', () => {
     const attempts = [
       makeAttempt(),
-      makeAttempt({ categoryId: 'nursery-language' }),
+      makeAttempt({ categoryId: 'grade-1-language' }),
       makeAttempt({ gradeId: 'grade-1' }),
     ]
 
-    expect(computeMastery('nursery', 'nursery-math', attempts).attempts).toBe(1)
+    expect(computeMastery('grade-1', 'grade-1-math', attempts).attempts).toBe(1)
   })
 
   it('薄弱点按出错权重排序，用提示也算', () => {
@@ -262,7 +262,7 @@ describe('deriveGrowthState', () => {
     }
 
     const growth = deriveGrowthState(snapshot, today, [], {
-      worldByCategory: { 'nursery-math': 'math-castle' },
+      worldByCategory: { 'grade-1-math': 'math-castle' },
     })
 
     expect(growth.exploredWorldIds).toEqual(['math-castle'])

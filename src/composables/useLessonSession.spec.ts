@@ -13,7 +13,7 @@ import { useLessonSession } from './useLessonSession'
  *
  * 这条链路是产品的核心，任何一环断了，家长端看到的数字都会不对。
  */
-const LESSON_ID = 'nursery-language-chunxiao-1'
+const LESSON_ID = 'grade-1-language-chunxiao-1'
 
 describe('useLessonSession', () => {
   beforeEach(() => {
@@ -120,7 +120,7 @@ describe('useLessonSession', () => {
     for (let index = 0; index < session.taskCount.value; index += 1)
       session.next()
 
-    expect(progress.topicProgressOf('nursery-language-chunxiao').status).toBe('completed')
+    expect(progress.topicProgressOf('grade-1-language-chunxiao').status).toBe('completed')
   })
 
   it('重新开始会清空本次作答，但不影响已保存的进度', () => {

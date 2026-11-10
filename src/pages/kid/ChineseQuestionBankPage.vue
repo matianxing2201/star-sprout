@@ -195,7 +195,7 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
                   {{ currentQuestion.prompt }}
                 </p>
 
-                <ol class="mt-5 grid gap-2.5 sm:grid-cols-2">
+                <ol class="mt-5 grid gap-2.5">
                   <li v-for="choice in currentQuestion.choices" :key="choice.id">
                     <button
                       type="button"
@@ -212,7 +212,7 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
                       <span class="grid size-8 shrink-0 place-items-center rounded-full border-2 border-current font-numeric text-xs font-extrabold text-language-deep">
                         {{ choice.id }}
                       </span>
-                      <span class="font-body text-sm font-semibold leading-snug text-ink">{{ choice.text }}</span>
+                      <span class="min-w-0 flex-1 whitespace-nowrap font-body text-sm font-semibold leading-snug text-ink">{{ choice.text }}</span>
                       <KIcon
                         v-if="selectedAnswer !== null && choice.id === currentQuestion.answerId"
                         name="check"
@@ -268,14 +268,5 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
         </section>
       </main>
     </div>
-
-    <details class="rounded-tile border border-line bg-surface/70 px-4 py-3 text-xs text-ink-faint">
-      <summary class="cursor-pointer font-body font-bold text-ink-soft">题库来源与内容说明</summary>
-      <p class="mt-2 leading-relaxed">
-        题目来源：<a :href="bank.attribution.repositoryUrl" target="_blank" rel="noreferrer" class="underline">{{ bank.attribution.repository }}</a>，作者 {{ bank.attribution.creator }}；
-        许可：<a :href="bank.attribution.licenseUrl" target="_blank" rel="noreferrer" class="underline">{{ bank.attribution.license }}</a>。
-        本项目按非商业用途使用。{{ bank.attribution.changes }}{{ bank.attribution.sourceQualityNote }}
-      </p>
-    </details>
   </div>
 </template>

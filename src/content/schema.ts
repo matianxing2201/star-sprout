@@ -13,7 +13,7 @@ import { MASCOT_IDS } from '@/domain/mascot/types'
 import { AUDIO_CLIP_ID_PATTERN } from '@/domain/shared/audio'
 import { TONE_KEYS } from '@/domain/shared/tone'
 
-/** 一整个内容包：目录 + 课程 + 跨学科世界 + 八个年级的地图 + 徽章 */
+/** 一整个内容包：目录 + 课程 + 跨学科世界 + 六个年级的地图 + 徽章 */
 export interface ContentPack {
   grades: Grade[]
   categories: Category[]
@@ -57,7 +57,7 @@ export const SCHEMA_VALUE_SETS = {
 } as const
 
 const gradeIdSchema = z.enum(SCHEMA_VALUE_SETS.gradeIds)
-const stageIdSchema = z.enum(['kindergarten', 'primary'])
+const stageIdSchema = z.enum(['primary'])
 const toneSchema = z.enum(SCHEMA_VALUE_SETS.tones)
 const mascotIdSchema = z.enum(SCHEMA_VALUE_SETS.mascotIds)
 /** 图标名必须是图标词汇表里的语义名 —— 写错会在这里被拦下，而不是渲染成空白 */
@@ -496,7 +496,7 @@ const numberTileSchema = z.object({
 /**
  * 找规律（find-pattern）：5 个方框排成一排，只有 1 格空着。
  *
- * 这里把「中班做不了的题」直接挡在数据入口，不靠写内容的人记住规则：
+ * 这里把超出当前低年级目录范围的题型直接挡在数据入口：
  *   - 5 格固定、只有 1 个空格（空格由 `blankIndex` 表达，结构上写不出两个）
  *   - 数字 1~10 —— 0 一律不给进（比「尽量少用」更稳）
  *   - 备选 3~4 个、互不相同、**必须含答案**（否则这题无解）
@@ -733,10 +733,8 @@ export const worldMapLayoutSchema: z.ZodType<WorldMapLayout> = z.object({
   }
 })
 
-/** 8 个年级的地图必须齐全 —— 少一个年级首页就会空一块 */
+/** 1–6 年级的地图必须齐全 —— 少一个年级首页就会空一块 */
 const gradeMapSchema = z.object({
-  'nursery': worldMapLayoutSchema,
-  'preschool': worldMapLayoutSchema,
   'grade-1': worldMapLayoutSchema,
   'grade-2': worldMapLayoutSchema,
   'grade-3': worldMapLayoutSchema,

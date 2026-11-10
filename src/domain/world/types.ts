@@ -59,7 +59,7 @@ export interface WorldMapPath {
 
 export interface WorldMapLayout {
   gradeId: GradeId
-  /** 地图标题，例如 '中班的探索地图' */
+  /** 地图标题，例如 '一年级的成长地图' */
   title: string
   nodes: WorldMapNode[]
   paths: WorldMapPath[]

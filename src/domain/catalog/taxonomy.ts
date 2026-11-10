@@ -1,10 +1,9 @@
 import type { CategoryId, GradeId, StageId, TopicKind } from './types'
 
 /** 一级分类的固定顺序 —— 产品需求中明确锁定，不允许在界面层重新排序 */
-export const STAGE_ORDER: StageId[] = ['kindergarten', 'primary']
+export const STAGE_ORDER: StageId[] = ['primary']
 
 export const STAGE_LABELS: Record<StageId, string> = {
-  kindergarten: '学前启蒙',
   primary: '小学成长',
 }
 

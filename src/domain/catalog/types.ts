@@ -9,9 +9,7 @@ import type { ToneKey } from '../shared/tone'
  */
 
 export type GradeId
-  = | 'nursery'
-    | 'preschool'
-    | 'grade-1'
+  = | 'grade-1'
     | 'grade-2'
     | 'grade-3'
     | 'grade-4'
@@ -20,12 +18,10 @@ export type GradeId
 
 /**
  * 一级分类的固定顺序与取值集合。
- * 产品需求明确锁定“中班 → 六年级”，任何界面都不允许重新排序，
+ * 当前范围为小学一年级至六年级，任何界面都不允许重新排序，
  * 因此这里导出唯一的取值来源，schema 与界面都从它派生。
  */
 export const GRADE_IDS = [
-  'nursery',
-  'preschool',
   'grade-1',
   'grade-2',
   'grade-3',
@@ -34,8 +30,8 @@ export const GRADE_IDS = [
   'grade-6',
 ] as const
 
-/** 学段：幼儿园 / 小学 */
-export type StageId = 'kindergarten' | 'primary'
+/** 当前课程覆盖小学阶段。 */
+export type StageId = 'primary'
 
 export type CategoryId = string
 export type TopicId = string
@@ -47,7 +43,7 @@ export type TopicKind = (typeof TOPIC_KINDS)[number]
 
 export interface Grade {
   id: GradeId
-  /** 一级分类名称，例如“中班” */
+  /** 一级分类名称，例如“一年级” */
   name: string
   stage: StageId
   /** 升序序号，决定成长阶梯的顺序 */
@@ -56,7 +52,7 @@ export interface Grade {
   /**
    * 年级在成长阶梯上的图标。
    * 用矢量图标而不是 emoji：emoji 在不同系统里字形差异极大，
-   * 八个年级并排时会粗细不一、基线参差，一眼就能看出“没设计过”。
+   * 六个年级并排时会粗细不一、基线参差，一眼就能看出“没设计过”。
    */
   icon: AppIconName
   tone: ToneKey

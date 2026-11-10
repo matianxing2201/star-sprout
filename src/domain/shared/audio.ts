@@ -11,7 +11,7 @@
  *
  * ## 为什么用 clipId 而不是直接存路径
  *
- * 内容里只写 `clipId`（例如 `nursery-literacy-autumn-words-grass`），
+ * 内容里只写 `clipId`（例如 `grade-1-literacy-autumn-words-grass`），
  * 由 `audioClipPath()` 推导出文件路径。这样做有两个好处：
  *   1. 生成脚本用同一个函数算文件名，**改路径规则时不会内容与文件对不上**；
  *   2. `clipId` 稳定，文案改了 id 不变 —— 生成脚本据此判断「这句要不要重新生成」。

@@ -29,9 +29,9 @@ describe('内容包结构', () => {
 })
 
 describe('年级体系', () => {
-  it('八个年级齐全且顺序固定', () => {
+  it('小学一至六年级齐全且顺序固定', () => {
     expect(contentPack.grades.map(grade => grade.id)).toEqual([...GRADE_IDS])
-    expect(contentPack.grades.map(grade => grade.order)).toEqual([0, 1, 2, 3, 4, 5, 6, 7])
+    expect(contentPack.grades.map(grade => grade.order)).toEqual([0, 1, 2, 3, 4, 5])
   })
 
   it('每个年级都有面向孩子的定位说明', () => {
@@ -70,7 +70,7 @@ describe('学科体系', () => {
 })
 
 describe('学习地图', () => {
-  it('八个年级各有一张地图', () => {
+  it('小学一至六年级各有一张地图', () => {
     expect(Object.keys(contentPack.maps).sort()).toEqual([...GRADE_IDS].sort())
   })
 
@@ -181,12 +181,12 @@ describe('课程数据模型', () => {
     expect(leaks).toEqual([])
   })
 
-  it('找规律题只允许 ABAB / 顺数 +1 / 倒数 -1（中班做不了乘法与隔 2）', () => {
+  it('找规律题只允许当前支持的 ABAB / 顺数 +1 / 倒数 -1 样式', () => {
     // 这条是**内容结构**检查，schema 做不了：schema 只能看到「5 个 1~10 的数」，
     // 要判断「这是不是合法规律」必须先把空格填出来看整段序列。
     //
     // 「恰好命中一种」同时挡住两类问题：
-    //   命中 0 种 → 这题是乘法 / 隔 2 / 全相同 之类中班做不了的形状
+    //   命中 0 种 → 这题使用了当前范围尚未支持的规律样式
     //   命中 2 种 → 这题有两种读法，孩子会不知道该信哪个
     const violations: string[] = []
 

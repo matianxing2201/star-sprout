@@ -19,6 +19,6 @@ export interface ChildProfile {
 export const DEFAULT_PROFILE: ChildProfile = {
   nickname: '小探险家',
   mascot: 'fox',
-  gradeId: 'nursery',
+  gradeId: 'grade-1',
   createdAt: 0,
 }

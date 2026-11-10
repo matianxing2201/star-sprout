@@ -192,27 +192,5 @@ function onResolved(next: InteractionResult): void {
         </div>
       </aside>
     </section>
-
-    <footer class="rounded-tile border border-line bg-paper/80 px-4 py-3 font-body text-xs leading-relaxed text-ink-faint">
-      题目来源：
-      <a
-        :href="grade1MathUnitTwoSample.source.url"
-        target="_blank"
-        rel="noreferrer"
-        class="font-semibold text-math-deep underline decoration-math-line underline-offset-2"
-      >
-        {{ grade1MathUnitTwoSample.source.name }} · {{ grade1MathUnitTwoSample.id }}
-      </a>
-      · 依据
-      <a
-        :href="grade1MathUnitTwoSample.source.licenseUrl"
-        target="_blank"
-        rel="noreferrer"
-        class="font-semibold text-math-deep underline decoration-math-line underline-offset-2"
-      >
-        CC BY-NC 4.0
-      </a>
-      · 本项目增加数字序列互动与引导文案。
-    </footer>
   </main>
 </template>
