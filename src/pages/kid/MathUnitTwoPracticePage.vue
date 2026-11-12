@@ -31,15 +31,9 @@ const sessionOriginalTasks = computed(() => requestedPointId.value
 const sessionExtensionTasks = computed(() => requestedPointId.value
   ? grade1MathUnitTwoExtensionTasks.filter(task => task.knowledgePointId === requestedPointId.value)
   : grade1MathUnitTwoExtensionTasks)
-const sessionKnowledgePoint = computed(() => sessionOriginalTasks.value[0]?.knowledgePoint)
+const sessionKnowledgePoint = computed(() => requestedPointId.value ? sessionOriginalTasks.value[0]?.knowledgePoint : undefined)
 const unitTwoKnowledgePoints = [...new Map(grade1MathUnitTwoOriginalTasks.map(task => [task.knowledgePointId, task.knowledgePoint])).entries()]
   .map(([id, name]) => ({ id, name }))
-const nextKnowledgePoint = computed(() => {
-  if (!requestedPointId.value)
-    return undefined
-  const currentIndex = unitTwoKnowledgePoints.findIndex(point => point.id === requestedPointId.value)
-  return unitTwoKnowledgePoints[currentIndex + 1]
-})
 const mode = ref<PracticeMode>('digital')
 const section = ref<UnitTwoSection>('diagnostic')
 const position = ref(0)
@@ -50,6 +44,21 @@ const reviewDone = ref<string[]>([])
 const resultByTask = ref<Record<string, Partial<Record<PracticeMode, InteractionResult>>>>({})
 const firstCompletionResult = ref<Record<string, InteractionResult>>({})
 const extensionOrder = ref<string[]>([])
+const celebrationShown = ref(false)
+
+interface PracticeProgressSnapshot {
+  section?: UnitTwoSection
+  position?: number
+  mode?: PracticeMode
+  completed?: string[]
+  missed?: string[]
+  reviewCorrect?: string[]
+  reviewDone?: string[]
+  extensionOrder?: string[]
+  resultByTask?: Record<string, Partial<Record<PracticeMode, InteractionResult>>>
+  firstCompletionResult?: Record<string, InteractionResult>
+  celebrationShown?: boolean
+}
 
 const characters: Record<string, string> = {
   'peppa': '佩奇',
@@ -63,6 +72,7 @@ const characters: Record<string, string> = {
 const diagnosticTasks = computed(() => sessionOriginalTasks.value.filter(isDiagnosticTask))
 const remainingOriginals = computed(() => sessionOriginalTasks.value.filter(task => !isDiagnosticTask(task)))
 const allTasks = computed(() => [...sessionOriginalTasks.value, ...sessionExtensionTasks.value])
+const allUnitTasks = [...grade1MathUnitTwoOriginalTasks, ...grade1MathUnitTwoExtensionTasks]
 
 const stageTasks = computed<UnitTwoTask[]>(() => {
   if (section.value === 'diagnostic')
@@ -85,11 +95,12 @@ const totalTasks = computed(() => sessionOriginalTasks.value.length + sessionExt
 const completedOriginalCount = computed(() => completed.value.filter(id => sessionOriginalTasks.value.some(task => task.id === id)).length)
 const completedExtensionCount = computed(() => completed.value.filter(id => sessionExtensionTasks.value.some(task => task.id === id)).length)
 const completionPercent = computed(() => Math.round(completed.value.length / totalTasks.value * 100))
-const correctOnFirstTry = computed(() => Object.values(firstCompletionResult.value)
-  .filter(result => result.correct && result.attempts === 1)
-  .length)
-const firstTryAccuracy = computed(() => completed.value.length
-  ? Math.round(correctOnFirstTry.value / completed.value.length * 100)
+const correctOnFirstTry = computed(() => sessionOriginalTasks.value.filter((task) => {
+  const result = firstCompletionResult.value[task.id]
+  return result?.correct && result.attempts === 1
+}).length)
+const firstTryAccuracy = computed(() => sessionOriginalTasks.value.length
+  ? Math.round(correctOnFirstTry.value / sessionOriginalTasks.value.length * 100)
   : 0)
 const activeSpec = computed(() => currentTask.value ? interactionFor(currentTask.value, mode.value) : null)
 
@@ -97,30 +108,124 @@ const pointSummary = computed(() => {
   const points = [...new Map(sessionOriginalTasks.value.map(task => [task.knowledgePointId, task.knowledgePoint])).entries()]
   return points.map(([id, label]) => {
     const initialMisses = missed.value.filter(taskId => allTasks.value.find(task => task.id === taskId)?.knowledgePointId === id)
-    return { id, label, needsPractice: initialMisses.length > 0, missedCount: initialMisses.length }
+    const uncorrectedMisses = initialMisses.filter(taskId => !reviewCorrect.value.includes(taskId))
+    return { id, label, needsPractice: uncorrectedMisses.length > 0, missedCount: uncorrectedMisses.length }
   })
 })
-const missedTasks = computed(() => missed.value
+const currentMissedTasks = computed(() => missed.value
   .map(id => allTasks.value.find(task => task.id === id))
   .filter((task): task is UnitTwoTask => Boolean(task)))
+
+const liveSessionSnapshot = computed<PracticeProgressSnapshot>(() => ({
+  section: section.value,
+  completed: completed.value,
+  missed: missed.value,
+  reviewCorrect: reviewCorrect.value,
+  firstCompletionResult: firstCompletionResult.value,
+  celebrationShown: celebrationShown.value,
+}))
+
+function storedPointSnapshot(pointId: string): PracticeProgressSnapshot {
+  if (!requestedPointId.value || pointId === requestedPointId.value)
+    return liveSessionSnapshot.value
+
+  try {
+    const saved = localStorage.getItem(`${STORAGE_PREFIX}:${pointId}`)
+    return saved ? JSON.parse(saved) as PracticeProgressSnapshot : {}
+  }
+  catch {
+    return {}
+  }
+}
+
+const pointSnapshots = computed(() => unitTwoKnowledgePoints.map(point => ({
+  point,
+  session: storedPointSnapshot(point.id),
+})))
+
+const unitPointSummary = computed(() => pointSnapshots.value.map(({ point, session }) => {
+  const tasks = grade1MathUnitTwoOriginalTasks.filter(task => task.knowledgePointId === point.id)
+  const missedIds = new Set(session.missed ?? [])
+  const correctedIds = new Set(session.reviewCorrect ?? [])
+  const missedOriginals = tasks.filter(task => missedIds.has(task.id))
+  const correctedCount = missedOriginals.filter(task => correctedIds.has(task.id)).length
+  const correctCount = tasks.filter((task) => {
+    const result = session.firstCompletionResult?.[task.id]
+    return result?.correct && result.attempts === 1
+  }).length
+
+  return {
+    id: point.id,
+    label: point.name,
+    completed: session.section === 'summary',
+    correctCount,
+    totalCount: tasks.length,
+    missedCount: missedOriginals.length,
+    correctedCount,
+    needsPractice: missedOriginals.length > correctedCount,
+  }
+}))
+
+const unitProgress = computed(() => {
+  const completedIds = new Set<string>()
+  const missedIds = new Set<string>()
+  const correctedIds = new Set<string>()
+  const firstResults: Record<string, InteractionResult> = {}
+
+  for (const { session } of pointSnapshots.value) {
+    for (const id of session.completed ?? []) completedIds.add(id)
+    for (const id of session.missed ?? []) missedIds.add(id)
+    for (const id of session.reviewCorrect ?? []) correctedIds.add(id)
+    Object.assign(firstResults, session.firstCompletionResult ?? {})
+  }
+
+  const originalCorrectCount = grade1MathUnitTwoOriginalTasks.filter((task) => {
+    const result = firstResults[task.id]
+    return result?.correct && result.attempts === 1
+  }).length
+  const originalCompletedCount = grade1MathUnitTwoOriginalTasks.filter(task => completedIds.has(task.id)).length
+  const extensionCompletedCount = grade1MathUnitTwoExtensionTasks.filter(task => completedIds.has(task.id)).length
+  const originalMissedCount = grade1MathUnitTwoOriginalTasks.filter(task => missedIds.has(task.id)).length
+
+  return {
+    originalCorrectCount,
+    originalCompletedCount,
+    originalTotalCount: grade1MathUnitTwoOriginalTasks.length,
+    accuracy: grade1MathUnitTwoOriginalTasks.length
+      ? Math.round(originalCorrectCount / grade1MathUnitTwoOriginalTasks.length * 100)
+      : 0,
+    extensionCompletedCount,
+    extensionTotalCount: grade1MathUnitTwoExtensionTasks.length,
+    correctedCount: allUnitTasks.filter(task => missedIds.has(task.id) && correctedIds.has(task.id)).length,
+    missedTasks: allUnitTasks.filter(task => missedIds.has(task.id)),
+    reviewCorrectIds: [...correctedIds],
+    originalMissedCount,
+    completedPointCount: unitPointSummary.value.filter(point => point.completed).length,
+    totalPointCount: unitTwoKnowledgePoints.length,
+    pointSummary: unitPointSummary.value,
+  }
+})
+
+const isUnitComplete = computed(() => requestedPointId.value
+  ? unitPointSummary.value.length > 0 && unitPointSummary.value.every(point => point.completed)
+  : isSummary.value)
+
+const nextKnowledgePoint = computed(() => {
+  if (!requestedPointId.value)
+    return undefined
+  const next = unitPointSummary.value.find(point => !point.completed && point.id !== requestedPointId.value)
+  return next ? { id: next.id, name: next.label } : undefined
+})
+
+const summaryMissedTasks = computed(() => isUnitComplete.value ? unitProgress.value.missedTasks : currentMissedTasks.value)
+const summaryReviewCorrectIds = computed(() => isUnitComplete.value ? unitProgress.value.reviewCorrectIds : reviewCorrect.value)
 
 function restoreProgress(): void {
   try {
     const saved = localStorage.getItem(storageKey.value)
     if (!saved)
       return
-    const state = JSON.parse(saved) as {
-      section?: UnitTwoSection
-      position?: number
-      mode?: PracticeMode
-      completed?: string[]
-      missed?: string[]
-      reviewCorrect?: string[]
-      reviewDone?: string[]
-      extensionOrder?: string[]
-      resultByTask?: Record<string, Partial<Record<PracticeMode, InteractionResult>>>
-      firstCompletionResult?: Record<string, InteractionResult>
-    }
+    const state = JSON.parse(saved) as PracticeProgressSnapshot
     if (state.section)
       section.value = state.section
     position.value = state.position ?? 0
@@ -132,6 +237,12 @@ function restoreProgress(): void {
     extensionOrder.value = state.extensionOrder ?? []
     resultByTask.value = state.resultByTask ?? {}
     firstCompletionResult.value = state.firstCompletionResult ?? {}
+    celebrationShown.value = state.celebrationShown ?? false
+    if (route.query.review === '1' && missed.value.length > 0) {
+      section.value = 'review'
+      position.value = 0
+      reviewDone.value = []
+    }
     if (section.value === 'summary')
       position.value = 0
     else if (position.value >= stageTasks.value.length)
@@ -154,12 +265,13 @@ function persistProgress(): void {
     extensionOrder: extensionOrder.value,
     resultByTask: resultByTask.value,
     firstCompletionResult: firstCompletionResult.value,
+    celebrationShown: celebrationShown.value,
   }))
 }
 
 restoreProgress()
-watch([section, position, mode, completed, missed, reviewCorrect, reviewDone, resultByTask, firstCompletionResult], persistProgress, { deep: true })
-watch(() => route.query.knowledgePointId, () => {
+watch([section, position, mode, completed, missed, reviewCorrect, reviewDone, resultByTask, firstCompletionResult, celebrationShown], persistProgress, { deep: true })
+watch(() => [route.query.knowledgePointId, route.query.review], () => {
   section.value = 'diagnostic'
   position.value = 0
   mode.value = 'digital'
@@ -169,6 +281,7 @@ watch(() => route.query.knowledgePointId, () => {
   reviewDone.value = []
   resultByTask.value = {}
   firstCompletionResult.value = {}
+  celebrationShown.value = false
   extensionOrder.value = []
   restoreProgress()
 })
@@ -255,8 +368,17 @@ function continueLearning(): void {
     beginSection('extension')
   else if (section.value === 'extension')
     beginSection(missed.value.length ? 'review' : 'summary')
-  else if (section.value === 'review')
+  else if (section.value === 'review') {
     beginSection('summary')
+    if (route.query.review === '1') {
+      const query = requestedPointId.value ? { knowledgePointId: requestedPointId.value } : {}
+      void router.replace({
+        name: ROUTE_NAMES.mathUnitTwoPractice,
+        params: { gradeId: 'grade-1', categoryId: 'grade-1-math' },
+        query,
+      })
+    }
+  }
 }
 
 function nextQuestion(): void {
@@ -270,8 +392,28 @@ function nextQuestion(): void {
 }
 
 function retryMissed(): void {
+  if (requestedPointId.value && isUnitComplete.value) {
+    const firstMissed = unitProgress.value.missedTasks[0]
+    if (!firstMissed)
+      return
+    router.push({
+      name: ROUTE_NAMES.mathUnitTwoPractice,
+      params: { gradeId: 'grade-1', categoryId: 'grade-1-math' },
+      query: { knowledgePointId: firstMissed.knowledgePointId, review: '1' },
+    })
+    return
+  }
+
   reviewDone.value = []
   beginSection('review')
+}
+
+function retryKnowledgePoint(pointId: string): void {
+  router.push({
+    name: ROUTE_NAMES.mathUnitTwoPractice,
+    params: { gradeId: 'grade-1', categoryId: 'grade-1-math' },
+    query: { knowledgePointId: pointId, review: '1' },
+  })
 }
 
 function restart(): void {
@@ -285,7 +427,13 @@ function restart(): void {
   reviewDone.value = []
   resultByTask.value = {}
   firstCompletionResult.value = {}
+  celebrationShown.value = false
   extensionOrder.value = []
+}
+
+function markCelebrationShown(): void {
+  celebrationShown.value = true
+  persistProgress()
 }
 
 function returnToOutline(): void {
@@ -424,10 +572,24 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
       :knowledge-point-name="sessionKnowledgePoint"
       :next-knowledge-point-name="nextKnowledgePoint?.name"
       :accuracy="firstTryAccuracy"
-      :missed-tasks="missedTasks"
-      :review-correct-ids="reviewCorrect"
+      :missed-tasks="summaryMissedTasks"
+      :review-correct-ids="summaryReviewCorrectIds"
       :point-summary="pointSummary"
+      :unit-complete="isUnitComplete"
+      :unit-accuracy="unitProgress.accuracy"
+      :unit-correct-count="unitProgress.originalCorrectCount"
+      :unit-original-count="unitProgress.originalTotalCount"
+      :unit-extension-count="unitProgress.extensionCompletedCount"
+      :unit-extension-total-count="unitProgress.extensionTotalCount"
+      :unit-completed-point-count="unitProgress.completedPointCount"
+      :unit-point-count="unitProgress.totalPointCount"
+      :unit-correction-count="unitProgress.correctedCount"
+      :unit-point-summary="unitProgress.pointSummary"
+      :character-image="characterAsset('peppa')"
+      :play-celebration="!celebrationShown"
       @retry-missed="retryMissed"
+      @retry-point="retryKnowledgePoint"
+      @celebration-played="markCelebrationShown"
       @restart="restart"
       @next-knowledge-point="continueToNextKnowledgePoint"
       @return-to-outline="returnToOutline"
