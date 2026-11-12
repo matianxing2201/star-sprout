@@ -2,6 +2,7 @@ import type { CatalogRepository } from './ports/catalog-repository'
 
 import type { ProfileRepository } from './ports/profile-repository'
 import type { ProgressRepository } from './ports/progress-repository'
+import type { QuestionBankProgressRepository } from './ports/question-bank-progress-repository'
 /**
  * 数据层（data）
  * =============
@@ -16,9 +17,11 @@ import { contentPack } from '@/content'
 import { createLocalCatalogRepository } from './adapters/local-catalog-repository'
 import { createLocalStorageProfileRepository } from './adapters/local-storage-profile-repository'
 import { createLocalStorageProgressRepository } from './adapters/local-storage-progress-repository'
+import { createLocalStorageQuestionBankProgressRepository } from './adapters/local-storage-question-bank-progress-repository'
 
 export const catalogRepository: CatalogRepository = createLocalCatalogRepository(contentPack)
 export const progressRepository: ProgressRepository = createLocalStorageProgressRepository()
+export const questionBankProgressRepository: QuestionBankProgressRepository = createLocalStorageQuestionBankProgressRepository()
 export const profileRepository: ProfileRepository = createLocalStorageProfileRepository()
 
-export type { CatalogRepository, ProfileRepository, ProgressRepository }
+export type { CatalogRepository, ProfileRepository, ProgressRepository, QuestionBankProgressRepository }

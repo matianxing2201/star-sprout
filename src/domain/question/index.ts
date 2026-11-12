@@ -51,3 +51,26 @@ export interface TextbookQuestionBank {
   units: TextbookUnit[]
   attribution: QuestionBankAttribution
 }
+
+/** 题库练习的跨页面记录；答案过程归题库专属仓储，不混入正式课程进度。 */
+export interface QuestionBankProgressSnapshot {
+  attemptsByQuestionId: Record<string, number>
+  firstTryCorrectByQuestionId: Record<string, boolean>
+  completedQuestionIds: string[]
+  missedQuestionIds: string[]
+  completedPointIds: string[]
+  celebratedPointIds: string[]
+  currentUnitId: string | null
+  currentPointId: string | null
+}
+
+export const EMPTY_QUESTION_BANK_PROGRESS: QuestionBankProgressSnapshot = {
+  attemptsByQuestionId: {},
+  firstTryCorrectByQuestionId: {},
+  completedQuestionIds: [],
+  missedQuestionIds: [],
+  completedPointIds: [],
+  celebratedPointIds: [],
+  currentUnitId: null,
+  currentPointId: null,
+}
