@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import type { CategoryId, GradeId } from "@/domain";
-import { computed } from "vue";
+import type { CategoryId, GradeId } from '@/domain'
+import { computed } from 'vue'
 
-import { RouterLink, useRoute, useRouter } from "vue-router";
-import { ROUTE_NAMES } from "@/app/router/route-names";
-import { grade1MathQuestions } from "@/content/grades/grade-1/math-question-bank";
-import { useCatalogStore } from "@/stores";
-import { KButton, KIcon, KIconTile, KTag } from "@/ui";
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { ROUTE_NAMES } from '@/app/router/route-names'
+import { grade1MathQuestions } from '@/content/grades/grade-1/math-question-bank'
+import { useCatalogStore } from '@/stores'
+import { KButton, KIcon, KIconTile, KTag } from '@/ui'
 
-const route = useRoute();
-const router = useRouter();
-const catalog = useCatalogStore();
+const route = useRoute()
+const router = useRouter()
+const catalog = useCatalogStore()
 
-const gradeId = computed(() => route.params.gradeId as GradeId);
-const categoryId = computed(() => route.params.categoryId as CategoryId);
-const grade = computed(() => catalog.grade(gradeId.value));
-const category = computed(() => catalog.category(categoryId.value));
-const topics = computed(() => catalog.topicsOfCategory(categoryId.value));
+const gradeId = computed(() => route.params.gradeId as GradeId)
+const categoryId = computed(() => route.params.categoryId as CategoryId)
+const grade = computed(() => catalog.grade(gradeId.value))
+const category = computed(() => catalog.category(categoryId.value))
+const topics = computed(() => catalog.topicsOfCategory(categoryId.value))
 const knowledgePointCount = computed(() =>
-  topics.value.reduce((total, topic) => total + topic.knowledgePoints.length, 0)
-);
+  topics.value.reduce((total, topic) => total + topic.knowledgePoints.length, 0),
+)
 
 function questionsForPoint(pointId: string) {
   return grade1MathQuestions.filter(
-    (question) => question.knowledgePointId === pointId
-  );
+    question => question.knowledgePointId === pointId,
+  )
 }
 
 function isUnitTwoKnowledgePoint(pointId: string): boolean {
@@ -35,11 +35,11 @@ function unitTwoQuestionCount(): number {
   return 6
 }
 
-if (gradeId.value !== "grade-1" || categoryId.value !== "grade-1-math") {
+if (gradeId.value !== 'grade-1' || categoryId.value !== 'grade-1-math') {
   router.replace({
     name: ROUTE_NAMES.categories,
     params: { gradeId: gradeId.value },
-  });
+  })
 }
 </script>
 
@@ -87,7 +87,9 @@ if (gradeId.value !== "grade-1" || categoryId.value !== "grade-1-math") {
         <KTag tone="star" size="md">
           <KIcon name="sparkle" size="xs" /> {{ knowledgePointCount }} 个知识点
         </KTag>
-        <KTag tone="neutral" size="md">按教材顺序</KTag>
+        <KTag tone="neutral" size="md">
+          按教材顺序
+        </KTag>
       </div>
     </header>
 
@@ -117,9 +119,12 @@ if (gradeId.value !== "grade-1" || categoryId.value !== "grade-1-math") {
               {{ topic.title }}
             </h2>
           </div>
-          <KTag tone="math" size="sm"
-            >{{ topic.knowledgePoints.length }} 个知识点</KTag
+          <KTag
+            tone="math"
+            size="sm"
           >
+            {{ topic.knowledgePoints.length }} 个知识点
+          </KTag>
         </div>
 
         <div class="p-4 sm:p-5">
@@ -149,18 +154,43 @@ if (gradeId.value !== "grade-1" || categoryId.value !== "grade-1-math") {
                   >
                     {{ point.detail }}
                   </p>
-                  <RouterLink
-                    v-if="isUnitTwoKnowledgePoint(point.id)"
-                    :to="{
-                      name: ROUTE_NAMES.mathUnitTwoPractice,
-                      params: { gradeId, categoryId },
-                      query: { knowledgePointId: point.id },
-                    }"
-                    class="mt-3 inline-flex items-center gap-1 rounded-chip bg-math-deep px-3 py-1.5 font-body text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
-                  >
-                    开始练习 · {{ unitTwoQuestionCount() }} 题
-                    <KIcon name="arrow-right" size="xs" />
-                  </RouterLink>
+                  <template v-if="isUnitTwoKnowledgePoint(point.id)">
+                    <RouterLink
+                      :to="{
+                        name: ROUTE_NAMES.mathUnitTwoPractice,
+                        params: { gradeId, categoryId },
+                        query: { knowledgePointId: point.id },
+                      }"
+                      class="mt-3 inline-flex items-center gap-1 rounded-chip bg-math-deep px-3 py-1.5 font-body text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
+                    >
+                      开始练习 · {{ unitTwoQuestionCount() }} 题
+                      <KIcon name="arrow-right" size="xs" />
+                    </RouterLink>
+                    <RouterLink
+                      v-if="point.id === 'kp-cnm-p010'"
+                      :to="{
+                        name: ROUTE_NAMES.mathUnitTwoPractice,
+                        params: { gradeId, categoryId },
+                        query: { knowledgePointId: point.id, lesson: 'addition' },
+                      }"
+                      class="mt-2 inline-flex items-center gap-1 rounded-chip border-2 border-math-line bg-math-soft px-3 py-1.5 font-body text-xs font-bold text-math-deep transition-transform hover:-translate-y-0.5"
+                    >
+                      互动小课 · 8 分钟
+                      <KIcon name="sparkle" size="xs" />
+                    </RouterLink>
+                    <RouterLink
+                      v-else
+                      :to="{
+                        name: ROUTE_NAMES.mathUnitTwoPractice,
+                        params: { gradeId, categoryId },
+                        query: { knowledgePointId: point.id, lesson: 'mini' },
+                      }"
+                      class="mt-2 inline-flex items-center gap-1 rounded-chip border-2 border-math-line bg-math-soft px-3 py-1.5 font-body text-xs font-bold text-math-deep transition-transform hover:-translate-y-0.5"
+                    >
+                      互动小课 · 8 分钟
+                      <KIcon name="sparkle" size="xs" />
+                    </RouterLink>
+                  </template>
                   <RouterLink
                     v-else-if="questionsForPoint(point.id).length > 0"
                     :to="{

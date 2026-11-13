@@ -15,6 +15,8 @@ import {
 } from '@/content/grades/grade-1/math-unit-two-practice'
 import { publicAsset } from '@/shared/utils'
 import { KButton, KIcon, KTag } from '@/ui'
+import MathAdditionMiniLesson from './MathAdditionMiniLesson.vue'
+import MathUnitTwoMiniLesson from './MathUnitTwoMiniLesson.vue'
 import MathUnitTwoSummary from './MathUnitTwoSummary.vue'
 
 const STORAGE_PREFIX = 'starsprout:g1-math-u2-practice:v1'
@@ -24,6 +26,16 @@ const requestedPointId = computed(() => typeof route.query.knowledgePointId === 
   && grade1MathUnitTwoOriginalTasks.some(task => task.knowledgePointId === route.query.knowledgePointId)
   ? route.query.knowledgePointId
   : null)
+const isAdditionLesson = computed(() => route.query.lesson === 'addition' && requestedPointId.value === 'kp-cnm-p010')
+const miniLessonPointIds = ['kp-cnm-p008', 'kp-cnm-p009', 'kp-cnm-p011', 'kp-cnm-p012', 'kp-cnm-p013', 'kp-cnm-p253'] as const
+type MiniLessonPointId = (typeof miniLessonPointIds)[number]
+const miniLessonPointId = computed<MiniLessonPointId | null>(() => {
+  const pointId = requestedPointId.value
+  if (route.query.lesson === 'mini' && pointId && miniLessonPointIds.includes(pointId as MiniLessonPointId))
+    return pointId as MiniLessonPointId
+  return null
+})
+const isMiniLesson = computed(() => isAdditionLesson.value || miniLessonPointId.value !== null)
 const storageKey = computed(() => `${STORAGE_PREFIX}:${requestedPointId.value ?? 'all'}`)
 const sessionOriginalTasks = computed(() => requestedPointId.value
   ? grade1MathUnitTwoOriginalTasks.filter(task => task.knowledgePointId === requestedPointId.value)
@@ -362,12 +374,15 @@ function beginSection(next: UnitTwoSection): void {
 }
 
 function continueLearning(): void {
-  if (section.value === 'diagnostic')
+  if (section.value === 'diagnostic') {
     beginSection('original')
-  else if (section.value === 'original')
+  }
+  else if (section.value === 'original') {
     beginSection('extension')
-  else if (section.value === 'extension')
+  }
+  else if (section.value === 'extension') {
     beginSection(missed.value.length ? 'review' : 'summary')
+  }
   else if (section.value === 'review') {
     beginSection('summary')
     if (route.query.review === '1') {
@@ -440,6 +455,27 @@ function returnToOutline(): void {
   router.push({ name: ROUTE_NAMES.mathOutline, params: { gradeId: 'grade-1', categoryId: 'grade-1-math' } })
 }
 
+function continueFromAdditionLesson(): void {
+  router.replace({
+    name: ROUTE_NAMES.mathUnitTwoPractice,
+    params: { gradeId: 'grade-1', categoryId: 'grade-1-math' },
+    query: { knowledgePointId: 'kp-cnm-p010' },
+  })
+}
+
+function continueFromMiniLesson(): void {
+  if (!requestedPointId.value) {
+    returnToOutline()
+  }
+  else {
+    router.replace({
+      name: ROUTE_NAMES.mathUnitTwoPractice,
+      params: { gradeId: 'grade-1', categoryId: 'grade-1-math' },
+      query: { knowledgePointId: requestedPointId.value },
+    })
+  }
+}
+
 function continueToNextKnowledgePoint(): void {
   if (!nextKnowledgePoint.value)
     return
@@ -464,13 +500,26 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
         <KTag tone="math" size="sm">
           一年级上册 · 第 2 单元
         </KTag>
-        <KTag tone="star" size="sm">
+        <KTag v-if="!isMiniLesson" tone="star" size="sm">
           {{ completed.length }} / {{ totalTasks }} 题
         </KTag>
       </div>
     </div>
 
-    <header v-if="!isIllustratedSample" class="relative overflow-hidden rounded-blob border-2 border-math-line bg-math-soft px-5 py-6 shadow-sticker sm:px-8 sm:py-8">
+    <MathAdditionMiniLesson
+      v-if="isAdditionLesson"
+      @back="returnToOutline"
+      @continue="continueFromAdditionLesson"
+    />
+    <MathUnitTwoMiniLesson
+      v-else-if="miniLessonPointId"
+      :key="miniLessonPointId"
+      :point-id="miniLessonPointId"
+      @back="returnToOutline"
+      @continue="continueFromMiniLesson"
+    />
+
+    <header v-if="!isMiniLesson && !isIllustratedSample" class="relative overflow-hidden rounded-blob border-2 border-math-line bg-math-soft px-5 py-6 shadow-sticker sm:px-8 sm:py-8">
       <div class="pointer-events-none absolute -right-8 -top-12 size-48 rounded-full bg-white/45" />
       <div class="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div>
@@ -503,7 +552,7 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
       </div>
     </header>
 
-    <template v-if="!isSummary && currentTask && activeSpec">
+    <template v-if="!isMiniLesson && !isSummary && currentTask && activeSpec">
       <template v-if="isIllustratedSample">
         <header class="rounded-blob border-2 border-math-line bg-math-soft px-5 py-5 sm:px-7">
           <p class="font-body text-xs font-extrabold text-math-deep">
@@ -564,7 +613,7 @@ if (route.params.gradeId !== 'grade-1' || route.params.categoryId !== 'grade-1-m
     </template>
 
     <MathUnitTwoSummary
-      v-else
+      v-else-if="!isMiniLesson"
       :original-count="completedOriginalCount"
       :total-original-count="sessionOriginalTasks.length"
       :extension-count="completedExtensionCount"
