@@ -10,6 +10,7 @@ import { RewardLayer } from '@/features/reward'
 import { useFeedbackStore, useQuestionBankProgressStore } from '@/stores'
 import { KButton, KIcon, KTag } from '@/ui'
 import ChineseAeToneLesson from './ChineseAeToneLesson.vue'
+import ChineseUnitTwoMiniLesson from './ChineseUnitTwoMiniLesson.vue'
 
 type QuestionFeedback = 'waiting' | 'hint' | 'correct' | 'revealed'
 
@@ -37,6 +38,11 @@ const lessonMode = ref(false)
 const currentUnit = computed(() => bank.units[unitIndex.value]!)
 const currentPoint = computed<CurriculumKnowledgePoint>(() => currentUnit.value.knowledgePoints[pointIndex.value]!)
 const isAeTonePoint = computed(() => currentPoint.value.id === 'cnc_p008')
+const miniLessonPointId = computed(() => {
+  const pointId = currentPoint.value.id
+  return pointId === 'cnc_p009' || pointId === 'cnc_p010' || pointId === 'cnc_p011' || pointId === 'cnc_p012' ? pointId : null
+})
+const isSecondUnit = computed(() => currentUnit.value.order === 2)
 const activeQuestions = computed(() => {
   if (!reviewMode.value)
     return currentPoint.value.questions
@@ -336,13 +342,13 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
             </button>
           </div>
 
-          <div v-if="isAeTonePoint && !lessonMode" class="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-card border-2 border-language-line bg-language-soft/70 p-4">
+          <div v-if="isSecondUnit && !lessonMode" class="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-card border-2 border-language-line bg-language-soft/70 p-4">
             <div>
               <p class="font-display text-base text-ink">
                 先上互动小课，再做原题
               </p>
               <p class="mt-1 font-body text-xs leading-relaxed text-ink-soft">
-                口型观察、四声手势、12 个拼音跟读和 6 道变式挑战 · 约 18 分钟
+                根据「{{ currentPoint.title }}」设计故事讲解、互动体验和变式挑战。
               </p>
             </div>
             <KButton size="md" variant="primary" tone="language" @click="startAeToneLesson">
@@ -352,7 +358,14 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
           </div>
 
           <ChineseAeToneLesson
-            v-if="lessonMode"
+            v-if="lessonMode && isAeTonePoint"
+            class="mt-3"
+            @cancel="lessonMode = false"
+            @practice-originals="startOriginalPractice"
+          />
+          <ChineseUnitTwoMiniLesson
+            v-else-if="lessonMode && miniLessonPointId"
+            :point-id="miniLessonPointId"
             class="mt-3"
             @cancel="lessonMode = false"
             @practice-originals="startOriginalPractice"
