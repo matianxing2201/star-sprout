@@ -1,0 +1,36 @@
+# 不进 Docker 构建上下文的文件。
+# 构建只需要源码 + 依赖清单；密钥文件绝不能进镜像层。
+
+# 版本库与本地状态
+.git
+.github
+.history
+.DS_Store
+
+# 依赖与构建产物
+node_modules
+dist
+dist-ssr
+coverage
+.pnpm-store
+*.tsbuildinfo
+
+# 环境文件：*.local 匹配 .env.local（含 API 密钥 / SFTP 密码），
+# .env 是 compose 部署用的本地变量，都与镜像内容无关。
+*.local
+.env
+
+# 部署与文档（镜像用不到）
+docs
+docker
+compose.yaml
+deploy.sh
+Dockerfile
+.dockerignore
+
+# 工具产物
+.wrangler
+.playwright-cli
+output
+logs
+*.log

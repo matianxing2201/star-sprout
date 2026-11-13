@@ -39,6 +39,14 @@ jobs:
 
       - name: Build site
         run: pnpm build
+        env:
+          GITHUB_ACTIONS: 'true'
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      # GitHub Pages 没有服务端回退：刷新 /star-sprout/xxx 深链接会 404。
+      # 复制一份 index.html 为 404.html，Pages 会用它渲染 SPA 路由。
+      - name: Add SPA route fallback
+        run: cp dist/index.html dist/404.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

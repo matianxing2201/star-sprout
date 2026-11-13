@@ -4,6 +4,8 @@ dist/
 dist-ssr/
 coverage/
 *.local
+# Docker Compose 本地部署变量（NGINX_CONF 等，不含密钥，只与服务器相关）
+.env
 *.tsbuildinfo
 .pnpm-store/
 .wrangler/
