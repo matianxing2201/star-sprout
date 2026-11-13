@@ -14,12 +14,10 @@ import { KIconTile, KTag, TONE_ICONS } from "@/ui";
  */
 const {
   category,
-  questionCount = 0,
-  outlineCount = 0,
+  knowledgePointCount = 0,
 } = defineProps<{
   category: Category;
-  questionCount?: number;
-  outlineCount?: number;
+  knowledgePointCount?: number;
 }>();
 
 const skills = computed(() => category.skills);
@@ -64,17 +62,10 @@ const skills = computed(() => category.skills);
     </ul>
 
     <p
-      v-if="questionCount > 0"
-      class="mt-auto flex items-center justify-between border-t border-line pt-4 font-body text-xs font-bold text-language-deep"
+      v-if="knowledgePointCount > 0"
+      class="mt-auto flex items-center justify-between border-t border-line pt-4 font-body text-xs font-bold text-ink-soft"
     >
-      <span>一年级上册 · {{ questionCount }} 道题</span>
-      <KIcon name="arrow-right" size="sm" />
-    </p>
-    <p
-      v-else-if="outlineCount > 0"
-      class="mt-auto flex items-center justify-between border-t border-line pt-4 font-body text-xs font-bold text-math-deep"
-    >
-      <span>一年级上册 · {{ outlineCount }} 个主题</span>
+      <span>一年级上册 · {{ knowledgePointCount }} 个知识点</span>
       <KIcon name="arrow-right" size="sm" />
     </p>
   </div>

@@ -4,7 +4,7 @@ import { computed } from "vue";
 
 import { RouterLink } from "vue-router";
 import { ROUTE_NAMES } from "@/app/router/route-names";
-import { grade1ChineseQuestionCount } from "@/content/grades/grade-1/chinese-question-bank";
+import { grade1ChineseKnowledgePointCount } from "@/content/grades/grade-1/chinese-question-bank";
 import { useCatalogStore } from "@/stores";
 import { KEmptyState, KSectionTitle } from "@/ui";
 
@@ -21,8 +21,9 @@ const { gradeId } = defineProps<{ gradeId: GradeId }>();
 const catalog = useCatalogStore();
 const grade = computed(() => catalog.grade(gradeId));
 const categories = computed(() => catalog.categoriesOf(gradeId));
-const grade1MathTopicCount = computed(
-  () => catalog.topicsOfCategory("grade-1-math").length
+const grade1MathKnowledgePointCount = computed(
+  () => catalog.topicsOfCategory("grade-1-math")
+    .reduce((sum, topic) => sum + topic.knowledgePoints.length, 0)
 );
 </script>
 
@@ -54,7 +55,7 @@ const grade1MathTopicCount = computed(
         >
           <CategoryCard
             :category="category"
-            :question-count="grade1ChineseQuestionCount"
+            :knowledge-point-count="grade1ChineseKnowledgePointCount"
           />
         </RouterLink>
         <RouterLink
@@ -67,7 +68,7 @@ const grade1MathTopicCount = computed(
         >
           <CategoryCard
             :category="category"
-            :outline-count="grade1MathTopicCount"
+            :knowledge-point-count="grade1MathKnowledgePointCount"
           />
         </RouterLink>
         <CategoryCard v-else :category="category" />

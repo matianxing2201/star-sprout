@@ -11,6 +11,7 @@ import { useFeedbackStore, useQuestionBankProgressStore } from '@/stores'
 import { KButton, KIcon, KTag } from '@/ui'
 import ChineseAeToneLesson from './ChineseAeToneLesson.vue'
 import ChineseUnitTwoMiniLesson from './ChineseUnitTwoMiniLesson.vue'
+import ChineseUnitThreeMiniLesson from './ChineseUnitThreeMiniLesson.vue'
 
 type QuestionFeedback = 'waiting' | 'hint' | 'correct' | 'revealed'
 
@@ -43,6 +44,13 @@ const miniLessonPointId = computed(() => {
   return pointId === 'cnc_p009' || pointId === 'cnc_p010' || pointId === 'cnc_p011' || pointId === 'cnc_p012' ? pointId : null
 })
 const isSecondUnit = computed(() => currentUnit.value.order === 2)
+const thirdUnitMiniLessonPointId = computed(() => {
+  const pointId = currentPoint.value.id
+  if (currentUnit.value.order !== 3)
+    return null
+  return pointId === 'cnc_p013' || pointId === 'cnc_p014' || pointId === 'cnc_p015' || pointId === 'cnc_p016' || pointId === 'cnc_p017' || pointId === 'cnc_p018' ? pointId : null
+})
+const hasInteractiveLesson = computed(() => isSecondUnit.value || thirdUnitMiniLessonPointId.value !== null)
 const activeQuestions = computed(() => {
   if (!reviewMode.value)
     return currentPoint.value.questions
@@ -190,7 +198,7 @@ function startPointAgain(): void {
   celebratingPointId.value = null
 }
 
-function startAeToneLesson(): void {
+function startInteractiveLesson(): void {
   lessonMode.value = true
 }
 
@@ -342,7 +350,7 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
             </button>
           </div>
 
-          <div v-if="isSecondUnit && !lessonMode" class="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-card border-2 border-language-line bg-language-soft/70 p-4">
+          <div v-if="hasInteractiveLesson && !lessonMode" class="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-card border-2 border-language-line bg-language-soft/70 p-4">
             <div>
               <p class="font-display text-base text-ink">
                 先上互动小课，再做原题
@@ -351,7 +359,7 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
                 根据「{{ currentPoint.title }}」设计故事讲解、互动体验和变式挑战。
               </p>
             </div>
-            <KButton size="md" variant="primary" tone="language" @click="startAeToneLesson">
+            <KButton size="md" variant="primary" tone="language" @click="startInteractiveLesson">
               {{ progress.snapshot.completedPointIds.includes(currentPoint.id) ? '重温互动小课' : '开始互动小课' }}
               <KIcon name="arrow-right" size="sm" />
             </KButton>
@@ -366,6 +374,13 @@ if (route.params.gradeId !== bank.gradeId || route.params.categoryId !== bank.ca
           <ChineseUnitTwoMiniLesson
             v-else-if="lessonMode && miniLessonPointId"
             :point-id="miniLessonPointId"
+            class="mt-3"
+            @cancel="lessonMode = false"
+            @practice-originals="startOriginalPractice"
+          />
+          <ChineseUnitThreeMiniLesson
+            v-else-if="lessonMode && thirdUnitMiniLessonPointId"
+            :point-id="thirdUnitMiniLessonPointId"
             class="mt-3"
             @cancel="lessonMode = false"
             @practice-originals="startOriginalPractice"
